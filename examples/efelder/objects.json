@@ -1,0 +1,25 @@
+{
+	"circles":
+	[
+		{
+			"x":1520,
+			"y":540,
+			"radius":128,
+			"charge":2.0,
+			"test_points":45
+		},
+		{
+			"x":400,
+			"y":540,
+			"radius":128,
+			"charge":-2.0,
+			"test_points":45
+		},
+		{
+			"x":960,
+			"y":64,
+			"radius":64,
+			"charge":-2.0,
+			"test_points":45
+		}]
+}
