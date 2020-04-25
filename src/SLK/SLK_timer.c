@@ -18,14 +18,37 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "../../include/SLK/SLK.h"
+//External includes
+#include <SDL2/SDL.h>
+//-------------------------------------
 
+//Internal includes
+#include "../../include/SLK/SLK_functions.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
 int fps;
 int frametime;
 int framedelay;
 int framestart;
 float delta;
+//-------------------------------------
 
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Sets the target fps.
+//Pass a value of 0 or lower to set maximum fps.
+//Hardlimited to 1000 fps because SDL_GetTicks can't go
+//smaller than milliseconds.
 void SLK_timer_set_fps(const int FPS)
 {
    if(FPS<1||FPS>1000)
@@ -33,12 +56,26 @@ void SLK_timer_set_fps(const int FPS)
    else
       fps = FPS;
 
-   framedelay = 1000/FPS;
+   framedelay = 1000/fps;
 }
 
+//Returns the currently targeted fps.
+//Don't know how this could be usefull,
+//but anyway, here it is.
+int SLK_timer_get_fps()
+{
+   return fps;
+}
+
+//Updates the timings and sleeps
+//the needed amount of time.
+//Already gets called in SLK_update,
+//only use if you know
+//what you are doing
 void SLK_timer_update()
 {
    frametime = SDL_GetTicks()-framestart;
+
    if(framedelay>frametime)
       SDL_Delay(framedelay-frametime);
 
@@ -46,7 +83,13 @@ void SLK_timer_update()
    framestart = SDL_GetTicks();
 }
 
+//Returns the time the last frame has taken
+//in seconds.
+//SLK is designed to use fixed framerates,
+//but if you desire to do something else
+//I won't stop you.
 float SLK_timer_get_delta()
 {
    return delta;
 }
+//-------------------------------------

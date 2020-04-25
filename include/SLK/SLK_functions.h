@@ -29,6 +29,7 @@ SLK_Palette *SLK_palette_load(const char *path);
 
 //Timer subsystem: SLK_timer.c
 void SLK_timer_set_fps(const int FPS);
+int SLK_timer_get_fps();
 void SLK_timer_update();
 float SLK_timer_get_delta();
 
