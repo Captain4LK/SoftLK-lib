@@ -49,7 +49,7 @@ float delta;
 //Pass a value of 0 or lower to set maximum fps.
 //Hardlimited to 1000 fps because SDL_GetTicks can't go
 //smaller than milliseconds.
-void SLK_timer_set_fps(const int FPS)
+void SLK_timer_set_fps(int FPS)
 {
    if(FPS<1||FPS>1000)
       fps = 1000;
@@ -71,7 +71,7 @@ int SLK_timer_get_fps()
 //the needed amount of time.
 //Already gets called in SLK_update,
 //only use if you know
-//what you are doing
+//what you are doing.
 void SLK_timer_update()
 {
    frametime = SDL_GetTicks()-framestart;

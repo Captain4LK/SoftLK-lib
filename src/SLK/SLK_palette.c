@@ -18,18 +18,42 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+#include <stdio.h>
+//-------------------------------------
 
-/*
- * Loads a paltte from a .pal 
- * file.
- * Support for other types
- * is planned
- */
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Reads a palette from a .pal file.
+//Most pal files don't have an alpha
+//component added to them, you
+//need to add that yourself in the pal file.
 SLK_Palette *SLK_palette_load(const char *path)
 {
+   char buffer[512];
+   int colors = 0,i,found;
+   int r,g,b,a;
    SLK_Palette *palette = malloc(sizeof(SLK_Palette));
+
+   memset(palette,0,sizeof(SLK_Palette));
 
    FILE *f = fopen(path,"r");
    if(!f)
@@ -38,21 +62,18 @@ SLK_Palette *SLK_palette_load(const char *path)
       return palette;
    }
    
-   char buffer[512];
-   int colors = 0;
    
-   for(int i = 0;i<259&&fgets(buffer,512,f);i++)
+   for(i = 0;i<259&&fgets(buffer,512,f);i++)
    {
       if(i==2)
       {
-         int found;
          sscanf(buffer,"%d",&found);
          printf("Found %d colors\n",found);
       }
-      else if(i>2)
+      else if(i>2&&buffer[0]!='\0')
       {
-         int r,g,b,a;
          sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a);
+
          palette->colors[colors].r = r;
          palette->colors[colors].g = g;
          palette->colors[colors].b = b;
@@ -63,3 +84,24 @@ SLK_Palette *SLK_palette_load(const char *path)
 
    return palette;
 }
+
+//Sets the color of a palette at the
+//desired index.
+//Usefull for rapidly chaning certain colors of a sprite,
+//eg. for simple animations.
+void SLK_palette_set_color(SLK_Palette *palette, int index, SLK_Color color)
+{
+   if(index>=0&&index<256)
+      palette->colors[index] = color;
+}
+
+//Returns the color of a palette at the
+//desired index.
+SLK_Color SLK_palette_get_color(const SLK_Palette *palette, int index)
+{
+   if(index>=0&&index<256)
+      return palette->colors[index];
+   else
+      return SLK_color_create(0,0,0,255);
+}
+//-------------------------------------
