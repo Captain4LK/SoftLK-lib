@@ -9,7 +9,7 @@
        * Redistributions in binary form must reproduce the above copyright
          notice, this list of conditions and the following disclaimer in the
          documentation and/or other materials provided with the distribution.
-       * Neither the name of SLK nor the
+       * Neither the name of SoftLK nor the
          names of its contributors may be used to endorse or promote products
          derived from this software without specific prior written permission.
 
@@ -25,8 +25,29 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
+//External includes
+//-------------------------------------
 
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+//-------------------------------------
+//
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Creates a SLK_Color struct from 4 unsigned 8bit ints.
 SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
    SLK_Color c;
@@ -38,6 +59,10 @@ SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
    return c;
 } 
 
+//Creates a SLK_Paxel struct from 2 unsigned 8bit ints.
+//index is the index of the currently used palette.
+//mask is wether the paxel is supposed to be drawn:
+//SLK_OPAQUE for drawing, SLK_TRANSPARENT for skipping.
 SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask)
 {
    SLK_Paxel p;
@@ -46,3 +71,4 @@ SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask)
    
    return p;
 }
+//-------------------------------------

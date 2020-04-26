@@ -1,4 +1,4 @@
-# SLK Engine
+# SoftLK Engine
 
 A software accelerated engine that uses OpenGL to bring the graphics to the screen. It's made for low resolutions (eg. 256x240), but can be used for higher resolutions, too.
 
@@ -12,11 +12,11 @@ A software accelerated engine that uses OpenGL to bring the graphics to the scre
 
 ## License
 
-SLK is free Software (as in freedom) and is released under the 3-clause BSD license, see LICENSE.md for details. Most of the examples are released under the same license, unless noted otherwise of course.
+SoftLK is free Software (as in freedom) and is released under the 3-clause BSD license, see LICENSE.md for details. Most of the examples are released under the same license, unless noted otherwise of course.
 
-## Using SLK
+## Using SoftLK
 
-To use SLK you need to have the following libraries installed:
+To use SoftLK you need to have the following libraries installed:
 
 * [SDL 2](https://www.libsdl.org/)
 
@@ -30,7 +30,7 @@ Linux:
 
 ## Plattforms
 
-SLK has been tested and is working on the following plattforms/os:
+SoftLK has been tested and is working on the following plattforms/os:
 
 * Void GNU/Linux, amd64: [Enter the void](https://voidlinux.org/) 
 
