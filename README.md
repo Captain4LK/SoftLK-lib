@@ -12,7 +12,7 @@ A software accelerated engine that uses OpenGL to bring the graphics to the scre
 
 ## License
 
-SLK is free Software (as in freedom) and is released under the zlib license, see LICENSE.md for details. Most of the examples are released under the same license, unless noted otherwise of course.
+SLK is free Software (as in freedom) and is released under the 3-clause BSD license, see LICENSE.md for details. Most of the examples are released under the same license, unless noted otherwise of course.
 
 ## Using SLK
 
