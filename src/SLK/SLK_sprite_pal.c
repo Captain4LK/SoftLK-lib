@@ -25,16 +25,38 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+#include <string.h>
+//-------------------------------------
 
-/*
- * Creates a sprite with the requested dimensions
- * and returns a pointer to its location
- */
-SLK_Pal_sprite *SLK_pal_sprite_create(const int width, const int height)
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+#define INBOUNDS(LOWER,UPPER,NUMBER) \
+            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Creates a sprite with the requested dimensions
+//and returns a pointer to its location.
+SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 {
     SLK_Pal_sprite *s = malloc(sizeof(SLK_Pal_sprite));
+
     s->width = width;
     s->height = height;
     s->data = malloc(width*height*sizeof(SLK_Paxel));
@@ -43,24 +65,20 @@ SLK_Pal_sprite *SLK_pal_sprite_create(const int width, const int height)
     return s;
 }
 
-/*
- * Destroys a previously allocated sprite.
- * The user may not now that s->data also 
- * needs to be freed
- */
+//Destroys a previously allocated sprite.
+//The user may not now that s->data also 
+//needs to be freed.
 void SLK_pal_sprite_destroy(SLK_Pal_sprite *s)
 {
    free(s->data);
    free(s);
 }
 
-/*
- * Returns the paxel at the specified
- * location.
- * The paxel layout may change in
- * the future
- */
-SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, const int x, const int y)
+//Returns the paxel at the specified
+//location.
+//The paxel layout may change in
+//the future.
+SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       return s->data[y*s->width+x];
@@ -68,50 +86,47 @@ SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, const int x, const i
       return (SLK_Paxel){0,0};
 }
 
-/*
- * Sets the paxel at the specified
- * position.
- * Again, the paxel layout may change
- * in the future
- */
-void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, const int x, const int y, const SLK_Paxel c)
+//Sets the paxel at the specified
+//position.
+//Again, the paxel layout may change
+//in the future.
+void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       s->data[y*s->width+x] = c;
 }
 
-/*
- * Loads a sprite from a .slk file.
- * Current layout:
- * int width,
- * int height,
- * width*height*SLK_Paxel data
- */
+//Loads a sprite from a .slk file.
+//Current layout:
+//int width,
+//int height,
+//width*height*SLK_Paxel data
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
 {
    FILE *f = fopen(path,"rb");
+   SLK_Pal_sprite *s = NULL;
+   int width, height;
+
    if(!f)
       return SLK_pal_sprite_create(1,1);
       
-   int width, height;
    fread(&width,sizeof(int),1,f);
    fread(&height,sizeof(int),1,f);   
    
-   SLK_Pal_sprite *s = SLK_pal_sprite_create(width,height);
+   s = SLK_pal_sprite_create(width,height);
    fread(s->data,sizeof(SLK_Paxel),width*height,f);
    fclose(f);
    
    return s;
 }
 
-/*
- * Saves a sprite to a file
- * with the above specified
- * layout
- */
+//Saves a sprite to a file
+//with the above specified
+//layout.
 void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
 {
    FILE *f = fopen(path,"wb");
+
    if(!f)
       return;
       
@@ -121,7 +136,10 @@ void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
    fclose(f);
 }
 
-void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, const int x, const int y, const int ox, const int oy, const int width, const int height)
+//Copies a specified part of the data of a sprite 
+//to another one.
+//Usefull for splitting a texture atlas in individual sprites.
+void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, int x, int y, int ox, int oy, int width, int height)
 {
    for(int tx = 0; tx < width; tx++)
    {
@@ -133,10 +151,12 @@ void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src,
    }
 }
 
+//Copies the data o a sprite to another one.
+//Usefull for duplicating sprites.
 void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src)
 {
    for(int x = 0;x<src->width;x++)
       for(int y = 0;y<src->height;y++)
          SLK_pal_sprite_set_paxel(dst,x,y,SLK_pal_sprite_get_paxel(src,x,y));
 }
-
+//-------------------------------------

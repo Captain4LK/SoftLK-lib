@@ -47,18 +47,18 @@ void SLK_render_init();
 void SLK_render_update();
 
 //Pal sprite subsystem: SLK_sprite_pal.c
-SLK_Pal_sprite *SLK_pal_sprite_create(const int width, const int height);
+SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
 void SLK_pal_sprite_destroy(SLK_Pal_sprite *s);
-SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, const int x, const int y);
-void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, const int x, const int y, const SLK_Paxel c);
+SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y);
+void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c);
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path);
 void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s);
-void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, const int x, const int y, const int ox, const int oy, const int width, const int height);
 void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src);
+void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, int x, int y, int ox, int oy, int width, int height);
 
 //Draw pal subsystem: SLK_draw_pal.c
-SLK_Pal_sprite *SLK_draw_pal_get_target();
 void SLK_draw_pal_set_target(SLK_Pal_sprite *s);
+SLK_Pal_sprite *SLK_draw_pal_get_target();
 void SLK_draw_pal_set_clear_paxel(SLK_Paxel paxel);
 void SLK_draw_pal_clear();
 void SLK_draw_pal_paxel(int x, int y, SLK_Paxel paxel);

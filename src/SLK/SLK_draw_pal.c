@@ -25,14 +25,45 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+//-------------------------------------
 
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+#define SWAP(x,y) \
+            { (x)=(x)^(y); (y)=(x)^(y); (x)=(x)^(y); }
+#define INBOUNDS(LOWER,UPPER,NUMBER) \
+            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+#define SIGNUM(NUM) \
+   NUM==0?0:(NUM<0?-1:1)
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Returns the target for drawing operations.
+//Usefull for getting the default draw target.
 SLK_Pal_sprite *SLK_draw_pal_get_target()
 {
    return target_pal;
 }
 
+//Sets the target for drawing operations.
+//Used for drawing to sprites, for creating spritesheets
+//SLK_pal_sprite_copy(_partial) is advised.
 void SLK_draw_pal_set_target(SLK_Pal_sprite *s)
 {
    if(s==NULL)
@@ -44,17 +75,22 @@ void SLK_draw_pal_set_target(SLK_Pal_sprite *s)
    target_pal = s;
 }
 
+//Sets the color wich the target is to be cleared to
+//when calling SLK_draw_pal_clear.
 void SLK_draw_pal_set_clear_paxel(SLK_Paxel paxel)
 {
    target_pal_clear = paxel;
 }
 
+//Clears the target to the color set by 
+//SLK_draw_pal_set_clear_paxel.
 void SLK_draw_pal_clear()
 {
    for(int i = 0;i<target_pal->width*target_pal->height;i++)
       target_pal->data[i] = target_pal_clear;
 }
 
+//Draws a single paxel to the draw target.
 void SLK_draw_pal_paxel(int x, int y, SLK_Paxel paxel)
 {
    if(INBOUNDS(0,target_pal->width,x)&&INBOUNDS(0,target_pal->height,y))
@@ -64,14 +100,16 @@ void SLK_draw_pal_paxel(int x, int y, SLK_Paxel paxel)
    }
 }
 
+//Draws a string to the draw target.
+//Color and scale must be specified.
 void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel paxel)
 {
    int sx = 0;
    int sy = 0;
 
-	for (int i = 0;text[i];i++)
+	for(int i = 0;text[i];i++)
 	{
-		if (text[i]=='\n')
+		if(text[i]=='\n')
 		{
 			sx = 0; 
          sy+=8*scale;
@@ -102,6 +140,8 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel pa
 	}
 }
 
+//Draws a sprite to the draw target.
+//Uses bit blitting for faster drawing.
 void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
 {
    int draw_start_y = 0;
@@ -129,6 +169,10 @@ void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
    }
 }
 
+//Draws a specified part of a sprite to the draw target.
+//This could be used for spritesheet drawing, but since the pal 
+//drawing system is software accelerated, there is no speed penality
+//when splitting the spritesheet into individual sprites.
 void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height)
 {
    int draw_start_y = oy;
@@ -156,6 +200,10 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
    }
 }
 
+//Draws a flipped sprite to the draw target.
+//For vertical flipping pass SLK_FLIP_VERTICAL,
+//for horizontal flipping pass SLK_FLIP_HORIZONTAL
+//(Note: The values can be or'd together).
 void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
 {
    int draw_start_y = 0;
@@ -222,6 +270,8 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
    }
 }
 
+//Draws a colored line between 2 points using
+//the Bresenham line drawing algorythm.
 void SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel)
 {
    int changed = 0;
@@ -264,18 +314,21 @@ void SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel)
     }
 }
 
+//Draws a line between to points, with a fixed x value.
 void SLK_draw_pal_vertical_line(int x, int y0, int y1, SLK_Paxel paxel)
 {
    for(int y = y0;y<y1;y++)
       SLK_draw_pal_paxel(x,y,paxel);
 }
 
+//Draws a line between to points, with a fixed y value.
 void SLK_draw_pal_horizontal_line(int x0, int x1, int y, SLK_Paxel paxel)
 {
    for(int x = x0;x<x1;x++)
       SLK_draw_pal_paxel(x,y,paxel);
 }
 
+//Draws the outline of a colored rectangle.
 void SLK_draw_pal_rectangle(int x, int y, int width, int height, SLK_Paxel paxel)
 {
    for(int y_ = y;y_<y+height;y_++)
@@ -291,6 +344,7 @@ void SLK_draw_pal_rectangle(int x, int y, int width, int height, SLK_Paxel paxel
    }
 }
 
+//Draws a colored filled rectangle.
 void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, SLK_Paxel paxel)
 {
    int draw_start_y = 0;
@@ -317,6 +371,7 @@ void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, SLK_Paxel 
    }
 }
 
+//Draws the outline of a colored circle.
 void SLK_draw_pal_circle(int x, int y, int radius, SLK_Paxel paxel)
 {
    int x_ = 0;
@@ -354,6 +409,7 @@ void SLK_draw_pal_circle(int x, int y, int radius, SLK_Paxel paxel)
    }
 }
 
+//Draws a colored filled circle.
 void SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel)
 {
    int x_ = 0;
@@ -382,3 +438,4 @@ void SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel)
       SLK_draw_pal_horizontal_line(x-y_,x+y_,y-x_,paxel);
    }
 }
+//-------------------------------------
