@@ -1,28 +1,16 @@
 /*
-   Copyright (c) 2020, Lukas Holzbeierlein (Captain4LK) 
-   All rights reserved.
+Copyright (c) 2020, Lukas Holzbeierlein (Captain4LK) 
+All rights reserved.
 
-   Redistribution and use in source and binary forms, with or without
-   modification, are permitted provided that the following conditions are met:
-       * Redistributions of source code must retain the above copyright
-         notice, this list of conditions and the following disclaimer.
-       * Redistributions in binary form must reproduce the above copyright
-         notice, this list of conditions and the following disclaimer in the
-         documentation and/or other materials provided with the distribution.
-       * Neither the name of SoftLK nor the
-         names of its contributors may be used to endorse or promote products
-         derived from this software without specific prior written permission.
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-   DISCLAIMED. IN NO EVENT SHALL CAPTAIN4LK BE LIABLE FOR ANY
-   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #ifndef _SLK_FUNCTIONS_H_
@@ -81,6 +69,8 @@ SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, const int x, const i
 void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, const int x, const int y, const SLK_Color c);
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path);
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s);
+void SLK_rgb_sprite_copy(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src);
+void SLK_rgb_sprite_copy_partial(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src, int x, int y, int ox, int oy, int width, int height);
 
 //Draw rgb subsystem: SLK_draw_rgb.c
 SLK_RGB_sprite *SLK_draw_rgb_get_target();
@@ -133,19 +123,5 @@ void SLK_update_viewport();
 void SLK_update_mouse(int x, int y);
 int SLK_running();
 void SLK_quit();
-
-/*//SLK_draw functionality
-void SLK_draw_string(int x, int y, int scale, const char *text, SLK_Paxel p);
-void SLK_draw_sprite(const SLK_Sprite *s, const int x, const int y);
-void SLK_draw_sprite_partial(SLK_Sprite *s, int x, int y, int ox, int oy, int width, int height);
-void SLK_draw_sprite_flip(const SLK_Sprite *s, const int x, const int y, const int flip);
-void SLK_draw_line(int x1, int y1, int x2, int y2, SLK_Paxel p);
-void SLK_draw_vertical_line(int x, int y1, int y2, SLK_Paxel p);
-void SLK_draw_rectangle(int x, int y, int width, int height, SLK_Paxel p);
-void SLK_fill_rectangle(int x, int y, int width, int height, SLK_Paxel p);
-void SLK_clear_screen();
-//--------------------------------------------
-
-/--------------------------------------------*/
 
 #endif //_SLK_FUNCTIONS_H_
