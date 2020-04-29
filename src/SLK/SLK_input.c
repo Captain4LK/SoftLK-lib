@@ -13,50 +13,92 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+#include <SDL2/SDL.h>
+//-------------------------------------
 
-int SLK_key_down(const int key)
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Returns wether the key belonging to 
+//the SLK_key enum is held.
+int SLK_key_down(int key)
 {
    return keyboard_state[key].held;
 }
 
-int SLK_key_pressed(const int key)
+//Returns wether the key belonging to 
+//the SLK_key enum has been pressed.
+int SLK_key_pressed(int key)
 {
    return keyboard_state[key].pressed;
 }
 
-int SLK_key_released(const int key)
+//Returns wether the key belonging to 
+//the SLK_key enum has been released.
+int SLK_key_released(int key)
 {
    return keyboard_state[key].released;
 }
 
-int SLK_mouse_down(const int key)
+//Returns wether the mouse button
+//refered to by SLK_mouse_button enum
+//is held.
+int SLK_mouse_down(int key)
 {
    return mouse_state[key].held;
 }
 
-int SLK_mouse_pressed(const int key)
+//Returns wether the mouse button
+//refered to by SLK_mouse_button enum
+//has been pressed.
+int SLK_mouse_pressed(int key)
 {
    return mouse_state[key].pressed;
 }
 
-int SLK_mouse_released(const int key)
+//Returns wether the mouse button
+//refered to by SLK_mouse_button enum
+//has been released.
+int SLK_mouse_released(int key)
 {
    return mouse_state[key].released;
 }
 
+//Stores the current mouse position
+//in the provided pointers.
 void SLK_mouse_get_pos(int *x, int *y)
 {
    *x = mouse_x_cache;
    *y = mouse_y_cache;
 }
 
+//Sets wether the cursor should be shown.
 void SLK_mouse_show_cursor(int shown)
 {
    SDL_ShowCursor(shown?SDL_ENABLE:SDL_DISABLE);
 }
 
+//Starts text ínput and appends the characters
+//to the provided char pointer.
+//Note: SoftLK does not allocate new memory,
+//you need to do that yourself.
 void SLK_text_input_start(char *text)
 {
    text_input = text;
@@ -65,9 +107,11 @@ void SLK_text_input_start(char *text)
    SDL_StartTextInput();
 }
 
+//Stops the text input.
 void SLK_text_input_stop()
 {
    text_input_active = 0;
 
    SDL_StopTextInput();
 }
+//-------------------------------------

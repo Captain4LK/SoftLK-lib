@@ -95,12 +95,12 @@ SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask);
 
 //Input subsystem: SLK_input.c 
-int SLK_key_down(const int key);
-int SLK_key_pressed(const int key);
-int SLK_key_released(const int key);
-int SLK_mouse_down(const int key);
-int SLK_mouse_pressed(const int key);
-int SLK_mouse_released(const int key);
+int SLK_key_down(int key);
+int SLK_key_pressed(int key);
+int SLK_key_released(int key);
+int SLK_mouse_down(int key);
+int SLK_mouse_pressed(int key);
+int SLK_mouse_released(int key);
 void SLK_mouse_get_pos(int *x, int *y);
 void SLK_mouse_show_cursor(int shown);
 void SLK_text_input_start(char *text);
