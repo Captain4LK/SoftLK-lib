@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 {
    SLK_setup(WIDTH,HEIGHT,3,"SLK Engine",1,0);
    SLK_timer_set_fps(30);
-   SLK_show_cursor(1);
+   SLK_mouse_show_cursor(1);
 
    SLK_layer_create(0,SLK_LAYER_RGB); //Layer for drawing shapes
    SLK_layer_create(1,SLK_LAYER_RGB); //Layer for drawing electric field
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 
    calculate();
 
-   while(SLK_running())
+   while(SLK_core_running())
    {
       SLK_update();
 

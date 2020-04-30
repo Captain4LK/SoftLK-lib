@@ -13,9 +13,35 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+#include <SDL2/SDL.h>
+#include "../../include/glad/glad.h"
+//-------------------------------------
 
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Initializes the requested layer to the specified type.
+//These types are currently availible:
+//SLK_LAYER_RGB,
+//SLK_LAYER_PAL
 void SLK_layer_create(const unsigned index, const int type)
 {
    if(index>=layer_count)
@@ -59,6 +85,7 @@ void SLK_layer_create(const unsigned index, const int type)
    }
 }
 
+//Sets wether the layers is supposed to be drawn.
 void SLK_layer_activate(const unsigned index, const int active)
 {
    if(index>=layer_count)
@@ -67,6 +94,8 @@ void SLK_layer_activate(const unsigned index, const int active)
    layers[index].active = active;
 }
 
+//Sets the palette of a layer.
+//Only works for SLK_LAYER_PAL layer type.
 void SLK_layer_set_palette(const unsigned index, SLK_Palette *pal)
 {
    if(index>=layer_count||layers[index].type!=SLK_LAYER_PAL)
@@ -75,11 +104,14 @@ void SLK_layer_set_palette(const unsigned index, SLK_Palette *pal)
    layers[index].type_0.palette = pal;
 }
 
+//Sets the tint a layers is supposed to be drawn with.
 void SLK_layer_set_tint(unsigned index, SLK_Color tint)
 {
    layers[index].tint = tint;
 }
 
+//Sets wich layer is the current default draw target.
+//Also overwrites the current draw target.
 void SLK_layer_set_current(const unsigned index)
 {
    if(index>=layer_count)
@@ -98,3 +130,4 @@ void SLK_layer_set_current(const unsigned index)
       target_rgb = layers[index].type_1.target;
    }
 }
+//-------------------------------------

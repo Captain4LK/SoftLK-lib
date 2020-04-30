@@ -113,4 +113,28 @@ void SLK_render_update()
 
    SDL_GL_SwapWindow(sdl_window);
 }
+
+//Updates the viewport (the space where everything is drawn in)
+//using the current window width and screen width.
+void SLK_render_update_viewport()
+{
+    view_width = screen_width*pixel_scale;
+    view_height = screen_height*pixel_scale;
+
+    if(view_height<window_height)
+    {
+        int p_scale = window_height/screen_height;
+        view_width = screen_width*p_scale;
+        view_height = screen_height*p_scale;
+    }
+    else
+    {
+       int p_scale = window_width/screen_width;
+       view_width = screen_width*p_scale;
+       view_height = screen_height*p_scale;
+    }
+
+    view_x = (window_width-view_width)/2;
+    view_y = (window_height-view_height)/2;
+}
 //-------------------------------------

@@ -89,6 +89,28 @@ void SLK_mouse_get_pos(int *x, int *y)
    *y = mouse_y_cache;
 }
 
+//Updates the mouse position (only the variable, 
+//not the actual position).
+//Used in SLK_update, no need to call yourself.
+void SLK_mouse_update(int x, int y)
+{
+    x-=view_x;
+    y-=view_y;
+
+    mouse_x_cache = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
+    mouse_y_cache = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+
+    if(mouse_x_cache>=screen_width)
+        mouse_x_cache = screen_width-1;
+    if(mouse_y_cache>=screen_height)
+        mouse_y_cache = screen_height-1;
+
+    if(mouse_x_cache<0)
+        mouse_x_cache = 0;
+    if(mouse_y_cache<1)
+        mouse_y_cache = 1;
+}
+
 //Sets wether the cursor should be shown.
 void SLK_mouse_show_cursor(int shown)
 {

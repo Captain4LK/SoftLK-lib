@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
    while(world.used<10)
       add_entity();
       
-   while(SLK_running())
+   while(SLK_core_running())
    {
       SLK_update();
 

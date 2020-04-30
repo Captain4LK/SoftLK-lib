@@ -13,20 +13,44 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../../include/SLK/SLK.h"
-#include "SLK_variables.h"
+//External includes
+//-------------------------------------
 
-void SLK_quit()
+//Internal includes
+#include "../../include/SLK/SLK_types.h"
+#include "../../include/SLK/SLK_functions.h"
+#include "SLK_variables.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
+
+//Function implementations
+
+//Sets the running flag to 0.
+void SLK_core_quit()
 {
    running = 0;
 }
 
-int SLK_running()
+//Checks wether SoftLK is supposed to be running or not.
+int SLK_core_running()
 {
     return running;
 }
 
-
+//Sets the title of the window.
+//I did not test this since I am using
+//a window manager without titlebars.
 void SLK_core_set_title(const char *title)
 {
    SDL_SetWindowTitle(sdl_window,title);
@@ -45,9 +69,12 @@ void SLK_core_set_fullscreen(int fullscreen)
    }
 
    SDL_GetWindowSize(sdl_window,&window_width,&window_height);
-   SLK_update_viewport();
+   SLK_render_update_viewport();
 }
 
+//Sets the icon of the window.
+//I did not test this since I am using
+//a window manager without titlebars.
 void SLK_core_set_icon(const SLK_RGB_sprite *icon)
 {
    SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(icon->data,icon->width,icon->height,32,icon->width*4,0xf000,0x0f00,0x00f0,0x000f);
@@ -57,6 +84,8 @@ void SLK_core_set_icon(const SLK_RGB_sprite *icon)
    SDL_FreeSurface(surface);
 }
 
+//Updates the engine state.
+//Updates the input and the timer.
 void SLK_update()
 {
    SLK_timer_update();
@@ -71,7 +100,7 @@ void SLK_update()
          running = 0;
          break;
       case SDL_MOUSEMOTION:
-         SLK_update_mouse(event.motion.x,event.motion.y);
+         SLK_mouse_update(event.motion.x,event.motion.y);
          break;
       case SDL_KEYDOWN:
          if(text_input_active&&event.key.keysym.sym==SDLK_BACKSPACE&&text_input[0]!='\0')
@@ -145,47 +174,9 @@ void SLK_update()
    }
 }
 
-void SLK_update_viewport()
-{
-    view_width = screen_width*pixel_scale;
-    view_height = screen_height*pixel_scale;
-
-    if(view_height<window_height)
-    {
-        int p_scale = window_height/screen_height;
-        view_width = screen_width*p_scale;
-        view_height = screen_height*p_scale;
-    }
-    else
-    {
-       int p_scale = window_width/screen_width;
-       view_width = screen_width*p_scale;
-       view_height = screen_height*p_scale;
-    }
-
-    view_x = (window_width-view_width)/2;
-    view_y = (window_height-view_height)/2;
-}
-
-void SLK_update_mouse(int x, int y)
-{
-    x-=view_x;
-    y-=view_y;
-
-    mouse_x_cache = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
-    mouse_y_cache = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
-
-    if(mouse_x_cache>=screen_width)
-        mouse_x_cache = screen_width-1;
-    if(mouse_y_cache>=screen_height)
-        mouse_y_cache = screen_height-1;
-
-    if(mouse_x_cache<0)
-        mouse_x_cache = 0;
-    if(mouse_y_cache<1)
-        mouse_y_cache = 1;
-}
-
+//The first function you should call in your code.
+//Creates a window, sets its title and allocates space for the layers.
+//Also loads the font files in the data dir if availible.
 void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale)
 {
    pixel_scale = scale;
@@ -249,7 +240,7 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
    SDL_GL_SetSwapInterval(0);
    SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
-   SLK_update_viewport();
+   SLK_render_update_viewport();
    SLK_render_init();
 
    text_sprite_pal = SLK_pal_sprite_load("data/font8x8.slk");
@@ -353,3 +344,4 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
    memset(new_key_state,0,sizeof(new_key_state));
    memset(new_mouse_state,0,sizeof(new_mouse_state));
 }
+//-------------------------------------

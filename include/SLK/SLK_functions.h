@@ -33,6 +33,7 @@ float SLK_timer_get_delta();
 //Render subsystem: SLK_render.c
 void SLK_render_init();
 void SLK_render_update();
+void SLK_render_update_viewport();
 
 //Pal sprite subsystem: SLK_sprite_pal.c
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
@@ -103,6 +104,7 @@ int SLK_mouse_pressed(int key);
 int SLK_mouse_released(int key);
 void SLK_mouse_get_pos(int *x, int *y);
 void SLK_mouse_show_cursor(int shown);
+void SLK_mouse_update(int x, int y);
 void SLK_text_input_start(char *text);
 void SLK_text_input_stop();
 
@@ -115,13 +117,11 @@ void SLK_layer_set_current(const unsigned index);
 
 //Core subsystem: SLK_core.c 
 void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale);
+void SLK_update();
 void SLK_core_set_title(const char *title);
 void SLK_core_set_fullscreen(int fullscreen);
 void SLK_core_set_icon(const SLK_RGB_sprite *icon);
-void SLK_update();
-void SLK_update_viewport();
-void SLK_update_mouse(int x, int y);
-int SLK_running();
-void SLK_quit();
+int SLK_core_running();
+void SLK_core_quit();
 
 #endif //_SLK_FUNCTIONS_H_
