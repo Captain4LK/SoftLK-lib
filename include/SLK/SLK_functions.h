@@ -64,10 +64,10 @@ void SLK_draw_pal_circle(int x, int y, int radius, SLK_Paxel paxel);
 void SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel);
 
 //RGB sprite subsystem: SLK_sprite_rgb.c
-SLK_RGB_sprite *SLK_rgb_sprite_create(const int width, const int height);
+SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height);
 void SLK_rgb_sprite_destroy(SLK_RGB_sprite *s);
-SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, const int x, const int y);
-void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, const int x, const int y, const SLK_Color c);
+SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, int x, int y);
+void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c);
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path);
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s);
 void SLK_rgb_sprite_copy(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src);
@@ -77,6 +77,7 @@ void SLK_rgb_sprite_copy_partial(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src,
 SLK_RGB_sprite *SLK_draw_rgb_get_target();
 void SLK_draw_rgb_set_target(SLK_RGB_sprite *s);
 void SLK_draw_rgb_set_clear_color(SLK_Color color);
+void SLK_draw_rgb_set_changed(int changed);
 void SLK_draw_rgb_clear();
 void SLK_draw_rgb_color(int x, int y, SLK_Color color);
 void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color color);
@@ -102,25 +103,36 @@ int SLK_key_released(int key);
 int SLK_mouse_down(int key);
 int SLK_mouse_pressed(int key);
 int SLK_mouse_released(int key);
+int SLK_mouse_wheel_get_scroll();
 void SLK_mouse_get_pos(int *x, int *y);
+void SLK_mouse_get_relative_pos(int *x, int *y);
+void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y);
 void SLK_mouse_show_cursor(int shown);
 void SLK_mouse_update(int x, int y);
+void SLK_mouse_update_wheel(int wheel);
 void SLK_text_input_start(char *text);
 void SLK_text_input_stop();
+void SLK_input_update_start();
 
 //Layer subsystem: SLK_layer.c
-void SLK_layer_create(const unsigned index, const int type);
-void SLK_layer_activate(const unsigned index, const int active);
-void SLK_layer_set_palette(const unsigned index, SLK_Palette *pal);
+void SLK_layer_create(unsigned index, int type);
+void SLK_layer_activate(unsigned index, int active);
+void SLK_layer_set_palette(unsigned index, SLK_Palette *pal);
 void SLK_layer_set_tint(unsigned index, SLK_Color tint);
-void SLK_layer_set_current(const unsigned index);
+void SLK_layer_set_dynamic(unsigned index, int dynamic);
+void SLK_layer_set_pos(unsigned index, int x, int y);
+void SLK_layer_set_scale(unsigned index, float scale);
+void SLK_layer_set_size(unsigned index, int width, int height);
+void SLK_layer_set_current(unsigned index);
 
 //Core subsystem: SLK_core.c 
-void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale);
+void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale, int resizable);
 void SLK_update();
 void SLK_core_set_title(const char *title);
 void SLK_core_set_fullscreen(int fullscreen);
 void SLK_core_set_icon(const SLK_RGB_sprite *icon);
+int SLK_core_get_width();
+int SLK_core_get_height();
 int SLK_core_running();
 void SLK_core_quit();
 

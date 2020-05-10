@@ -14,6 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 //-------------------------------------
 
 //Internal includes
@@ -68,7 +71,6 @@ void SLK_core_set_fullscreen(int fullscreen)
       SDL_SetWindowSize(sdl_window,screen_width*pixel_scale,screen_height*pixel_scale);
    }
 
-   SDL_GetWindowSize(sdl_window,&window_width,&window_height);
    SLK_render_update_viewport();
 }
 
@@ -84,11 +86,25 @@ void SLK_core_set_icon(const SLK_RGB_sprite *icon)
    SDL_FreeSurface(surface);
 }
 
+//Returns the current viewport width.
+int SLK_core_get_width()
+{
+   return screen_width;
+}
+
+//Returns the current viewport height.
+int SLK_core_get_height()
+{
+   return screen_height;
+}
+
 //Updates the engine state.
 //Updates the input and the timer.
 void SLK_update()
 {
    SLK_timer_update();
+
+   SLK_mouse_update_wheel(0);
 
    //Event managing
    SDL_Event event;
@@ -98,9 +114,6 @@ void SLK_update()
       {
       case SDL_QUIT:
          running = 0;
-         break;
-      case SDL_MOUSEMOTION:
-         SLK_mouse_update(event.motion.x,event.motion.y);
          break;
       case SDL_KEYDOWN:
          if(text_input_active&&event.key.keysym.sym==SDLK_BACKSPACE&&text_input[0]!='\0')
@@ -125,9 +138,34 @@ void SLK_update()
             strcat(text_input,event.text.text);
 
          break;
+      case SDL_MOUSEWHEEL:
+         SLK_mouse_update_wheel(event.wheel.y);
+         break;
+      case SDL_WINDOWEVENT:
+         if(event.window.event==SDL_WINDOWEVENT_RESIZED&&dynamic)
+         {
+            int new_width = event.window.data1/pixel_scale+1;
+            int new_height = event.window.data2/pixel_scale+1;
+            screen_width = new_width;
+            screen_height = new_height;
+
+            for(int l = 0;l<layer_count;l++)
+            {
+               if(layers[l].dynamic)
+                  SLK_layer_set_size(l,new_width,new_height);
+            }
+
+            SLK_render_update_viewport();
+         }
+
+         break;
       }
    }
    //-------------------------------------------
+   
+   int x,y;
+   SDL_GetMouseState(&x,&y);
+   SLK_mouse_update(x,y);
     
    for(int i = 0; i<256; i++)
    {
@@ -177,12 +215,13 @@ void SLK_update()
 //The first function you should call in your code.
 //Creates a window, sets its title and allocates space for the layers.
 //Also loads the font files in the data dir if availible.
-void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale)
+void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale, int resizable)
 {
    pixel_scale = scale;
    screen_width = width;
    screen_height = height;
    layer_count = layer_num;
+   dynamic = resizable;
    layers = malloc(sizeof(SLK_Layer)*layer_num);
    memset(layers,0,sizeof(SLK_Layer)*layer_num);
 
@@ -191,7 +230,6 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
       printf("FATAL ERROR: failed to init sdl\n");
       exit(-1);
    }
-
 
    if(pixel_scale==SLK_WINDOW_MAX)
    {
@@ -220,8 +258,9 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,2); 
    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,1);
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
-   if(fullscreen)
-      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,0,0,SDL_WINDOW_FULLSCREEN_DESKTOP|SDL_WINDOW_OPENGL);
+
+   if(resizable)
+      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
    else
       sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_OPENGL);
 
@@ -238,10 +277,9 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
       exit(-1);
    }
    SDL_GL_SetSwapInterval(0);
-   SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
-   SLK_render_update_viewport();
    SLK_render_init();
+   SLK_core_set_fullscreen(fullscreen);
 
    text_sprite_pal = SLK_pal_sprite_load("data/font8x8.slk");
    text_sprite_rgb = SLK_rgb_sprite_load("data/font8x8.png");
@@ -302,9 +340,9 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
    key_map[XK_Page_Down] = SLK_KEY_PGDN;
    key_map[XK_Insert] = SLK_KEY_INS;
    key_map[XK_Shift_L] = SLK_KEY_SHIFT;
-   key_map[XK_Shift_R] = SLK_KEY_SHIFT;
-   key_map[XK_Control_L] = SLK_KEY_CTRL;
-   key_map[XK_Control_R] = SLK_KEY_CTRL;*/
+   key_map[XK_Shift_R] = SLK_KEY_SHIFT;*/
+   key_map[SDL_SCANCODE_LCTRL] = SLK_KEY_CTRL;
+   key_map[SDL_SCANCODE_RCTRL] = SLK_KEY_CTRL;
    key_map[SDL_SCANCODE_SPACE] = SLK_KEY_SPACE;
 
    /*key_map[XK_0] = SLK_KEY_K0;

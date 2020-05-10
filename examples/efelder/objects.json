@@ -1,25 +1,31 @@
 {
+	"canvas_width":8000,
+	"canvas_height":8000,
+	"window_width":800,
+	"window_height":600,
+	
 	"circles":
 	[
 		{
-			"x":1520,
-			"y":540,
+			"x":3520,
+			"y":2540,
 			"radius":128,
 			"charge":2.0,
 			"test_points":45
 		},
 		{
-			"x":400,
-			"y":540,
+			"x":2400,
+			"y":2540,
 			"radius":128,
 			"charge":-2.0,
 			"test_points":45
 		},
 		{
-			"x":960,
-			"y":64,
+			"x":2960,
+			"y":2064,
 			"radius":64,
 			"charge":-2.0,
 			"test_points":45
-		}]
+		}
+	]
 }

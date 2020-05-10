@@ -14,6 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 //-------------------------------------
 
@@ -31,7 +33,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //#defines
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
-            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+            ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
 //-------------------------------------
 
 //Typedefs
@@ -46,7 +48,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Function implementations
 
 //Creates a sprites with the specified dimensions and clear it.
-SLK_RGB_sprite *SLK_rgb_sprite_create(const int width, const int height)
+SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height)
 {   
    SLK_RGB_sprite *s = malloc(sizeof(SLK_RGB_sprite));
    
@@ -69,7 +71,7 @@ void SLK_rgb_sprite_destroy(SLK_RGB_sprite *s)
 }
 
 //Returns the color at the specified position of a sprite.
-SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, const int x, const int y)
+SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, int x, int y)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       return s->data[y*s->width+x];
@@ -79,7 +81,7 @@ SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, const int x, const i
 
 //Sets the color of a sprite at the specified position.
 //Similar to SLK_draw_rgb_color, but ignores alpha value.
-void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, const int x, const int y, const SLK_Color c)
+void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       s->data[y*s->width+x] = c;
@@ -98,7 +100,7 @@ SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
    data = stbi_load(path,&width,&height,NULL,4);
    if(data==NULL)
    {
-      printf("Unable to load %s\n",path);
+      printf("Failed to load %s\n",path);
       return SLK_rgb_sprite_create(1,1);
    }
 

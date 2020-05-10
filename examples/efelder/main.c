@@ -20,8 +20,6 @@
 #include "ULK_vector.h"
 #include <cjson/cJSON.h>
 
-#define WIDTH 1920
-#define HEIGHT 1080
 
 typedef struct
 {
@@ -44,6 +42,14 @@ typedef struct
 }Shape;
 Shape *shapes;
 int shapes_count;
+int mode = 0;
+int win_width;
+int win_height;
+int can_width;
+int can_height;
+int can_x = 0;
+int can_y = 0;
+float can_scale = 1.0f;
 
 void load_shapes();
 void draw_shapes();
@@ -53,18 +59,31 @@ void calculate_pos(ULK_vector_2d out, float x, float y);
 
 int main(int argc, char *argv[])
 {
-   SLK_setup(WIDTH,HEIGHT,3,"SLK Engine",1,0);
+   load_shapes();
+
+   SLK_setup(win_width,win_height,3,"SLK Engine",0,1,1);
    SLK_timer_set_fps(30);
-   SLK_mouse_show_cursor(1);
 
    SLK_layer_create(0,SLK_LAYER_RGB); //Layer for drawing shapes
    SLK_layer_create(1,SLK_LAYER_RGB); //Layer for drawing electric field
    SLK_layer_create(2,SLK_LAYER_RGB);
-   SLK_layer_activate(0,1);
-   SLK_layer_activate(1,0);
-   SLK_layer_activate(2,1);
 
-   load_shapes();
+   SLK_layer_activate(0,1);
+   SLK_layer_set_dynamic(0,0);
+   SLK_layer_set_size(0,can_width,can_height);
+   SLK_layer_set_pos(0,can_x,can_y);
+   SLK_layer_set_scale(0,can_scale);
+   SLK_layer_activate(1,0);
+   SLK_layer_set_dynamic(1,0);
+   SLK_layer_set_size(1,can_width,can_height);
+   SLK_layer_set_pos(1,can_x,can_y);
+   SLK_layer_set_scale(1,can_scale);
+   SLK_layer_activate(2,1);
+   SLK_layer_set_dynamic(2,0);
+   SLK_layer_set_size(2,can_width,can_height);
+   SLK_layer_set_pos(2,can_x,can_y);
+   SLK_layer_set_scale(1,can_scale);
+
    draw_shapes();
 
    calculate();
@@ -72,6 +91,65 @@ int main(int argc, char *argv[])
    while(SLK_core_running())
    {
       SLK_update();
+
+      if(SLK_key_pressed(SLK_KEY_M))
+      {
+         if(mode)
+         {
+            mode = 0;
+            SLK_layer_activate(1,0);
+            SLK_layer_activate(2,1);
+         }
+         else 
+         {
+            mode = 1;
+            SLK_layer_activate(1,1);
+            SLK_layer_activate(2,0);
+         }
+      }
+
+      if(SLK_mouse_down(SLK_BUTTON_MIDDLE))
+      {
+         int x,y;
+         SLK_mouse_get_relative_pos(&x,&y);
+         can_x+=x;
+         can_y+=y;
+         SLK_layer_set_pos(0,can_x,can_y);
+         SLK_layer_set_pos(1,can_x,can_y);
+         SLK_layer_set_pos(2,can_x,can_y);
+      }
+
+      if(SLK_key_down(SLK_KEY_CTRL))
+      {
+         int wheel = SLK_mouse_wheel_get_scroll();
+
+         if(wheel<0)
+         {
+            can_x-=SLK_core_get_width()*can_scale*0.1f*2.f;
+            can_y-=SLK_core_get_height()*can_scale*0.1f*2.f;
+            SLK_layer_set_pos(0,can_x,can_y);
+            SLK_layer_set_pos(1,can_x,can_y);
+            SLK_layer_set_pos(2,can_x,can_y);
+
+            can_scale+=can_scale*0.1f;
+            SLK_layer_set_scale(0,can_scale);
+            SLK_layer_set_scale(1,can_scale);
+            SLK_layer_set_scale(2,can_scale);
+         }
+         else if(wheel>0)
+         {
+            can_x+=SLK_core_get_width()*can_scale*0.1f*2.f;
+            can_y+=SLK_core_get_height()*can_scale*0.1f*2.f;
+            SLK_layer_set_pos(0,can_x,can_y);
+            SLK_layer_set_pos(1,can_x,can_y);
+            SLK_layer_set_pos(2,can_x,can_y);
+
+            can_scale-=can_scale*0.1f;
+            SLK_layer_set_scale(0,can_scale);
+            SLK_layer_set_scale(1,can_scale);
+            SLK_layer_set_scale(2,can_scale);
+         }
+      }
 
       SLK_render_update();
    }
@@ -97,6 +175,12 @@ void load_shapes()
    json = cJSON_Parse(buffer);
    if(json==NULL)
       printf("Json file seems to be faulty!\n");
+
+   //Read settings
+   win_width = cJSON_GetObjectItem(json,"window_width")->valueint;
+   win_height = cJSON_GetObjectItem(json,"window_height")->valueint;
+   can_width = cJSON_GetObjectItem(json,"canvas_width")->valueint;
+   can_height = cJSON_GetObjectItem(json,"canvas_height")->valueint;
 
    //Load all shapes here and count them
    circles = cJSON_GetObjectItem(json,"circles");
@@ -133,6 +217,7 @@ void draw_shapes()
    int i;
 
    SLK_layer_set_current(0);
+   SLK_draw_rgb_set_changed(1);
    
    SLK_draw_rgb_set_clear_color(SLK_color_create(0,0,0,0));
    SLK_draw_rgb_clear();
@@ -152,6 +237,7 @@ void calculate()
    int i;
 
    SLK_layer_set_current(1);
+   SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_set_clear_color(SLK_color_create(0,0,0,0));
    SLK_draw_rgb_clear();
 
@@ -166,12 +252,13 @@ void calculate()
    }
 
    SLK_layer_set_current(2);
+   SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_clear();
 
    //Calculate electrical
-   for(int x = 0;x<WIDTH;x++)
+   for(int x = 0;x<can_width;x++)
    {
-      for(int y = 0;y<HEIGHT;y++)
+      for(int y = 0;y<can_height;y++)
       {
          ULK_vector_2d point;
          ULK_vector_2d center;
@@ -264,7 +351,7 @@ void calculate_circle(int shape)
          SLK_draw_rgb_color((int)pos[0],(int)pos[1],SLK_color_create(255,128,0,255));
       }
 
-      printf("%d of %d calculated, %f\n",i,shapes[shape].circle.test_points,angle);
+      printf("%d of %d calculated, %f\n",i+1,shapes[shape].circle.test_points,angle);
    }
 }
 

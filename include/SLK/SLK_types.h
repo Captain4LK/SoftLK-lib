@@ -90,6 +90,10 @@ typedef struct
 {
    int type;
    int active;
+   int dynamic;
+   int x;
+   int y;
+   float scale;
    SLK_Color tint;
 
    union
@@ -149,7 +153,7 @@ enum SLK_flip
    SLK_FLIP_HORIZONTAL = 2,
 };
 
-enum SLK_window_scale
+enum SLK_window
 {
    SLK_WINDOW_MAX = -1,
 };

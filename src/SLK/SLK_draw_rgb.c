@@ -24,7 +24,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //#defines
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
-            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+            ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
 #define SIGNUM(NUM) \
    NUM==0?0:(NUM<0?-1:1)
 #define SWAP(x,y) \
@@ -67,6 +67,14 @@ void SLK_draw_rgb_set_target(SLK_RGB_sprite *s)
 void SLK_draw_rgb_set_clear_color(SLK_Color color)
 {
    target_rgb_clear = color;
+}
+
+//Sets wether the target has been changed.
+//The gpu texture will only be updated if the target
+//has been flagged as changed.
+void SLK_draw_rgb_set_changed(int changed)
+{
+   target_rgb->changed = changed;
 }
 
 //Clears the draw target to the color specified
@@ -140,10 +148,10 @@ void SLK_draw_rgb_sprite(const SLK_RGB_sprite *s, int x, int y)
       draw_start_x = -x;
    if(y<0)
       draw_start_y = -y;
-   if(x+draw_end_x>target_pal->width)
-      draw_end_x = s->width+(target_pal->width-x-draw_end_x);
-   if(y+draw_end_y>target_pal->height)
-      draw_end_y = s->height+(target_pal->height-y-draw_end_y);
+   if(x+draw_end_x>target_rgb->width)
+      draw_end_x = s->width+(target_rgb->width-x-draw_end_x);
+   if(y+draw_end_y>target_rgb->height)
+      draw_end_y = s->height+(target_rgb->height-y-draw_end_y);
     
    for(int x1 = draw_start_x;x1<draw_end_x;x1++)
    {

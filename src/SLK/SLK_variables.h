@@ -40,13 +40,11 @@ int view_y;
 int view_width;
 int view_height;
 int running;
+int dynamic;
 
 int layer_count;
 SLK_Layer *layers;
 SLK_Layer *current_layer;
-
-int mouse_x_cache;
-int mouse_y_cache;
 
 uint8_t new_key_state[256];
 uint8_t old_key_state[256];

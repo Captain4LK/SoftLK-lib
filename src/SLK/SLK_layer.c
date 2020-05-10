@@ -42,7 +42,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //These types are currently availible:
 //SLK_LAYER_RGB,
 //SLK_LAYER_PAL
-void SLK_layer_create(const unsigned index, const int type)
+void SLK_layer_create(unsigned index, int type)
 {
    if(index>=layer_count)
       return;
@@ -50,10 +50,14 @@ void SLK_layer_create(const unsigned index, const int type)
    layers[index].type = type;
    layers[index].active = 1;
    layers[index].tint = SLK_color_create(255,255,255,255);
+   layers[index].x = 0;
+   layers[index].y = 0;
+   layers[index].scale = 1.0f;
 
    switch(type)
    {
    case SLK_LAYER_PAL:
+   {
       layers[index].type_0.target = SLK_pal_sprite_create(screen_width,screen_height);
       layers[index].type_0.render = SLK_rgb_sprite_create(screen_width,screen_height);
 
@@ -66,7 +70,9 @@ void SLK_layer_create(const unsigned index, const int type)
                    0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
 
       break;
+   }
    case SLK_LAYER_RGB:
+   {
       layers[index].type_1.target = SLK_rgb_sprite_create(screen_width,screen_height);
 
       glGenTextures(1,&layers[index].type_1.texture);
@@ -79,14 +85,17 @@ void SLK_layer_create(const unsigned index, const int type)
 
 
       break;
+   }
    case SLK_LAYER_GPU:
+   {
 
       break;
+   }
    }
 }
 
 //Sets wether the layers is supposed to be drawn.
-void SLK_layer_activate(const unsigned index, const int active)
+void SLK_layer_activate(unsigned index, int active)
 {
    if(index>=layer_count)
       return;
@@ -96,7 +105,7 @@ void SLK_layer_activate(const unsigned index, const int active)
 
 //Sets the palette of a layer.
 //Only works for SLK_LAYER_PAL layer type.
-void SLK_layer_set_palette(const unsigned index, SLK_Palette *pal)
+void SLK_layer_set_palette(unsigned index, SLK_Palette *pal)
 {
    if(index>=layer_count||layers[index].type!=SLK_LAYER_PAL)
       return;
@@ -107,12 +116,83 @@ void SLK_layer_set_palette(const unsigned index, SLK_Palette *pal)
 //Sets the tint a layers is supposed to be drawn with.
 void SLK_layer_set_tint(unsigned index, SLK_Color tint)
 {
-   layers[index].tint = tint;
+   if(index<layer_count)
+      layers[index].tint = tint;
+}
+
+//Sets wether the layers should be resized on 
+//window resize.
+void SLK_layer_set_dynamic(unsigned index, int dynamic)
+{
+   if(index<layer_count)
+      layers[index].dynamic = dynamic;
+}
+
+//Sets the position the layers is supposed to be
+//drawn at.
+void SLK_layer_set_pos(unsigned index, int x, int y)
+{
+   if(index<layer_count)
+   {
+      layers[index].x = x;
+      layers[index].y = y;
+   }
+}
+
+//Sets the factor the layer is supposed to be scale
+//with when drawn.
+void SLK_layer_set_scale(unsigned index, float scale)
+{
+   if(index<layer_count)
+      layers[index].scale = scale;
+}
+
+//Sets the size of a non
+//dynamic layer.
+void SLK_layer_set_size(unsigned index, int width, int height)
+{
+   if(index<layer_count)
+   {
+      if(layers[index].type==SLK_LAYER_PAL)
+      {
+         if(layers[index].type_0.target==NULL||layers[index].type_0.render==NULL)
+         {
+            printf("Error: Layer %d has not been created yet!\n",index);
+            return;
+         }
+
+         SLK_Pal_sprite *sprite_new = SLK_pal_sprite_create(width,height);
+         
+         SLK_rgb_sprite_destroy(layers[index].type_0.render);
+         layers[index].type_0.render = SLK_rgb_sprite_create(width,height);
+
+         SLK_pal_sprite_copy(sprite_new,layers[index].type_0.target);
+         SLK_pal_sprite_destroy(layers[index].type_0.target);
+         layers[index].type_0.target = sprite_new;
+      }
+      else if(layers[index].type==SLK_LAYER_RGB)
+      {
+         if(layers[index].type_1.target==NULL)
+         {
+            printf("Error: Layer %d has not been created yet!\n",index);
+            return;
+         }
+
+         SLK_RGB_sprite *sprite_new = SLK_rgb_sprite_create(width,height);
+         sprite_new->changed = layers[index].type_1.target->changed;
+
+         SLK_rgb_sprite_copy(sprite_new,layers[index].type_1.target);
+         SLK_rgb_sprite_destroy(layers[index].type_1.target);
+         layers[index].type_1.target = sprite_new;
+      }
+
+      SLK_layer_set_current(index);
+   }
 }
 
 //Sets wich layer is the current default draw target.
 //Also overwrites the current draw target.
-void SLK_layer_set_current(const unsigned index)
+void SLK_layer_set_current(unsigned index)
 {
    if(index>=layer_count)
       return;

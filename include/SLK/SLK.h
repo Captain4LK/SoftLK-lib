@@ -32,7 +32,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Macros
 //Fast integer inbounds checking
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
-            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+            ((NUMBER-LOWER)<(UPPER-LOWER))
             
 #define SIGNUM(NUM) \
    NUM==0?0:(NUM<0?-1:1)

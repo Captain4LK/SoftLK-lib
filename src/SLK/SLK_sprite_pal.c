@@ -14,6 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 //-------------------------------------
 
@@ -25,7 +27,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //#defines
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
-            ((unsigned)(NUMBER-LOWER)<=(UPPER-LOWER))
+            ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
 //-------------------------------------
 
 //Typedefs
@@ -43,14 +45,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //and returns a pointer to its location.
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 {
-    SLK_Pal_sprite *s = malloc(sizeof(SLK_Pal_sprite));
+   SLK_Pal_sprite *s = malloc(sizeof(SLK_Pal_sprite));
 
-    s->width = width;
-    s->height = height;
-    s->data = malloc(width*height*sizeof(SLK_Paxel));
-    memset(s->data,0,sizeof(SLK_Paxel)*width*height);
-    
-    return s;
+   s->width = width;
+   s->height = height;
+
+   s->data = malloc(width*height*sizeof(SLK_Paxel));
+   memset(s->data,0,sizeof(SLK_Paxel)*width*height);
+
+   return s;
 }
 
 //Destroys a previously allocated sprite.
@@ -71,7 +74,7 @@ SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y)
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       return s->data[y*s->width+x];
    else
-      return (SLK_Paxel){0,0};
+      return SLK_color_create_paxel(0,0);
 }
 
 //Sets the paxel at the specified
@@ -95,8 +98,12 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
    SLK_Pal_sprite *s = NULL;
    int width, height;
 
-   if(!f)
+   if(f==NULL)
+   {
+      printf("Failed to open %s!\n",path);
+
       return SLK_pal_sprite_create(1,1);
+   }
       
    fread(&width,sizeof(int),1,f);
    fread(&height,sizeof(int),1,f);   

@@ -1,5 +1,9 @@
 #include "../../include/SLK/SLK.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 typedef struct
 {
     int x;
@@ -33,7 +37,7 @@ int sort(const void *e0, const void *e1);
 
 int main(int argc, char *argv[])
 {
-   SLK_setup(320,240,5,"SLK Engine",0,SLK_WINDOW_MAX);
+   SLK_setup(320,240,5,"SLK Engine",0,SLK_WINDOW_MAX,0);
    SLK_timer_set_fps(30);
    srand(time(NULL));
 
@@ -47,11 +51,13 @@ int main(int argc, char *argv[])
    SLK_layer_activate(2,1);
    SLK_layer_activate(4,1);
 
-   SLK_layer_set_current(0);
-   SLK_layer_set_current(1);
-
+   //SLK_layer_set_size(0,100,100);
    SLK_layer_set_tint(1,SLK_color_create(255,255,255,128));
    SLK_layer_set_tint(2,SLK_color_create(255,255,255,128));
+
+   SLK_layer_set_current(0);
+   SLK_draw_rgb_set_changed(1);
+   SLK_layer_set_current(1);
 
    SLK_draw_pal_set_clear_paxel(SLK_color_create_paxel(0,SLK_TRANSPARENT));
    SLK_draw_pal_clear();
@@ -65,12 +71,14 @@ int main(int argc, char *argv[])
    gui_01 = SLK_rgb_sprite_load("assets/gui_01.png");
    SLK_RGB_sprite *gui_02 = SLK_rgb_sprite_load("assets/gui_02.png");
    SLK_layer_set_current(0);
+   SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_sprite(gui_02,0,220);
    SLK_draw_rgb_sprite(gui_01,206,2);
    SLK_draw_rgb_string(214,10,1,"pal renderer",SLK_color_create(255,255,255,255));
    SLK_rgb_sprite_destroy(gui_02);
    SLK_RGB_sprite *gui_03 = SLK_rgb_sprite_load("assets/gui_03.png");
    SLK_layer_set_current(4);
+   SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_sprite(gui_03,0,0);
    SLK_rgb_sprite_destroy(gui_03);
 
@@ -94,6 +102,7 @@ int main(int argc, char *argv[])
       else if(render_mode==1)
       {
          SLK_layer_set_current(2);
+         SLK_draw_rgb_set_changed(1);
          SLK_draw_rgb_clear();
       }
 
@@ -135,6 +144,7 @@ int main(int argc, char *argv[])
          SLK_layer_activate(1,1);
 
          SLK_layer_set_current(0);
+         SLK_draw_rgb_set_changed(1);
          SLK_draw_rgb_sprite(gui_01,206,2);
          SLK_draw_rgb_string(214,10,1,"pal renderer",SLK_color_create(255,255,255,255));
       }
@@ -148,6 +158,7 @@ int main(int argc, char *argv[])
          SLK_layer_activate(1,0);
 
          SLK_layer_set_current(0);
+         SLK_draw_rgb_set_changed(1);
          SLK_draw_rgb_sprite(gui_01,206,2);
          SLK_draw_rgb_string(214,10,1,"rgb renderer",SLK_color_create(255,255,255,255));
       }
@@ -159,6 +170,7 @@ int main(int argc, char *argv[])
       
       
       SLK_layer_set_current(0);
+      SLK_draw_rgb_set_changed(1);
       SLK_draw_rgb_sprite(gui_00,2,2);
       SLK_draw_rgb_string(10,10,1,time_stat,SLK_color_create(255,255,255,255));
 

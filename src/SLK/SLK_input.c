@@ -29,6 +29,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+int mouse_x;
+int mouse_y;
+int mouse_x_rel;
+int mouse_y_rel;
+int mouse_wheel;
 //-------------------------------------
 
 //Function prototypes
@@ -81,12 +86,45 @@ int SLK_mouse_released(int key)
    return mouse_state[key].released;
 }
 
+//Returns the amount the mouse wheel has been scrolled.
+//Negative: towards the user.
+int SLK_mouse_wheel_get_scroll()
+{
+   return mouse_wheel;
+}
+
 //Stores the current mouse position
 //in the provided pointers.
 void SLK_mouse_get_pos(int *x, int *y)
 {
-   *x = mouse_x_cache;
-   *y = mouse_y_cache;
+   *x = mouse_x;
+   *y = mouse_y;
+}
+
+//Stores the mouse position relative
+//to the last position in the 
+//provided pointers.
+void SLK_mouse_get_relative_pos(int *x, int *y)
+{
+   *x = mouse_x_rel;
+   *y = mouse_y_rel;
+}
+
+//Gets the mouse position relative to a layer.
+//Layer scaling and position are being considered.
+void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y)
+{
+   if(index<layer_count)
+   {
+      *x = mouse_x;
+      *y = mouse_y;
+
+      *x-=layers[index].x;
+      *y-=layers[index].y;
+
+      *x/=layers[index].scale;
+      *y/=layers[index].scale;
+   }
 }
 
 //Updates the mouse position (only the variable, 
@@ -94,21 +132,32 @@ void SLK_mouse_get_pos(int *x, int *y)
 //Used in SLK_update, no need to call yourself.
 void SLK_mouse_update(int x, int y)
 {
-    x-=view_x;
-    y-=view_y;
+   int mouse_x_cache = mouse_x;
+   int mouse_y_cache = mouse_y;
+   x-=view_x;
+   y-=view_y;
 
-    mouse_x_cache = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
-    mouse_y_cache = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+   mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
+   mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+   mouse_x_rel = mouse_x-mouse_x_cache;
+   mouse_y_rel = mouse_y-mouse_y_cache;
 
-    if(mouse_x_cache>=screen_width)
-        mouse_x_cache = screen_width-1;
-    if(mouse_y_cache>=screen_height)
-        mouse_y_cache = screen_height-1;
+   if(mouse_x>=screen_width)
+     mouse_x= screen_width-1;
+   if(mouse_y>=screen_height)
+     mouse_y= screen_height-1;
 
-    if(mouse_x_cache<0)
-        mouse_x_cache = 0;
-    if(mouse_y_cache<1)
-        mouse_y_cache = 1;
+   if(mouse_x<0)
+     mouse_x= 0;
+   if(mouse_y<1)
+     mouse_y= 1;
+}
+
+//Updates the mouse wheel position status.
+//Used by SLK_update, no need to call yourself.
+void SLK_mouse_update_wheel(int wheel)
+{
+   mouse_wheel = wheel;
 }
 
 //Sets wether the cursor should be shown.

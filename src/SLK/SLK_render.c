@@ -55,6 +55,12 @@ void SLK_render_init()
 
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
 }
 
 //Clears the window and redraws the scene.
@@ -62,7 +68,7 @@ void SLK_render_init()
 void SLK_render_update()
 {
    glClear(GL_COLOR_BUFFER_BIT);
-   glViewport(view_x,view_y,view_width,view_height);
+   //glViewport(view_x,view_y,view_width,view_height);
 
    for(int l = layer_count-1;l>=0;l--)
    {
@@ -71,42 +77,60 @@ void SLK_render_update()
          switch(layers[l].type)
          {
          case SLK_LAYER_PAL:
+         {
+            float width = (float)layers[l].type_0.target->width*layers[l].scale;
+            float height = (float)layers[l].type_0.target->height*layers[l].scale;
+            float x = (float)layers[l].x;
+            float y = (float)layers[l].y;
+
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
                layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
 
             glBindTexture(GL_TEXTURE_2D,layers[l].type_0.texture);
-            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_0.render->data);
+            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,layers[l].type_0.render->width,layers[l].type_0.render->height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_0.render->data);
 
             glBegin(GL_QUADS);
                glColor4ub(layers[l].tint.r,layers[l].tint.g,layers[l].tint.b,layers[l].tint.a);
-               glTexCoord2f(0.0, 1.0);
-               glVertex3f(-1.0f,-1.0f,0.0f);
-               glTexCoord2f(0.0, 0.0);
-               glVertex3f(-1.0f,1.0f,0.0f);
-               glTexCoord2f(1.0, 0.0);
-               glVertex3f( 1.0f,1.0f,0.0f);
-               glTexCoord2f(1.0,1.0);
-               glVertex3f(1.0f,-1.0f,0.0f);
+               glTexCoord2i(0,0);
+               glVertex3f(x,y,0.0f);
+               glTexCoord2i(0,1);
+               glVertex3f(x,y+height,0.0f);
+               glTexCoord2f(1,1);
+               glVertex3f(width+x,y+height,0.0f);
+               glTexCoord2f(1,0);
+               glVertex3f(width+x,y,0.0f);
             glEnd();
 
             break;
+         }
          case SLK_LAYER_RGB:
+         {
+            float width = (float)layers[l].type_1.target->width*layers[l].scale;
+            float height = (float)layers[l].type_1.target->height*layers[l].scale;
+            float x = (float)layers[l].x;
+            float y = (float)layers[l].y;
+
             glBindTexture(GL_TEXTURE_2D,layers[l].type_1.texture);
-            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_1.target->data);
+            if(layers[l].type_1.target->changed)
+            {
+               glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,layers[l].type_1.target->width,layers[l].type_1.target->height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_1.target->data);
+               layers[l].type_1.target->changed = 0;
+            }
 
             glBegin(GL_QUADS);
                glColor4ub(layers[l].tint.r,layers[l].tint.g,layers[l].tint.b,layers[l].tint.a);
-               glTexCoord2f(0.0, 1.0);
-               glVertex3f(-1.0f,-1.0f,0.0f);
-               glTexCoord2f(0.0, 0.0);
-               glVertex3f(-1.0f,1.0f,0.0f);
-               glTexCoord2f(1.0, 0.0);
-               glVertex3f( 1.0f,1.0f,0.0f);
-               glTexCoord2f(1.0,1.0);
-               glVertex3f(1.0f,-1.0f,0.0f);
+               glTexCoord2i(0,0);
+               glVertex3f(x,y,0.0f);
+               glTexCoord2i(0,1);
+               glVertex3f(x,y+height,0.0f);
+               glTexCoord2f(1,1);
+               glVertex3f(width+x,y+height,0.0f);
+               glTexCoord2f(1,0);
+               glVertex3f(width+x,y,0.0f);
             glEnd();
 
             break;
+         }
          }
       }
    }
@@ -118,23 +142,41 @@ void SLK_render_update()
 //using the current window width and screen width.
 void SLK_render_update_viewport()
 {
-    view_width = screen_width*pixel_scale;
-    view_height = screen_height*pixel_scale;
+   SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
-    if(view_height<window_height)
-    {
-        int p_scale = window_height/screen_height;
-        view_width = screen_width*p_scale;
-        view_height = screen_height*p_scale;
-    }
-    else
-    {
-       int p_scale = window_width/screen_width;
-       view_width = screen_width*p_scale;
-       view_height = screen_height*p_scale;
-    }
+   if(dynamic)
+   {
+      view_width = window_width;
+      view_height = window_height;
+      view_x = 0;
+      view_y = 0;
+   }
+   else
+   {
+      view_width = screen_width*pixel_scale;
+      view_height = screen_height*pixel_scale;
 
-    view_x = (window_width-view_width)/2;
-    view_y = (window_height-view_height)/2;
+      /*if(view_height<window_height)
+      {
+           int p_scale = window_height/screen_height;
+           view_width = screen_width*p_scale;
+           view_height = screen_height*p_scale;
+       }
+       else
+       {
+          int p_scale = window_width/screen_width;
+          view_width = screen_width*p_scale;
+          view_height = screen_height*p_scale;
+       }*/
+
+       view_x = (window_width-view_width)/2;
+       view_y = (window_height-view_height)/2;
+   }
+
+   glViewport(view_x,view_y,view_width,view_height);
+
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   glOrtho(0,screen_width,screen_height,0,1.0,-1.0);
 }
 //-------------------------------------
