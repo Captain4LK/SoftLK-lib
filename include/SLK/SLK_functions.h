@@ -31,9 +31,7 @@ void SLK_timer_update();
 float SLK_timer_get_delta();
 
 //Render subsystem: SLK_render.c
-void SLK_render_init();
 void SLK_render_update();
-void SLK_render_update_viewport();
 
 //Pal sprite subsystem: SLK_sprite_pal.c
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
@@ -108,11 +106,8 @@ void SLK_mouse_get_pos(int *x, int *y);
 void SLK_mouse_get_relative_pos(int *x, int *y);
 void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y);
 void SLK_mouse_show_cursor(int shown);
-void SLK_mouse_update(int x, int y);
-void SLK_mouse_update_wheel(int wheel);
 void SLK_text_input_start(char *text);
 void SLK_text_input_stop();
-void SLK_input_update_start();
 
 //Layer subsystem: SLK_layer.c
 void SLK_layer_create(unsigned index, int type);

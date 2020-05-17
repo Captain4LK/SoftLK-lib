@@ -14,12 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <stdlib.h>
 //-------------------------------------
 
 //Internal includes
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
-#include "SLK_variables.h"
+#include "SLK_draw_pal_i.h"
 //-------------------------------------
 
 //#defines

@@ -22,7 +22,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Internal includes
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
-#include "SLK_variables.h"
+#include "SLK_input_i.h"
+#include "SLK_render_i.h"
+#include "SLK_draw_rgb_i.h"
+#include "SLK_draw_pal_i.h"
+#include "SLK_layer_i.h"
 //-------------------------------------
 
 //#defines
@@ -32,6 +36,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+uint8_t key_map[SDL_NUM_SCANCODES];
+uint8_t mouse_map[6];
+int running;
 //-------------------------------------
 
 //Function prototypes
@@ -71,7 +78,7 @@ void SLK_core_set_fullscreen(int fullscreen)
       SDL_SetWindowSize(sdl_window,screen_width*pixel_scale,screen_height*pixel_scale);
    }
 
-   SLK_render_update_viewport();
+   SLK_i_render_update_viewport();
 }
 
 //Sets the icon of the window.
@@ -104,7 +111,9 @@ void SLK_update()
 {
    SLK_timer_update();
 
-   SLK_mouse_update_wheel(0);
+   SLK_i_mouse_update_wheel(0);
+   memcpy(old_key_state,new_key_state,sizeof(new_key_state));
+   memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
 
    //Event managing
    SDL_Event event;
@@ -139,7 +148,7 @@ void SLK_update()
 
          break;
       case SDL_MOUSEWHEEL:
-         SLK_mouse_update_wheel(event.wheel.y);
+         SLK_i_mouse_update_wheel(event.wheel.y);
          break;
       case SDL_WINDOWEVENT:
          if(event.window.event==SDL_WINDOWEVENT_RESIZED&&dynamic)
@@ -155,7 +164,7 @@ void SLK_update()
                   SLK_layer_set_size(l,new_width,new_height);
             }
 
-            SLK_render_update_viewport();
+            SLK_i_render_update_viewport();
          }
 
          break;
@@ -165,51 +174,7 @@ void SLK_update()
    
    int x,y;
    SDL_GetMouseState(&x,&y);
-   SLK_mouse_update(x,y);
-    
-   for(int i = 0; i<256; i++)
-   {
-      keyboard_state[i].released = 0;
-      keyboard_state[i].pressed = 0;
-
-      if(new_key_state[i]!=old_key_state[i])
-      {
-         if(new_key_state[i])
-         {
-            keyboard_state[i].pressed = !keyboard_state[i].held;
-            keyboard_state[i].held = 1;
-         }
-         else
-         {
-            keyboard_state[i].released = 1;
-            keyboard_state[i].held = 0;
-         }
-      }
-
-      old_key_state[i] = new_key_state[i];
-   }
-    
-   for(int i = 0;i<6;i++)
-	{
-		mouse_state[i].pressed = 0;
-		mouse_state[i].released = 0;
-
-		if(new_mouse_state[i]!=old_mouse_state[i])
-		{
-			if(new_mouse_state[i])
-			{
-				mouse_state[i].pressed = !mouse_state[i].held;
-				mouse_state[i].held =1;
-			}
-			else
-			{
-				mouse_state[i].released = 1;
-				mouse_state[i].held = 0;
-			}
-		}
-
-		old_mouse_state[i] = new_mouse_state[i];
-   }
+   SLK_i_mouse_update(x,y);
 }
 
 //The first function you should call in your code.
@@ -278,7 +243,7 @@ void SLK_setup(const int width, const int height, const int layer_num, const cha
    }
    SDL_GL_SetSwapInterval(0);
 
-   SLK_render_init();
+   SLK_i_render_init();
    SLK_core_set_fullscreen(fullscreen);
 
    text_sprite_pal = SLK_pal_sprite_load("data/font8x8.slk");

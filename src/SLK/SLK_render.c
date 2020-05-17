@@ -21,7 +21,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Internal includes
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
-#include "SLK_variables.h"
+#include "SLK_render_i.h"
+#include "SLK_layer_i.h"
 //-------------------------------------
 
 //#defines
@@ -40,7 +41,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Performs some necessary OpenGL function calls.
 //Gets called by SLK_setup, don't call by yourself.
-void SLK_render_init()
+void SLK_i_render_init()
 {
    printf("OpenGL loaded\n");
    gladLoadGLLoader(SDL_GL_GetProcAddress);
@@ -140,7 +141,7 @@ void SLK_render_update()
 
 //Updates the viewport (the space where everything is drawn in)
 //using the current window width and screen width.
-void SLK_render_update_viewport()
+void SLK_i_render_update_viewport()
 {
    SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
@@ -156,21 +157,8 @@ void SLK_render_update_viewport()
       view_width = screen_width*pixel_scale;
       view_height = screen_height*pixel_scale;
 
-      /*if(view_height<window_height)
-      {
-           int p_scale = window_height/screen_height;
-           view_width = screen_width*p_scale;
-           view_height = screen_height*p_scale;
-       }
-       else
-       {
-          int p_scale = window_width/screen_width;
-          view_width = screen_width*p_scale;
-          view_height = screen_height*p_scale;
-       }*/
-
-       view_x = (window_width-view_width)/2;
-       view_y = (window_height-view_height)/2;
+      view_x = (window_width-view_width)/2;
+      view_y = (window_height-view_height)/2;
    }
 
    glViewport(view_x,view_y,view_width,view_height);

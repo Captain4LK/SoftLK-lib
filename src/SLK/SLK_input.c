@@ -19,7 +19,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Internal includes
 #include "../../include/SLK/SLK_types.h"
-#include "SLK_variables.h"
+#include "SLK_input_i.h"
+#include "SLK_render_i.h"
+#include "SLK_layer_i.h"
 //-------------------------------------
 
 //#defines
@@ -45,21 +47,21 @@ int mouse_wheel;
 //the SLK_key enum is held.
 int SLK_key_down(int key)
 {
-   return keyboard_state[key].held;
+   return new_key_state[key];
 }
 
 //Returns wether the key belonging to 
 //the SLK_key enum has been pressed.
 int SLK_key_pressed(int key)
 {
-   return keyboard_state[key].pressed;
+   return new_key_state[key]&&!old_key_state[key];
 }
 
 //Returns wether the key belonging to 
 //the SLK_key enum has been released.
 int SLK_key_released(int key)
 {
-   return keyboard_state[key].released;
+   return !new_key_state[key]&&old_key_state[key];
 }
 
 //Returns wether the mouse button
@@ -67,7 +69,7 @@ int SLK_key_released(int key)
 //is held.
 int SLK_mouse_down(int key)
 {
-   return mouse_state[key].held;
+   return new_mouse_state[key];
 }
 
 //Returns wether the mouse button
@@ -75,7 +77,7 @@ int SLK_mouse_down(int key)
 //has been pressed.
 int SLK_mouse_pressed(int key)
 {
-   return mouse_state[key].pressed;
+   return new_mouse_state[key]&&!old_mouse_state[key];
 }
 
 //Returns wether the mouse button
@@ -83,7 +85,7 @@ int SLK_mouse_pressed(int key)
 //has been released.
 int SLK_mouse_released(int key)
 {
-   return mouse_state[key].released;
+   return !new_mouse_state[key]&&old_mouse_state[key];
 }
 
 //Returns the amount the mouse wheel has been scrolled.
@@ -130,7 +132,7 @@ void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y)
 //Updates the mouse position (only the variable, 
 //not the actual position).
 //Used in SLK_update, no need to call yourself.
-void SLK_mouse_update(int x, int y)
+void SLK_i_mouse_update(int x, int y)
 {
    int mouse_x_cache = mouse_x;
    int mouse_y_cache = mouse_y;
@@ -155,7 +157,7 @@ void SLK_mouse_update(int x, int y)
 
 //Updates the mouse wheel position status.
 //Used by SLK_update, no need to call yourself.
-void SLK_mouse_update_wheel(int wheel)
+void SLK_i_mouse_update_wheel(int wheel)
 {
    mouse_wheel = wheel;
 }

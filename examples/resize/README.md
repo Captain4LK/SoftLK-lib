@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
    SLK_layer_activate(0,1);
    //Now flag the layer as dynamic. If the dynamic flag is set and SoftLK
    //has been started in dynamic mode, windows will be resizable and
-   //the layers is resized accordingly to the window dimensions.
+   //the layer is resized accordingly to the window dimensions.
    SLK_layer_set_dynamic(0,1);
 
    while(SLK_core_running())

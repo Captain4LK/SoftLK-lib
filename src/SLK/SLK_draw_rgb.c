@@ -14,12 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <stdlib.h>
 //-------------------------------------
 
 //Internal includes
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
-#include "SLK_variables.h"
+#include "SLK_draw_rgb_i.h"
 //-------------------------------------
 
 //#defines
@@ -115,7 +116,7 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 			{
 				for(int x_ = 0;x_<8;x_++)
 					for(int y_ = 0;y_<8;y_++)
-						if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
+						if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
 							for(int is = 0;is<scale;is++)
 								for(int js = 0;js<scale;js++)
 									SLK_draw_rgb_color(x+sx+(x_*scale)+is,y+sy+(y_*scale)+js,color);
@@ -124,7 +125,7 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 			{
 				for(int x_ = 0; x_ < 8; x_++)
 					for(int y_ = 0; y_ < 8; y_++)
-						if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
+						if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
 						 	SLK_draw_rgb_color(x+sx+x_,y+sy+y_,color);
 			}
 			sx += 8*scale;
