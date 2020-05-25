@@ -121,7 +121,7 @@ void SLK_layer_set_size(unsigned index, int width, int height);
 void SLK_layer_set_current(unsigned index);
 
 //Core subsystem: SLK_core.c 
-void SLK_setup(const int width, const int height, const int layer_num, const char *title, const int fullscreen, int scale, int resizable);
+void SLK_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable);
 void SLK_update();
 void SLK_core_set_title(const char *title);
 void SLK_core_set_fullscreen(int fullscreen);

@@ -32,8 +32,8 @@ Linux:
 
 SoftLK has been tested and is working on the following plattforms/os:
 
-* Void GNU/Linux, amd64: [Enter the void](https://voidlinux.org/) 
-* Raspbian 10, raspberry pi 4b: [Teach, learn and make](https://www.raspberrypi.org/)
+* Void GNU/Linux, amd64 (glibc/musl-libc)
+* Raspbian 10, raspberry pi 4b
 
 SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, the plattforms listed here are just the ones I frequently test SoftLK on.
 

@@ -13,50 +13,11 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//External includes
-//-------------------------------------
+#ifndef _SLK_CONFIG_H_
 
-//Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
-//-------------------------------------
+#define _SLK_CONFIG_H_
 
-//#defines
-//-------------------------------------
+//SLK config file,
+//optional features are specified here
 
-//Typedefs
-//-------------------------------------
-
-//Variables
-//-------------------------------------
-
-//Function prototypes
-//-------------------------------------
-
-//Function implementations
-
-//Creates a SLK_Color struct from 4 unsigned 8bit ints.
-SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-{
-   SLK_Color c;
-   c.r = r;
-   c.g = g;
-   c.b = b;
-   c.a = a;
-   
-   return c;
-} 
-
-//Creates a SLK_Paxel struct from 2 unsigned 8bit ints.
-//index is the index of the currently used palette.
-//mask is wether the paxel is supposed to be drawn:
-//SLK_OPAQUE for drawing, SLK_TRANSPARENT for skipping.
-SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask)
-{
-   SLK_Paxel p;
-   p.index = index;
-   p.mask = mask;
-   
-   return p;
-}
-//-------------------------------------
+#endif
