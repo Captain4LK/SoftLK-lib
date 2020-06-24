@@ -64,6 +64,7 @@ void SLK_core_set_title(const char *title)
    SDL_SetWindowTitle(sdl_window,title);
 }
 
+//Sets the window in windowed or fullscreen mode.
 void SLK_core_set_fullscreen(int fullscreen)
 {
    if(fullscreen)
@@ -77,6 +78,15 @@ void SLK_core_set_fullscreen(int fullscreen)
    }
 
    SLK_i_render_update_viewport();
+}
+
+//Shows or hides the window.
+void SLK_core_set_visible(int visible)
+{
+   if(visible)
+      SDL_ShowWindow(sdl_window);
+   else
+      SDL_HideWindow(sdl_window);
 }
 
 //Sets the icon of the window.

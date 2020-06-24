@@ -14,20 +14,22 @@ int main(int argc, char *argv[])
 
    int canvas_pos_x = 128;
    int canvas_pos_y = 128;
-   float canvas_scale = 2.0f;
-   SLK_layer_create(0,SLK_LAYER_RGB);
+   float canvas_scale = 1.0f;
+   SLK_layer_create(0,SLK_LAYER_PAL);
    SLK_layer_activate(0,1);
    SLK_layer_set_current(0);
-   SLK_draw_rgb_set_changed(1);
    SLK_layer_set_dynamic(0,0);
-   SLK_layer_set_size(0,256,224);
    SLK_layer_set_pos(0,canvas_pos_x,canvas_pos_y);
    SLK_layer_set_scale(0,canvas_scale);
-   SLK_draw_rgb_set_clear_color(SLK_color_create(255,255,255,255));
-   SLK_draw_rgb_clear();
-   SLK_RGB_sprite *logo = SLK_rgb_sprite_load("assets/logo.png");
-   SLK_draw_rgb_sprite(logo,0,0);
-   SLK_rgb_sprite_destroy(logo);
+   SLK_draw_pal_set_clear_paxel(SLK_color_create_paxel(0,0));
+   SLK_draw_pal_clear();
+   SLK_Pal_sprite *logo = SLK_pal_sprite_load("assets/0.slk");
+   SLK_layer_set_size(0,logo->width,logo->height);
+   SLK_draw_pal_clear();
+   SLK_draw_pal_sprite(logo,0,0);
+   SLK_pal_sprite_destroy(logo);
+   SLK_layer_set_palette(0,SLK_palette_load("data/3-3-2.pal"));
+
 
    while(SLK_core_running())
    {

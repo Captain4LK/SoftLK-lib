@@ -96,11 +96,20 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
    FILE *f = fopen(path,"rb");
    SLK_Pal_sprite *s = NULL;
    int width, height;
+   char file_type[512];
 
    if(f==NULL)
    {
       printf("Failed to open %s!\n",path);
 
+      return SLK_pal_sprite_create(1,1);
+   }
+
+   fread(file_type,sizeof(char),8,f);
+   file_type[8] = '\0';
+   if(strcmp(file_type,"SLKIMAGE")!=0)
+   {
+      printf("%s does not seem to be a SLKIMAGE file\n",path);
       return SLK_pal_sprite_create(1,1);
    }
       

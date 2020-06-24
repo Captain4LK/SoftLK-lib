@@ -125,6 +125,7 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
 void SLK_update();
 void SLK_core_set_title(const char *title);
 void SLK_core_set_fullscreen(int fullscreen);
+void SLK_core_set_visible(int visible);
 void SLK_core_set_icon(const SLK_RGB_sprite *icon);
 int SLK_core_get_width();
 int SLK_core_get_height();
