@@ -33,8 +33,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Variables
 int mouse_x;
 int mouse_y;
-int mouse_x_rel;
-int mouse_y_rel;
 int mouse_wheel;
 //-------------------------------------
 
@@ -134,15 +132,15 @@ void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y)
 //Used in SLK_update, no need to call yourself.
 void SLK_i_mouse_update(int x, int y)
 {
-   int mouse_x_cache = mouse_x;
-   int mouse_y_cache = mouse_y;
+   //int mouse_x_cache = mouse_x;
+   //int mouse_y_cache = mouse_y;
    x-=view_x;
    y-=view_y;
 
    mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
    mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
-   mouse_x_rel = mouse_x-mouse_x_cache;
-   mouse_y_rel = mouse_y-mouse_y_cache;
+   //mouse_x_rel = mouse_x-mouse_x_cache;
+   //mouse_y_rel = mouse_y-mouse_y_cache;
 
    if(mouse_x>=screen_width)
      mouse_x= screen_width-1;
@@ -166,6 +164,19 @@ void SLK_i_mouse_update_wheel(int wheel)
 void SLK_mouse_show_cursor(int shown)
 {
    SDL_ShowCursor(shown?SDL_ENABLE:SDL_DISABLE);
+}
+
+//Sets wether the mouse cursor is captured and only relative
+//mouse motion is registerd.
+void SLK_mouse_set_relative(int relative)
+{
+   SDL_SetRelativeMouseMode(relative);
+}
+
+//Sets wether to capture mouse events globally.
+void SLK_mouse_capture(int capture)
+{
+   SDL_CaptureMouse(capture);
 }
 
 //Starts text ínput and appends the characters
@@ -292,7 +303,8 @@ void SLK_i_input_init()
    //Clear key states, just in case,
    //should already be empty since known at compile time
    memset(new_key_state,0,sizeof(new_key_state));
+   memset(old_key_state,0,sizeof(old_key_state));
    memset(new_mouse_state,0,sizeof(new_mouse_state));
-
+   memset(old_mouse_state,0,sizeof(old_mouse_state));
 }
 //-------------------------------------

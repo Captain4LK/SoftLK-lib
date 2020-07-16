@@ -64,8 +64,20 @@ typedef struct
 
 typedef struct
 {
-   GLint id;
-}SLK_GPU_sprite;
+   int size;
+   SLK_RGB_sprite **sheet;
+}SLK_RGB_sheet;
+
+typedef struct
+{
+   int size;
+   SLK_Pal_sprite **sheet;
+}SLK_Pal_sheet;
+
+typedef struct
+{
+
+}SLK_RGB_animation;
 
 typedef struct
 {
@@ -83,14 +95,10 @@ typedef struct
 
 typedef struct
 {
-   
-}SLK_Layer_gpu;
-
-typedef struct
-{
    int type;
    int active;
    int dynamic;
+   int resized;
    int x;
    int y;
    float scale;
@@ -100,7 +108,6 @@ typedef struct
    {
       SLK_Layer_pal type_0;
       SLK_Layer_rgb type_1;
-      SLK_Layer_gpu type_2;
    };
 }SLK_Layer;
 

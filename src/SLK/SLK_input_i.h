@@ -11,6 +11,8 @@ uint8_t new_mouse_state[6];
 uint8_t old_mouse_state[6];
 uint8_t key_map[SDL_NUM_SCANCODES];
 uint8_t mouse_map[6];
+int mouse_x_rel;
+int mouse_y_rel;
 char *text_input;
 int text_input_active;
 

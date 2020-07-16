@@ -73,6 +73,8 @@ void SLK_render_update()
 
    for(int l = layer_count-1;l>=0;l--)
    {
+      layers[l].resized = 0;
+
       if(layers[l].active)
       {
          switch(layers[l].type)

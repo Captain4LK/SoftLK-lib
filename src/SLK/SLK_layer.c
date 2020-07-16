@@ -156,6 +156,8 @@ void SLK_layer_set_size(unsigned index, int width, int height)
 {
    if(index<layer_count)
    {
+      layers[index].resized = 1;
+
       if(layers[index].type==SLK_LAYER_PAL)
       {
          if(layers[index].type_0.target==NULL||layers[index].type_0.render==NULL)
@@ -193,6 +195,28 @@ void SLK_layer_set_size(unsigned index, int width, int height)
    }
 }
 
+//Stores the dimensions of the specified layer in the specified pointers.
+void SLK_layer_get_size(unsigned index, int *width, int *height)
+{
+   if(index>=layer_count)
+      return;
+
+   if(layers[index].type==SLK_LAYER_RGB)
+   {
+      if(width)
+         *width = layers[index].type_1.target->width;
+      if(height)
+         *height = layers[index].type_1.target->height;
+   }
+   else if(layers[index].type==SLK_LAYER_PAL)
+   {
+      if(width)
+         *width = layers[index].type_0.target->width;
+      if(height)
+         *height = layers[index].type_0.target->height;
+   } 
+}
+
 //Sets wich layer is the current default draw target.
 //Also overwrites the current draw target.
 void SLK_layer_set_current(unsigned index)
@@ -212,5 +236,25 @@ void SLK_layer_set_current(unsigned index)
       target_rgb_default = layers[index].type_1.target;
       target_rgb = layers[index].type_1.target;
    }
+}
+
+//Returns wether the layer has been resized.
+//A layer counts as resized between a SLK_layer_set_size call and a SLK_render_update call.
+int SLK_layer_get_resized(unsigned index)
+{
+   if(index>=layer_count)
+      return 0;
+
+   return layers[index].resized;
+}
+
+//Returns the specified layer if it
+//exists.
+SLK_Layer *SLK_layer_get(unsigned index)
+{
+   if(index>=layer_count)
+      return NULL;
+
+   return &layers[index];
 }
 //-------------------------------------

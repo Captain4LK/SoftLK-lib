@@ -43,6 +43,14 @@ void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s);
 void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src);
 void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, int x, int y, int ox, int oy, int width, int height);
 
+//Pal sprite sheet subsystem: SLK_sheet_pal.c
+SLK_Pal_sheet *SLK_pal_sheet_create(int size);
+void SLK_pal_sheet_expand(SLK_Pal_sheet *sheet, int new_size);
+void SLK_pal_sheet_destroy(SLK_Pal_sheet *sheet);
+void SLK_pal_sheet_add(SLK_Pal_sheet *sheet, int index, SLK_Pal_sprite *sprite);
+void SLK_pal_seet_add_from(SLK_Pal_sheet *sheet, int index, SLK_Pal_sprite *source, int x, int y, int width, int height);
+SLK_Pal_sprite *SLK_pal_sheet_get(const SLK_Pal_sheet *sheet, int index);
+
 //Draw pal subsystem: SLK_draw_pal.c
 void SLK_draw_pal_set_target(SLK_Pal_sprite *s);
 SLK_Pal_sprite *SLK_draw_pal_get_target();
@@ -70,6 +78,14 @@ SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path);
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s);
 void SLK_rgb_sprite_copy(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src);
 void SLK_rgb_sprite_copy_partial(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src, int x, int y, int ox, int oy, int width, int height);
+
+//RGB sprite sheet subsystem: SLK_sheet_rgb.c
+SLK_RGB_sheet *SLK_rgb_sheet_create(int size);
+void SLK_rgb_sheet_expand(SLK_RGB_sheet *sheet, int new_size);
+void SLK_rgb_sheet_destroy(SLK_RGB_sheet *sheet);
+void SLK_rgb_sheet_add(SLK_RGB_sheet *sheet, int index, SLK_RGB_sprite *sprite);
+void SLK_rgb_seet_add_from(SLK_RGB_sheet *sheet, int index, SLK_RGB_sprite *source, int x, int y, int width, int height);
+SLK_RGB_sprite *SLK_rgb_sheet_get(const SLK_RGB_sheet *sheet, int index);
 
 //Draw rgb subsystem: SLK_draw_rgb.c
 SLK_RGB_sprite *SLK_draw_rgb_get_target();
@@ -106,6 +122,8 @@ void SLK_mouse_get_pos(int *x, int *y);
 void SLK_mouse_get_relative_pos(int *x, int *y);
 void SLK_mouse_get_layer_pos(unsigned index, int *x, int *y);
 void SLK_mouse_show_cursor(int shown);
+void SLK_mouse_set_relative(int relative);
+void SLK_mouse_capture(int capture);
 void SLK_text_input_start(char *text);
 void SLK_text_input_stop();
 
@@ -118,7 +136,10 @@ void SLK_layer_set_dynamic(unsigned index, int dynamic);
 void SLK_layer_set_pos(unsigned index, int x, int y);
 void SLK_layer_set_scale(unsigned index, float scale);
 void SLK_layer_set_size(unsigned index, int width, int height);
+void SLK_layer_get_size(unsigned index, int *width, int *height);
 void SLK_layer_set_current(unsigned index);
+int SLK_layer_get_resized(unsigned index);
+SLK_Layer *SLK_layer_get(unsigned index);
 
 //Core subsystem: SLK_core.c 
 void SLK_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable);

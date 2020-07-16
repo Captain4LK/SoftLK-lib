@@ -123,6 +123,9 @@ void SLK_update()
    memcpy(old_key_state,new_key_state,sizeof(new_key_state));
    memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
 
+   mouse_x_rel = 0;
+   mouse_y_rel = 0;
+
    //Event managing
    SDL_Event event;
    while(SDL_PollEvent(&event))
@@ -157,6 +160,10 @@ void SLK_update()
          break;
       case SDL_MOUSEWHEEL:
          SLK_i_mouse_update_wheel(event.wheel.y);
+         break;
+    case SDL_MOUSEMOTION:
+         mouse_x_rel+=event.motion.xrel;
+         mouse_y_rel+=event.motion.yrel;
          break;
       case SDL_WINDOWEVENT:
          if(event.window.event==SDL_WINDOWEVENT_RESIZED&&dynamic)
@@ -259,5 +266,5 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
    text_sprite_rgb = SLK_rgb_sprite_load("data/font8x8.png");
    
    SLK_i_input_init();
-   }
+}
 //-------------------------------------

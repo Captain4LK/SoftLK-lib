@@ -15,11 +15,29 @@
    	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+//External includes
+#include <cjson/cJSON.h>
 #include "../../include/SLK/SLK.h"
 #include "ULK_file.h"
 #include "ULK_vector.h"
-#include <cjson/cJSON.h>
+//-------------------------------------
 
+//Internal includes
+#include "gui.h"
+#include "settings.h"
+//-------------------------------------
+
+//#defines
+//-------------------------------------
+
+//Typedefs
+//-------------------------------------
+
+//Variables
+//-------------------------------------
+
+//Function prototypes
+//-------------------------------------
 
 typedef struct
 {
@@ -45,11 +63,6 @@ int shapes_count;
 int mode = 0;
 int win_width;
 int win_height;
-int can_width;
-int can_height;
-int can_x = 0;
-int can_y = 0;
-float can_scale = 1.0f;
 
 void load_shapes();
 void draw_shapes();
@@ -57,32 +70,38 @@ void calculate_circle(int shape);
 void calculate();
 void calculate_pos(ULK_vector_2d out, float x, float y);
 
+//Function implementations
+
 int main(int argc, char *argv[])
 {
    load_shapes();
 
-   SLK_setup(win_width,win_height,3,"SLK Engine",0,1,1);
+   SLK_setup(win_width,win_height,6,"SLK Engine",0,1,1);
    SLK_timer_set_fps(30);
 
-   SLK_layer_create(0,SLK_LAYER_RGB); //Layer for drawing shapes
-   SLK_layer_create(1,SLK_LAYER_RGB); //Layer for drawing electric field
-   SLK_layer_create(2,SLK_LAYER_RGB);
+   SLK_layer_create(0,SLK_LAYER_RGB); //Layer for GUI
+   SLK_layer_create(1,SLK_LAYER_RGB); //Layer for shapes
+   SLK_layer_create(2,SLK_LAYER_RGB); //Layer for drawing electric field
+   SLK_layer_create(3,SLK_LAYER_RGB); //Layer for drawing electric potential
+   SLK_layer_create(4,SLK_LAYER_RGB); //Layer for editing layout
+   SLK_layer_create(5,SLK_LAYER_RGB); //Layer for background
+
 
    SLK_layer_activate(0,1);
    SLK_layer_set_dynamic(0,0);
-   SLK_layer_set_size(0,can_width,can_height);
-   SLK_layer_set_pos(0,can_x,can_y);
-   SLK_layer_set_scale(0,can_scale);
-   SLK_layer_activate(1,0);
+   SLK_layer_activate(1,1);
    SLK_layer_set_dynamic(1,0);
-   SLK_layer_set_size(1,can_width,can_height);
-   SLK_layer_set_pos(1,can_x,can_y);
-   SLK_layer_set_scale(1,can_scale);
-   SLK_layer_activate(2,1);
+   SLK_layer_activate(2,0);
    SLK_layer_set_dynamic(2,0);
-   SLK_layer_set_size(2,can_width,can_height);
-   SLK_layer_set_pos(2,can_x,can_y);
-   SLK_layer_set_scale(1,can_scale);
+   SLK_layer_activate(3,1);
+   SLK_layer_set_dynamic(3,0);
+   SLK_layer_activate(4,0);
+   SLK_layer_set_dynamic(4,0);
+   SLK_layer_activate(5,1);
+   SLK_layer_set_dynamic(5,1);
+
+   settings_init_default();
+   gui_init();
 
    draw_shapes();
 
@@ -91,66 +110,25 @@ int main(int argc, char *argv[])
    while(SLK_core_running())
    {
       SLK_update();
+      gui_update();
 
       if(SLK_key_pressed(SLK_KEY_M))
       {
          if(mode)
          {
             mode = 0;
-            SLK_layer_activate(1,0);
-            SLK_layer_activate(2,1);
+            SLK_layer_activate(2,0);
+            SLK_layer_activate(3,1);
          }
          else 
          {
             mode = 1;
-            SLK_layer_activate(1,1);
-            SLK_layer_activate(2,0);
+            SLK_layer_activate(2,1);
+            SLK_layer_activate(3,0);
          }
       }
 
-      if(SLK_mouse_down(SLK_BUTTON_MIDDLE))
-      {
-         int x,y;
-         SLK_mouse_get_relative_pos(&x,&y);
-         can_x+=x;
-         can_y+=y;
-         SLK_layer_set_pos(0,can_x,can_y);
-         SLK_layer_set_pos(1,can_x,can_y);
-         SLK_layer_set_pos(2,can_x,can_y);
-      }
-
-      if(SLK_key_down(SLK_KEY_CTRL))
-      {
-         int wheel = SLK_mouse_wheel_get_scroll();
-
-         if(wheel<0)
-         {
-            can_x-=SLK_core_get_width()*can_scale*0.1f*2.f;
-            can_y-=SLK_core_get_height()*can_scale*0.1f*2.f;
-            SLK_layer_set_pos(0,can_x,can_y);
-            SLK_layer_set_pos(1,can_x,can_y);
-            SLK_layer_set_pos(2,can_x,can_y);
-
-            can_scale+=can_scale*0.1f;
-            SLK_layer_set_scale(0,can_scale);
-            SLK_layer_set_scale(1,can_scale);
-            SLK_layer_set_scale(2,can_scale);
-         }
-         else if(wheel>0)
-         {
-            can_x+=SLK_core_get_width()*can_scale*0.1f*2.f;
-            can_y+=SLK_core_get_height()*can_scale*0.1f*2.f;
-            SLK_layer_set_pos(0,can_x,can_y);
-            SLK_layer_set_pos(1,can_x,can_y);
-            SLK_layer_set_pos(2,can_x,can_y);
-
-            can_scale-=can_scale*0.1f;
-            SLK_layer_set_scale(0,can_scale);
-            SLK_layer_set_scale(1,can_scale);
-            SLK_layer_set_scale(2,can_scale);
-         }
-      }
-
+      gui_draw();
       SLK_render_update();
    }
 
@@ -216,7 +194,7 @@ void draw_shapes()
 {
    int i;
 
-   SLK_layer_set_current(0);
+   SLK_layer_set_current(1);
    SLK_draw_rgb_set_changed(1);
    
    SLK_draw_rgb_set_clear_color(SLK_color_create(0,0,0,0));
@@ -236,7 +214,7 @@ void calculate()
 {
    int i;
 
-   SLK_layer_set_current(1);
+   SLK_layer_set_current(2);
    SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_set_clear_color(SLK_color_create(0,0,0,0));
    SLK_draw_rgb_clear();
@@ -251,11 +229,11 @@ void calculate()
       }
    }
 
-   SLK_layer_set_current(2);
+   SLK_layer_set_current(3);
    SLK_draw_rgb_set_changed(1);
    SLK_draw_rgb_clear();
 
-   //Calculate electrical
+   //Calculate electrical potential
    for(int x = 0;x<can_width;x++)
    {
       for(int y = 0;y<can_height;y++)
@@ -359,3 +337,4 @@ void calculate_pos(ULK_vector_2d out, float x, float y)
 {
    
 }
+//-------------------------------------
