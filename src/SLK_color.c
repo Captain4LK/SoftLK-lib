@@ -14,11 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
-#include <SDL2/SDL.h>
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_types.h"
+#include "../include/SLK/SLK_functions.h"
 //-------------------------------------
 
 //#defines
@@ -28,11 +28,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
-int fps;
-int frametime;
-int framedelay;
-int framestart;
-float delta;
 //-------------------------------------
 
 //Function prototypes
@@ -40,51 +35,28 @@ float delta;
 
 //Function implementations
 
-//Sets the target fps.
-//Pass a value of 0 or lower to set maximum fps.
-//Hardlimited to 1000 fps because SDL_GetTicks can't go
-//smaller than milliseconds.
-void SLK_timer_set_fps(int FPS)
+//Creates a SLK_Color struct from 4 unsigned 8bit ints.
+SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
-   if(FPS<1||FPS>1000)
-      fps = 1000;
-   else
-      fps = FPS;
+   SLK_Color c;
+   c.r = r;
+   c.g = g;
+   c.b = b;
+   c.a = a;
+   
+   return c;
+} 
 
-   framedelay = 1000/fps;
-}
-
-//Returns the currently targeted fps.
-//Don't know how this could be usefull,
-//but anyway, here it is.
-int SLK_timer_get_fps()
+//Creates a SLK_Paxel struct from 2 unsigned 8bit ints.
+//index is the index of the currently used palette.
+//mask is wether the paxel is supposed to be drawn:
+//SLK_OPAQUE for drawing, SLK_TRANSPARENT for skipping.
+SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask)
 {
-   return fps;
-}
-
-//Updates the timings and sleeps
-//the needed amount of time.
-//Already gets called in SLK_update,
-//only use if you know
-//what you are doing.
-void SLK_timer_update()
-{
-   frametime = SDL_GetTicks()-framestart;
-
-   if(framedelay>frametime)
-      SDL_Delay(framedelay-frametime);
-
-   delta = (float)(SDL_GetTicks()-framestart)/1000.0f;
-   framestart = SDL_GetTicks();
-}
-
-//Returns the time the last frame has taken
-//in seconds.
-//SLK is designed to use fixed framerates,
-//but if you desire to do something else
-//I won't stop you.
-float SLK_timer_get_delta()
-{
-   return delta;
+   SLK_Paxel p;
+   p.index = index;
+   p.mask = mask;
+   
+   return p;
 }
 //-------------------------------------

@@ -20,13 +20,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_types.h"
+#include "../include/SLK/SLK_functions.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "../external/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION 
-#include "stb_image_write.h"
+#include "../external/stb_image_write.h"
 //https://github.com/nothings/stb
 //-------------------------------------
 

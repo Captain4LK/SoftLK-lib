@@ -15,12 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <SDL2/SDL.h>
-#include "../../include/glad/glad.h"
+#include "../external/glad.h"
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_types.h"
+#include "../include/SLK/SLK_functions.h"
 #include "SLK_render_i.h"
 #include "SLK_layer_i.h"
 //-------------------------------------

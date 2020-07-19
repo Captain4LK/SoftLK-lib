@@ -17,8 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define _SLK_H_
 
-#define SLK_log 0
-
 //Includes
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,18 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <time.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-#include "../glad/glad.h"
-
-//Macros
-//Fast integer inbounds checking
-#define INBOUNDS(LOWER,UPPER,NUMBER) \
-            ((NUMBER-LOWER)<(UPPER-LOWER))
-            
-#define SIGNUM(NUM) \
-   NUM==0?0:(NUM<0?-1:1)
-//Two integer swapping
-#define SWAP(x,y) \
-            { (x)=(x)^(y); (y)=(x)^(y); (x)=(x)^(y); }
+#include "../../external/glad.h"
 
 //Internal includes
 #include "SLK_types.h"

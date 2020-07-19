@@ -18,8 +18,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_types.h"
+#include "../include/SLK/SLK_functions.h"
 #include "SLK_draw_pal_i.h"
 //-------------------------------------
 

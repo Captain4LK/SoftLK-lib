@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define _SLK_TYPES_H_
 
 #include <stdint.h>
-#include "../glad/glad.h"
+#include "../../external/glad.h"
 
 typedef struct
 {
@@ -73,11 +73,6 @@ typedef struct
    int size;
    SLK_Pal_sprite **sheet;
 }SLK_Pal_sheet;
-
-typedef struct
-{
-
-}SLK_RGB_animation;
 
 typedef struct
 {
@@ -144,7 +139,7 @@ enum SLK_mouse_button
 
 enum SLK_layer
 {
-   SLK_LAYER_PAL,SLK_LAYER_RGB,SLK_LAYER_GPU,
+   SLK_LAYER_PAL,SLK_LAYER_RGB,
 };
 
 enum SLK_mask

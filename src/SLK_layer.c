@@ -15,12 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <SDL2/SDL.h>
-#include "../../include/glad/glad.h"
+#include "../external/glad.h"
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_types.h"
+#include "../include/SLK/SLK_functions.h"
 #include "SLK_render_i.h"
 #include "SLK_draw_rgb_i.h"
 #include "SLK_draw_pal_i.h"
@@ -60,40 +60,32 @@ void SLK_layer_create(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
-   {
-      layers[index].type_0.target = SLK_pal_sprite_create(screen_width,screen_height);
-      layers[index].type_0.render = SLK_rgb_sprite_create(screen_width,screen_height);
+      {
+         layers[index].type_0.target = SLK_pal_sprite_create(screen_width,screen_height);
+         layers[index].type_0.render = SLK_rgb_sprite_create(screen_width,screen_height);
 
-      glGenTextures(1,&layers[index].type_0.texture);
-      glBindTexture(GL_TEXTURE_2D,layers[index].type_0.texture);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
-                   0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
-
+         glGenTextures(1,&layers[index].type_0.texture);
+         glBindTexture(GL_TEXTURE_2D,layers[index].type_0.texture);
+         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+         glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
+                      0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
+      }
       break;
-   }
    case SLK_LAYER_RGB:
-   {
-      layers[index].type_1.target = SLK_rgb_sprite_create(screen_width,screen_height);
+      {
+         layers[index].type_1.target = SLK_rgb_sprite_create(screen_width,screen_height);
 
-      glGenTextures(1,&layers[index].type_1.texture);
-      glBindTexture(GL_TEXTURE_2D,layers[index].type_1.texture);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
-                   0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_1.target->data);
-
-
+         glGenTextures(1,&layers[index].type_1.texture);
+         glBindTexture(GL_TEXTURE_2D,layers[index].type_1.texture);
+         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+         glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
+                      0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_1.target->data);
+      }
       break;
-   }
-   case SLK_LAYER_GPU:
-   {
-
-      break;
-   }
    }
 }
 

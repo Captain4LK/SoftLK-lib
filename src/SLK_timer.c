@@ -14,14 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <SDL2/SDL.h>
 //-------------------------------------
 
 //Internal includes
-#include "../../include/SLK/SLK_types.h"
-#include "../../include/SLK/SLK_functions.h"
+#include "../include/SLK/SLK_functions.h"
 //-------------------------------------
 
 //#defines
@@ -31,6 +28,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+int fps;
+int frametime;
+int framedelay;
+int framestart;
+float delta;
 //-------------------------------------
 
 //Function prototypes
@@ -38,66 +40,51 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Function implementations
 
-//Reads a palette from a .pal file.
-//Most pal files don't have an alpha
-//component added to them, you
-//need to add that yourself in the pal file.
-SLK_Palette *SLK_palette_load(const char *path)
+//Sets the target fps.
+//Pass a value of 0 or lower to set maximum fps.
+//Hardlimited to 1000 fps because SDL_GetTicks can't go
+//smaller than milliseconds.
+void SLK_timer_set_fps(int FPS)
 {
-   char buffer[512];
-   int colors = 0,i,found;
-   int r,g,b,a;
-   SLK_Palette *palette = malloc(sizeof(SLK_Palette));
-
-   memset(palette,0,sizeof(SLK_Palette));
-
-   FILE *f = fopen(path,"r");
-   if(!f)
-   {
-      printf("Unable to load palette\n");
-      return palette;
-   }
-   
-   
-   for(i = 0;i<259&&fgets(buffer,512,f);i++)
-   {
-      if(i==2)
-      {
-         sscanf(buffer,"%d",&found);
-         printf("Found %d colors\n",found);
-      }
-      else if(i>2&&buffer[0]!='\0')
-      {
-         sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a);
-
-         palette->colors[colors].r = r;
-         palette->colors[colors].g = g;
-         palette->colors[colors].b = b;
-         palette->colors[colors].a = a;
-         colors++;
-      }
-   }
-
-   return palette;
-}
-
-//Sets the color of a palette at the
-//desired index.
-//Usefull for rapidly chaning certain colors of a sprite,
-//eg. for simple animations.
-void SLK_palette_set_color(SLK_Palette *palette, int index, SLK_Color color)
-{
-   if(index>=0&&index<256)
-      palette->colors[index] = color;
-}
-
-//Returns the color of a palette at the
-//desired index.
-SLK_Color SLK_palette_get_color(const SLK_Palette *palette, int index)
-{
-   if(index>=0&&index<256)
-      return palette->colors[index];
+   if(FPS<1||FPS>1000)
+      fps = 1000;
    else
-      return SLK_color_create(0,0,0,255);
+      fps = FPS;
+
+   framedelay = 1000/fps;
+}
+
+//Returns the currently targeted fps.
+//Don't know how this could be usefull,
+//but anyway, here it is.
+int SLK_timer_get_fps()
+{
+   return fps;
+}
+
+//Updates the timings and sleeps
+//the needed amount of time.
+//Already gets called in SLK_update,
+//only use if you know
+//what you are doing.
+void SLK_timer_update()
+{
+   frametime = SDL_GetTicks()-framestart;
+
+   if(framedelay>frametime)
+      SDL_Delay(framedelay-frametime);
+
+   delta = (float)(SDL_GetTicks()-framestart)/1000.0f;
+   framestart = SDL_GetTicks();
+}
+
+//Returns the time the last frame has taken
+//in seconds.
+//SLK is designed to use fixed framerates,
+//but if you desire to do something else
+//I won't stop you.
+float SLK_timer_get_delta()
+{
+   return delta;
 }
 //-------------------------------------

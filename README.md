@@ -39,8 +39,13 @@ SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, 
 
 ## Library Credits
 
+Here I shall list all external libraries used by SoftLK:
+
+* [SDL2](https://www.libsdl.org/) 
+* [glad](https://glad.dav1d.de/)
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
-* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h) 
+* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
+* [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h)
 
 ## Gallery
 
