@@ -25,7 +25,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <time.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-#include "../../external/glad.h"
 
 //Internal includes
 #include "SLK_types.h"

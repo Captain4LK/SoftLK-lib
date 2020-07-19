@@ -1,39 +1,54 @@
 # SoftLK Engine
 
-A software accelerated engine that uses OpenGL to bring the graphics to the screen. It's made for low resolutions (eg. 256x240), but can be used for higher resolutions, too.
+A software accelerated engine using OpenGL to bring the graphics to the screen. It's made for low resolutions (eg. 256x240), but should handle higher resolutions, too.
 
 ## Features
 
 * Layers: Draw to multiple independent layers
 * RGB drawing: Draw in 32bit rgba colorspace
 * Pal drawing: Draw in palletized 8bit colorspace and change the palette on the fly, without needing to redraw
-* Image loading: Load and save from and to multiple file formats
+* Image loading: Load and save sprites from and to multiple file formats
 * OpenGL 2.1: It's old. It's antiquated. I mean, who needs shaders anyway?
 
 ## License
 
 SoftLK is free Software (as in freedom) and is released under the 3-clause BSD license, see LICENSE.md for details. Most of the examples are released under the same license, unless noted otherwise of course.
 
-## Using SoftLK
+## Getting started
 
-To use SoftLK you need to have the following libraries installed:
+1. Get a compiler: I use gcc but clang works too.
+2. Install the SDL2 development files:
+	
+	On Debian/Ubuntu: `` sudo apt install libsdl2-dev``  (Note: I haven't used a Debian/Ubuntu based distro in a while)
 
-* [SDL 2](https://www.libsdl.org/)
+	On Void-Linux: `` sudo xbps-install  SDL2-devel``
+3. Clone this repository: `` git clone https://codeberg.org/Captain4LK/SoftLK-lib.git``
+4. Compile SoftLK: 
+	
+	You can either use the provided makefile:
 
-You need to link your programm to the following libraries:
+	```
+	cd SoftLK-lib/lib
+	make
+	```
 
-Linux:
+	Or compile it yourself:
+	
+	```	
+	cd SoftLK-lib/lib
+	gcc -O3 -c ../src/*.c -lm -lSDL2 -lGL #Compile to object files first
+	gcc -O3 -c ../external/glad.c -lm -lGL #Compile glad too
+	ar cr libSLK.a *.o #Then link them together
+	```
 
-* -lSDL2
-* -lGL
-* -ldl
+5.  If everything went right you are now ready to start using SoftLK. Now you can either look at some of the examples, look at the [Getting started](https://codeberg.org/Captain4LK/SoftLK-lib/wiki/Getting-started) wikipage or figure things out yourself by looking at the source. 
+
 
 ## Plattforms
 
 SoftLK has been tested and is working on the following plattforms/os:
 
 * Void GNU/Linux, amd64 (glibc/musl-libc)
-* Raspbian 10, raspberry pi 4b
 
 SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, the plattforms listed here are just the ones I frequently test SoftLK on.
 
