@@ -37,7 +37,6 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	```	
 	cd SoftLK-lib/lib
 	gcc -O3 -c ../src/*.c -lm -lSDL2 -lGL #Compile to object files first
-	gcc -O3 -c ../external/glad.c -lm -lGL #Compile glad too
 	ar cr libSLK.a *.o #Then link them together
 	```
 
