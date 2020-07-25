@@ -1,25 +1,43 @@
+/* 
+LICENSE OPTION A: 3-clause BSD
+
+   Copyright (C) 2020 Captain4LK (Lukas Holzbeierlein)
+
+   Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+   3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+LICENSE OPTION B: Public Domain CC0
+
+   just credit the original creator of gl-matrix as stated below.
+*/
+
 /*
-  Copyright (C) 2020 Captain4LK (Lukas Holzbeierlein)
+Based on gl-matrix: https://github.com/toji/gl-matrix 
 
-  This software is provided 'as-is', without any express or implied
-  warranty.  In no event will the authors be held liable for any damages
-  arising from the use of this software.
+Original license notice:
 
-  Permission is granted to anyone to use this software for any purpose,
-  including commercial applications, and to alter it and redistribute it
-  freely, subject to the following restrictions:
+Copyright (c) 2015-2020, Brandon Jones, Colin MacKenzie IV.
 
-  1. The origin of this software must not be misrepresented; you must not
-     claim that you wrote the original software. If you use this software
-     in a product, an acknowledgment in the product documentation would be
-     appreciated but is not required.
-  2. Altered source versions must be plainly marked as such, and must not be
-     misrepresented as being the original software.
-  3. This notice may not be removed or altered from any source distribution.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-  Captain4LK
-  commandant4lk@gmail.com
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+/*
+Changelog:
+   v1.1:
+      - added ULK_vector_3d_slerp
+      - removed all functions allocating memory to make library more usable
+      
 */
 
 #include "ULK_vector.h"
@@ -51,29 +69,10 @@ void ULK_vector_2d_ceil(ULK_vector_2d out, const ULK_vector_2d in)
    out[1] = ceilf(in[1]);
 }
 
-ULK_vector_2d *ULK_vector_2d_clone(const ULK_vector_2d in)
-{
-   ULK_vector_2d *out = malloc(sizeof(ULK_vector_2d));
-   *out[0] = in[0];
-   *out[1] = in[1];
-   
-   return out;
-}
-
 void ULK_vector_2d_copy(ULK_vector_2d dst, const ULK_vector_2d src)
 {
    dst[0] = src[0];
    dst[1] = src[1];
-}
-
-ULK_vector_2d *ULK_vector_2d_create()
-{
-   ULK_vector_2d *out = malloc(sizeof(ULK_vector_2d));
-   
-   *out[0] = 0.0f;
-   *out[1] = 0.0f;
-      
-   return out;
 }
 
 void ULK_vector_2d_cross(ULK_vector_3d out, const ULK_vector_2d a, const ULK_vector_2d b)
@@ -119,15 +118,6 @@ void ULK_vector_2d_floor(ULK_vector_2d out, const ULK_vector_2d in)
    out[1] = floorf(in[1]);
 }
 
-ULK_vector_2d *ULK_vector_2d_from_values(const float x, const float y)
-{
-   ULK_vector_2d *out = malloc(sizeof(ULK_vector_2d));
-   *out[0] = x;
-   *out[1] = y;
-   
-   return out;
-}
-
 void ULK_vector_2d_invert(ULK_vector_2d out, const ULK_vector_2d in)
 {
    out[0] = 1.0f/in[0];
@@ -139,7 +129,7 @@ float ULK_vector_2d_length(const ULK_vector_2d in)
    return sqrtf(in[0]*in[0]+in[1]*in[1]);
 }
 
-void ULK_vector_2d_lerp(ULK_vector_2d out, const ULK_vector_2d a, const ULK_vector_2d b, const float t)
+void ULK_vector_2d_lerp(ULK_vector_2d out, const ULK_vector_2d a, const ULK_vector_2d b, float t)
 {
    out[0] = a[0]+t*(b[0]-a[0]);
    out[1] = a[1]+t*(b[1]-a[1]);
@@ -201,7 +191,7 @@ void ULK_vector_2d_normalize(ULK_vector_2d out, const ULK_vector_2d in)
    out[1] = in[1]*length;
 }
 
-void ULK_vector_2d_rotate(ULK_vector_2d out, const ULK_vector_2d in, const ULK_vector_2d origin, const float radians)
+void ULK_vector_2d_rotate(ULK_vector_2d out, const ULK_vector_2d in, const ULK_vector_2d origin, float radians)
 {
    float point0 = in[0]-origin[0];
    float point1 = in[1]-origin[1];
@@ -218,13 +208,13 @@ void ULK_vector_2d_round(ULK_vector_2d out, const ULK_vector_2d in)
    out[1] = roundf(in[1]);
 }
 
-void ULK_vector_2d_scale(ULK_vector_2d out, const ULK_vector_2d in, const float scale)
+void ULK_vector_2d_scale(ULK_vector_2d out, const ULK_vector_2d in, float scale)
 {
    out[0] = in[0]*scale;
    out[1] = in[1]*scale;
 }
 
-void ULK_vector_2d_set(ULK_vector_2d out, const float x, const float y)
+void ULK_vector_2d_set(ULK_vector_2d out, float x, float y)
 {
    out[0] = x;
    out[1] = y;
@@ -273,7 +263,7 @@ float ULK_vector_3d_angle(const ULK_vector_3d a, const ULK_vector_3d b)
    return acosf(cosine);
 }
 
-void ULK_vector_3d_bezier(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, const ULK_vector_3d c, const ULK_vector_3d d, const float t)
+void ULK_vector_3d_bezier(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, const ULK_vector_3d c, const ULK_vector_3d d, float t)
 {
    float factor0 = (1-t)*(1-t)*(1-t);
    float factor1 = 3*t*(1-t)*(1-t);
@@ -292,33 +282,11 @@ void ULK_vector_3d_ceil(ULK_vector_3d out, const ULK_vector_3d in)
    out[2] = ceilf(in[2]);
 }
 
-ULK_vector_3d *ULK_vector_3d_clone(const ULK_vector_3d in)
-{
-   ULK_vector_3d *out = malloc(sizeof(ULK_vector_3d));
-   
-   *out[0] = in[0];
-   *out[1] = in[1];
-   *out[2] = in[2];
-   
-   return out;
-}
-
 void ULK_vector_3d_copy(ULK_vector_3d dst, const ULK_vector_3d src)
 {
    dst[0] = src[0];
    dst[1] = src[1];
    dst[2] = src[2];
-}
-
-ULK_vector_3d *ULK_vector_3d_create()
-{
-   ULK_vector_3d *out = malloc(sizeof(ULK_vector_3d));
-   
-   *out[0] = 0.0f;
-   *out[1] = 0.0f;
-   *out[2] = 0.0f;
-   
-   return out;
 }
 
 void ULK_vector_3d_cross(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b)
@@ -373,17 +341,6 @@ void ULK_vector_3d_floor(ULK_vector_3d out, const ULK_vector_3d in)
    out[2] = floorf(in[2]);
 }
 
-ULK_vector_3d *ULK_vector_3d_from_values(const float x, const float y, const float z)
-{
-   ULK_vector_3d *out = malloc(sizeof(ULK_vector_3d));
-   
-   *out[0] = x;
-   *out[1] = y;
-   *out[2] = z;
-   
-   return out;
-}
-
 void ULK_vector_3d_hermite(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, const ULK_vector_3d c, const ULK_vector_3d d, float t)
 {
    float factor0 = t*t*(2*t-3)+1;
@@ -408,7 +365,7 @@ float ULK_vector_3d_length(const ULK_vector_3d in)
    return sqrtf(in[0]*in[0]+in[1]*in[1]+in[2]*in[2]);
 }
 
-void ULK_vector_3d_lerp(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, const float t)
+void ULK_vector_3d_lerp(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, float t)
 {
    out[0] = a[0]+t*(b[0]-a[0]);
    out[1] = a[1]+t*(b[1]-a[1]);
@@ -479,7 +436,7 @@ void ULK_vector_3d_normalize(ULK_vector_3d out, const ULK_vector_3d in)
    out[2] = in[2]*length;
 }
 
-void ULK_vector_3d_rotate_x(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, const float rad)
+void ULK_vector_3d_rotate_x(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, float rad)
 {
    ULK_vector_3d p;
    p[0] = in[0]-origin[0];
@@ -491,7 +448,7 @@ void ULK_vector_3d_rotate_x(ULK_vector_3d out, const ULK_vector_3d in, const ULK
    out[2] = p[1]*sinf(rad)+p[2]*cosf(rad)+origin[2];
 }
 
-void ULK_vector_3d_rotate_y(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, const float rad)
+void ULK_vector_3d_rotate_y(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, float rad)
 {
    ULK_vector_3d p;
    p[0] = in[0]-origin[0];
@@ -503,7 +460,7 @@ void ULK_vector_3d_rotate_y(ULK_vector_3d out, const ULK_vector_3d in, const ULK
    out[2] = p[2]*cosf(rad)-p[0]*sinf(rad)+origin[2];
 }
 
-void ULK_vector_3d_rotate_z(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, const float rad)
+void ULK_vector_3d_rotate_z(ULK_vector_3d out, const ULK_vector_3d in, const ULK_vector_3d origin, float rad)
 {
    ULK_vector_3d p;
    p[0] = in[0]-origin[0];
@@ -522,18 +479,30 @@ void ULK_vector_3d_round(ULK_vector_3d out, const ULK_vector_3d in)
    out[2] = roundf(in[2]);
 }
 
-void ULK_vector_3d_scale(ULK_vector_3d out, const ULK_vector_3d in, const float scale)
+void ULK_vector_3d_scale(ULK_vector_3d out, const ULK_vector_3d in, float scale)
 {
    out[0] = in[0]*scale;
    out[1] = in[1]*scale;
    out[2] = in[2]*scale;
 }
 
-void ULK_vector_3d_set(ULK_vector_3d out, const float x, const float y, const float z)
+void ULK_vector_3d_set(ULK_vector_3d out, float x, float y, float z)
 {
    out[0] = x;
    out[1] = y;
    out[2] = z;
+}
+
+void ULK_vector_3d_slerp(ULK_vector_3d out, const ULK_vector_3d a, const ULK_vector_3d b, float t)
+{
+   float angle = acosf(MIN(MAX(ULK_vector_3d_dot(a,b),-1.0f),1.0f));
+   float sin_total = sinf(angle);
+   float ratio_a = sinf((1.0f-t)*angle)/sin_total;
+   float ratio_b = sinf(t*angle)/sin_total;
+
+   out[0] = ratio_a*a[0]+ratio_b*b[0];
+   out[1] = ratio_a*a[1]+ratio_b*b[1];
+   out[2] = ratio_a*a[2]+ratio_b*b[2];
 }
 
 float ULK_vector_3d_squared_distance(const ULK_vector_3d a, const ULK_vector_3d b)
@@ -580,36 +549,12 @@ void ULK_vector_4d_ceil(ULK_vector_4d out, const ULK_vector_4d in)
    out[3] = ceilf(in[3]);
 }
 
-ULK_vector_4d *ULK_vector_4d_clone(const ULK_vector_4d in)
-{
-   ULK_vector_4d *out = malloc(sizeof(ULK_vector_4d));
-   
-   *out[0] = in[0];
-   *out[1] = in[1];
-   *out[2] = in[2];
-   *out[3] = in[3];
-   
-   return out;
-}
-
 void ULK_vector_4d_copy(ULK_vector_4d out, const ULK_vector_4d in)
 {
    out[0] = in[0];
    out[1] = in[1];
    out[2] = in[2];
    out[3] = in[3];
-}
-
-ULK_vector_4d *ULK_vector_4d_create()
-{
-   ULK_vector_4d *out = malloc(sizeof(ULK_vector_4d));
-   
-   *out[0] = 0.0f;
-   *out[1] = 0.0f;
-   *out[2] = 0.0f;
-   *out[3] = 0.0f;
-   
-   return out;
 }
 
 void ULK_vector_4d_cross(ULK_vector_4d out, const ULK_vector_4d a, const ULK_vector_4d b, const ULK_vector_4d c)
@@ -672,18 +617,6 @@ void ULK_vector_4d_floor(ULK_vector_4d out, const ULK_vector_4d in)
    out[3] = floorf(in[3]);
 }
 
-ULK_vector_4d *ULK_vector_4d_from_values(const float x, const float y, const float z, const float w)
-{
-   ULK_vector_4d *out = malloc(sizeof(ULK_vector_4d));
-   
-   *out[0] = x;
-   *out[1] = y;
-   *out[2] = z;
-   *out[3] = w;
-   
-   return out;
-}
-
 void ULK_vector_4d_inverse(ULK_vector_4d out, const ULK_vector_4d in)
 {
    out[0] = 1.0f/in[0];
@@ -697,7 +630,7 @@ float ULK_vector_4d_length(const ULK_vector_4d in)
    return sqrtf(in[0]*in[0]+in[1]*in[1]+in[2]*in[2]+in[3]*in[3]);
 }
 
-void ULK_vector_4d_lerp(ULK_vector_4d out, const ULK_vector_4d a, const ULK_vector_4d b, const float t)
+void ULK_vector_4d_lerp(ULK_vector_4d out, const ULK_vector_4d a, const ULK_vector_4d b, float t)
 {
    out[0] = a[0]+t*(b[0]-a[0]);
    out[1] = a[1]+t*(b[1]-a[1]);
@@ -784,7 +717,7 @@ void ULK_vector_4d_round(ULK_vector_4d out, const ULK_vector_4d in)
    out[3] = roundf(in[3]);
 }
 
-void ULK_vector_4d_scale(ULK_vector_4d out, const ULK_vector_4d in, const float scale)
+void ULK_vector_4d_scale(ULK_vector_4d out, const ULK_vector_4d in, float scale)
 {
    out[0] = in[0]*scale;
    out[1] = in[1]*scale;
@@ -792,7 +725,7 @@ void ULK_vector_4d_scale(ULK_vector_4d out, const ULK_vector_4d in, const float 
    out[3] = in[3]*scale;
 }
 
-void ULK_vector_4d_set(ULK_vector_4d out, const float x, const float y, const float z, const float w)
+void ULK_vector_4d_set(ULK_vector_4d out, float x, float y, float z, float w)
 {
    out[0] = x;
    out[1] = y;
@@ -830,3 +763,7 @@ void ULK_vector_4d_zero(ULK_vector_4d out)
    out[2] = 0.0f;
    out[3] = 0.0f;
 }
+
+#undef EPSILON
+#undef MAX
+#undef MIN

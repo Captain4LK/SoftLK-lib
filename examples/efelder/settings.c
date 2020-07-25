@@ -16,6 +16,7 @@
 */
 
 //External includes
+#include "../../include/SLK/SLK.h"
 //-------------------------------------
 
 //Internal includes
@@ -39,5 +40,8 @@
 void settings_init_default()
 {
    gui_scale = 2.0f;
+   background_color = SLK_color_create(0,0,0,255);
+   canvas_width = 4000;
+   canvas_height = 4000;
 }
 //-------------------------------------

@@ -1,31 +1,27 @@
 {
-	"canvas_width":8000,
-	"canvas_height":8000,
-	"window_width":800,
-	"window_height":600,
-	
 	"circles":
 	[
-		{
-			"x":3520,
-			"y":2540,
-			"radius":128,
+   ],
+   "rectangles":
+   [
+      {
+         "x":1500,
+         "y":1000,
+         "width":500,
+         "height":50,
+			"charge":-2.0,
+         "divisions":40,
+			"test_points":151
+      },
+      {
+         "x":1500,
+         "y":1500,
+         "width":500,
+         "height":50,
 			"charge":2.0,
-			"test_points":45
-		},
-		{
-			"x":2400,
-			"y":2540,
-			"radius":128,
-			"charge":-2.0,
-			"test_points":45
-		},
-		{
-			"x":2960,
-			"y":2064,
-			"radius":64,
-			"charge":-2.0,
-			"test_points":45
-		}
-	]
+         "divisions":40,
+			"test_points":152
+      }
+
+   ]
 }

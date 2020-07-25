@@ -15,14 +15,44 @@
    	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef _GUI_H_
+#ifndef _CALCULATE_H_
 
-#define _GUI_H_
+#define _CALCULATE_H_
 
-int mode;
+typedef struct
+{
+   int x;
+   int y;
+   int radius;
+   float charge;
+   char charge_str[16];
+   int test_points;
+}Circle;
 
-void gui_init();
-void gui_update();
-void gui_draw();
+typedef struct
+{
+   int x;
+   int y;
+   int width;
+   int height;
+   float charge;
+   char charge_str[16];
+   int test_points;
+}Rectangle;
+
+typedef struct
+{
+   int type;
+
+   Circle circle;
+}Shape;
+
+Shape *shapes;
+int shapes_count;
+Rectangle *rectangles_tmp;
+int rectangles_tmp_count;
+
+void shapes_load_file(const char *path);
+void calculate();
 
 #endif

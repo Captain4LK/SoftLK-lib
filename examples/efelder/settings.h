@@ -19,6 +19,11 @@
 
 #define _SETTINGS_H_
 
+#include "../../include/SLK/SLK_types.h"
+
+SLK_Color background_color;
+int canvas_width;
+int canvas_height;
 float gui_scale;
 
 void settings_init_default();
