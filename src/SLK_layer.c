@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <SDL2/SDL.h>
-#include "../external/glad.h"
+#include <SDL2/SDL_opengl.h>
+#include <GL/gl.h>
 //-------------------------------------
 
 //Internal includes

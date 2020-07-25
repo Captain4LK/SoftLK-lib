@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <SDL2/SDL.h>
-#include "../external/glad.h"
+#include <SDL2/SDL_opengl.h>
+#include <GL/gl.h>
 //-------------------------------------
 
 //Internal includes
@@ -44,7 +45,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 void SLK_i_render_init()
 {
    printf("OpenGL loaded\n");
-   gladLoadGLLoader(SDL_GL_GetProcAddress);
    printf("Vendor:   %s\n",glGetString(GL_VENDOR));
    printf("Renderer: %s\n",glGetString(GL_RENDERER));
    printf("Version:  %s\n",glGetString(GL_VERSION));
