@@ -2,6 +2,16 @@
 
 This example demonstrates dynamic sized windows, layer scaling, moving and resizing. The image is drawn on a seperate layer, the window itself is resizeable with layer 1 being resized dynamicly. Hold the ctrl key and scroll  the mouse wheel to scale the layer, hold the mouse wheel and move the mouse to move it.
 
+## How to compile
+
+If you are on linux and have gcc installed you can just use the provided shell script to compile this example, otherwise you can compile it like this (again, clang should work too):
+
+
+```
+gcc -O3 -o resize main.c ../../lib/libSLK.a -lm -lSDL2 -lGL  -Wall #Compile to executable
+chmod +x ./resize #Only needed on unix(-like) systems
+```
+
 ## Code Example
 
 This code example creates a resizable window with one dynamic layer.
