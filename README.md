@@ -29,14 +29,14 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 
 	```
 	cd SoftLK-lib/lib
-	make
+	make backend_sdl2_gl
 	```
 
 	Or compile it yourself:
 	
 	```	
 	cd SoftLK-lib/lib
-	gcc -O3 -c ../src/*.c -lm -lSDL2 -lGL #Compile to object files first
+	gcc -O3 -c ../src/*.c ../src/backend/backend_sdl2_gl.c -lm -lSDL2 -lGL #Compile to object files first
 	ar cr libSLK.a *.o #Then link them together
 	```
 

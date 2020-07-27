@@ -18,7 +18,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define _SLK_TYPES_H_
 
 #include <stdint.h>
-#include <SDL2/SDL_opengl.h>
 
 typedef struct
 {
@@ -79,13 +78,11 @@ typedef struct
    SLK_Pal_sprite *target;
    SLK_RGB_sprite *render;
    SLK_Palette *palette;
-   GLuint texture;
 }SLK_Layer_pal;
 
 typedef struct
 {
    SLK_RGB_sprite *target;
-   GLuint texture;
 }SLK_Layer_rgb;
 
 typedef struct

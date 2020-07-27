@@ -24,7 +24,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <math.h>
 #include <time.h>
 #include <string.h>
-#include <SDL2/SDL.h>
 
 //Internal includes
 #include "SLK_types.h"

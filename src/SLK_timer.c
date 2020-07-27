@@ -14,11 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
-#include <SDL2/SDL.h>
 //-------------------------------------
 
 //Internal includes
 #include "../include/SLK/SLK_functions.h"
+#include "backend.h"
 //-------------------------------------
 
 //#defines
@@ -28,11 +28,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
-int fps;
-int frametime;
-int framedelay;
-int framestart;
-float delta;
 //-------------------------------------
 
 //Function prototypes
@@ -46,12 +41,7 @@ float delta;
 //smaller than milliseconds.
 void SLK_timer_set_fps(int FPS)
 {
-   if(FPS<1||FPS>1000)
-      fps = 1000;
-   else
-      fps = FPS;
-
-   framedelay = 1000/fps;
+   backend_set_fps(FPS);
 }
 
 //Returns the currently targeted fps.
@@ -59,7 +49,7 @@ void SLK_timer_set_fps(int FPS)
 //but anyway, here it is.
 int SLK_timer_get_fps()
 {
-   return fps;
+   return backend_get_fps();
 }
 
 //Updates the timings and sleeps
@@ -69,13 +59,7 @@ int SLK_timer_get_fps()
 //what you are doing.
 void SLK_timer_update()
 {
-   frametime = SDL_GetTicks()-framestart;
-
-   if(framedelay>frametime)
-      SDL_Delay(framedelay-frametime);
-
-   delta = (float)(SDL_GetTicks()-framestart)/1000.0f;
-   framestart = SDL_GetTicks();
+   backend_timer_update();
 }
 
 //Returns the time the last frame has taken
@@ -85,6 +69,6 @@ void SLK_timer_update()
 //I won't stop you.
 float SLK_timer_get_delta()
 {
-   return delta;
+   return backend_timer_get_delta();
 }
 //-------------------------------------
