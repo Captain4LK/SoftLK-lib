@@ -23,8 +23,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "backend.h"
-#include "SLK_draw_rgb_i.h"
-#include "SLK_draw_pal_i.h"
 #include "SLK_layer_i.h"
 //-------------------------------------
 
@@ -117,10 +115,6 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
 
    running = 1;
    SLK_core_set_fullscreen(fullscreen);
-
-   //Load font sprites.
-   text_sprite_pal = SLK_pal_sprite_load("data/font8x8.slk");
-   text_sprite_rgb = SLK_rgb_sprite_load("data/font8x8.png");
 
    //Setup keymaps, or whatever you favourite backend does here.
    backend_input_init();

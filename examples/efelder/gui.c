@@ -79,7 +79,7 @@ static char text_help[GUI_HELP_LINES][36] = //only use 34 letters
    "You should have received a copy of",
    "the GNU General Public License    ",
    "along with this program.  If not, ",
-   ", see www.gnu.org/licenses/.      ",
+   "see www.gnu.org/licenses/.        ",
    "..................................",
    "Using this program should be      ",
    "fairly easy, but I will try to    ",

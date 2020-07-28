@@ -60,6 +60,9 @@ SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 //needs to be freed.
 void SLK_pal_sprite_destroy(SLK_Pal_sprite *s)
 {
+   if(s==NULL)
+      return;
+
    free(s->data);
    free(s);
 }

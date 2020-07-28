@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
    load_pal_sprites();
    load_rgb_sprites();
 
+   SLK_draw_rgb_load_font("../../data/fonts/cursive1.png");
    gui_00 = SLK_rgb_sprite_load("assets/gui_00.png");
    gui_01 = SLK_rgb_sprite_load("assets/gui_01.png");
    SLK_RGB_sprite *gui_02 = SLK_rgb_sprite_load("assets/gui_02.png");

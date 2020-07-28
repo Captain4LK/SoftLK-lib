@@ -36,6 +36,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+static SLK_Paxel target_pal_clear;
+static SLK_Pal_sprite *text_sprite_pal;
+static SLK_Pal_sprite *text_sprite_pal_default;
 //-------------------------------------
 
 //Function prototypes
@@ -62,6 +65,29 @@ void SLK_draw_pal_set_target(SLK_Pal_sprite *s)
    }
 
    target_pal = s;
+}
+
+//Loads a new font sprite.
+//Replaces the default font sprite.
+void SLK_draw_pal_load_font(const char *path)
+{
+   SLK_pal_sprite_destroy(text_sprite_pal_default);
+   text_sprite_pal_default = SLK_pal_sprite_load(path);
+   text_sprite_pal = text_sprite_pal_default;
+}
+
+//Sets the current font sprite from a 
+//sprite you have loaded in your code.
+//Pass NULL to reset to default.
+void SLK_draw_pal_set_font_sprite(SLK_Pal_sprite *font)
+{
+   if(font==NULL)
+   {
+      text_sprite_pal = text_sprite_pal_default;
+      return;
+   }
+
+   text_sprite_pal = font;
 }
 
 //Sets the color wich the target is to be cleared to
@@ -96,34 +122,35 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel pa
    int sx = 0;
    int sy = 0;
 
-	for(int i = 0;text[i];i++)
+	for (int i = 0;text[i];i++)
 	{
-		if(text[i]=='\n')
+		if (text[i]=='\n')
 		{
 			sx = 0; 
          sy+=8*scale;
 		}
 		else
 		{
-			int ox = (text[i]-32) % 16;
-			int oy = (text[i]-32) / 16;
+			int ox = (text[i]-32)&15;
+			int oy = (text[i]-32)/16;
 
-			if(scale>1)
-			{
 				for(int x_ = 0;x_<8;x_++)
+            {
 					for(int y_ = 0;y_<8;y_++)
+               {
 						if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
-							for(int is = 0;is<scale;is++)
-								for(int js = 0;js<scale;js++)
-									SLK_draw_pal_paxel(x+sx+(x_*scale)+is,y+sy+(y_*scale)+js,paxel);
-			}
-			else
-			{
-				for(int x_ = 0; x_ < 8; x_++)
-					for(int y_ = 0; y_ < 8; y_++)
-						if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
-						 	SLK_draw_pal_paxel(x+sx+x_,y+sy+y_,paxel);
-			}
+                  {
+							for(int o = 0;o<scale;o++)
+                     {
+								for(int m = 0;m<scale;m++)
+                        {
+									SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
+                        }
+                     }
+                  }
+               }
+            }
+
 			sx += 8*scale;
 		}
 	}

@@ -8,7 +8,7 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 	ar cr libSLK.a $^
 
-SLK_core.o: ../src/SLK_core.c ../include/SLK/SLK_types.h ../include/SLK/SLK_functions.h ../src/backend.h ../src/SLK_draw_rgb_i.h ../src/SLK_draw_pal_i.h ../src/SLK_layer_i.h
+SLK_core.o: ../src/SLK_core.c ../include/SLK/SLK_types.h ../include/SLK/SLK_functions.h ../src/backend.h ../src/SLK_layer_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_color.o: ../src/SLK_color.c ../include/SLK/SLK_functions.h ../include/SLK/SLK_types.h

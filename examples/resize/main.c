@@ -23,12 +23,12 @@ int main(int argc, char *argv[])
    SLK_layer_set_scale(0,canvas_scale);
    SLK_draw_pal_set_clear_paxel(SLK_color_create_paxel(0,0));
    SLK_draw_pal_clear();
-   SLK_Pal_sprite *logo = SLK_pal_sprite_load("assets/0.slk");
+   SLK_Pal_sprite *logo = SLK_pal_sprite_load("assets/image.slk");
    SLK_layer_set_size(0,logo->width,logo->height);
    SLK_draw_pal_clear();
    SLK_draw_pal_sprite(logo,0,0);
    SLK_pal_sprite_destroy(logo);
-   SLK_layer_set_palette(0,SLK_palette_load("data/3-3-2.pal"));
+   SLK_layer_set_palette(0,SLK_palette_load("assets/3-3-2.pal"));
 
 
    while(SLK_core_running())

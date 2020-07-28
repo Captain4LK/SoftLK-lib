@@ -6,7 +6,5 @@
 
 SLK_Pal_sprite *target_pal;
 SLK_Pal_sprite *target_pal_default;
-SLK_Paxel target_pal_clear;
-SLK_Pal_sprite *text_sprite_pal;
 
 #endif

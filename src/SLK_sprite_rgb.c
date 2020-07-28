@@ -65,6 +65,9 @@ SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height)
 //to be freed.
 void SLK_rgb_sprite_destroy(SLK_RGB_sprite *s)
 {
+   if(s==NULL)
+      return;
+
    free(s->data);
    free(s);
 }

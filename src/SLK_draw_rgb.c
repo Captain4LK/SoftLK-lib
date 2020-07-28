@@ -36,6 +36,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+static SLK_Color target_rgb_clear;
+static SLK_RGB_sprite *text_sprite_rgb;
+static SLK_RGB_sprite *text_sprite_rgb_default;
 //-------------------------------------
 
 //Function prototypes
@@ -78,6 +81,30 @@ void SLK_draw_rgb_set_changed(int changed)
    target_rgb->changed = changed;
 }
 
+//Loads a new font sprite.
+//Replaces the default font sprite.
+void SLK_draw_rgb_load_font(const char *path)
+{
+   SLK_rgb_sprite_destroy(text_sprite_rgb_default);
+   text_sprite_rgb_default = SLK_rgb_sprite_load(path);
+   text_sprite_rgb= text_sprite_rgb_default;
+}
+
+//Sets the current font sprite from a 
+//sprite you have loaded in your code.
+//Pass NULL to reset to default.
+void SLK_draw_rgb_set_font_sprite(SLK_RGB_sprite *font)
+{
+   if(font==NULL)
+   {
+      text_sprite_rgb = text_sprite_rgb_default;
+
+      return;
+   }
+
+   text_sprite_rgb = font;
+}
+
 //Clears the draw target to the color specified
 //by SKL_draw_rgb_set_clear_color.
 void SLK_draw_rgb_clear()
@@ -109,25 +136,26 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 		}
 		else
 		{
-			int ox = (text[i]-32) % 16;
-			int oy = (text[i]-32) / 16;
+			int ox = (text[i]-32)&15;
+			int oy = (text[i]-32)/16;
 
-			if(scale>1)
-			{
-				for(int x_ = 0;x_<8;x_++)
-					for(int y_ = 0;y_<8;y_++)
-						if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
-							for(int is = 0;is<scale;is++)
-								for(int js = 0;js<scale;js++)
-									SLK_draw_rgb_color(x+sx+(x_*scale)+is,y+sy+(y_*scale)+js,color);
-			}
-			else
-			{
-				for(int x_ = 0; x_ < 8; x_++)
-					for(int y_ = 0; y_ < 8; y_++)
-						if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
-						 	SLK_draw_rgb_color(x+sx+x_,y+sy+y_,color);
-			}
+         for(int x_ = 0;x_<8;x_++)
+         {
+            for(int y_ = 0;y_<8;y_++)
+            {
+               if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
+               {
+                  for(int o = 0;o<scale;o++)
+                  {
+                     for(int m = 0;m<scale;m++)
+                     {
+                        SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
+                     }
+                  }
+               }
+            }
+         }
+
 			sx += 8*scale;
 		}
 	}
