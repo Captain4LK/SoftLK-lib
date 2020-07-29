@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
    SLK_layer_activate(5,1);
    SLK_layer_set_dynamic(5,1);
 
-   SLK_draw_rgb_load_font("../../data/fonts/cursive1.png");
+   SLK_draw_rgb_load_font("../../data/fonts/cursive2.png");
 
    gui_init();
 

@@ -132,20 +132,20 @@ static char text_help[GUI_HELP_LINES][36] = //only use 34 letters
 void gui_init()
 {
    //Load assets
-   SLK_RGB_sprite *sheet = SLK_rgb_sprite_load("assets/about.png");
+   SLK_RGB_sprite *sheet = SLK_rgb_sprite_load("assets/gui.png");
    gui_top_right = SLK_rgb_sprite_create(44,323);
-   gui_options = SLK_rgb_sprite_create(293,324);
-   gui_help = SLK_rgb_sprite_create(325,324);
-   gui_help_bar = SLK_rgb_sprite_create(12,17);
-   gui_help_text = SLK_rgb_sprite_create(276,244);
+   gui_options = SLK_rgb_sprite_create(256,280);
+   gui_help = SLK_rgb_sprite_create(288,280);
+   gui_help_bar = SLK_rgb_sprite_create(10,12);
+   gui_help_text = SLK_rgb_sprite_create(274,244);
    button_0_pressed = SLK_rgb_sprite_create(44,44);
    button_1_pressed = SLK_rgb_sprite_create(44,44);
    button_2_pressed = SLK_rgb_sprite_create(44,44);
    button_4_pressed = SLK_rgb_sprite_create(44,44);
    SLK_rgb_sprite_copy_partial(gui_top_right,sheet,0,0,229,64,44,323);
-   SLK_rgb_sprite_copy_partial(gui_options,sheet,0,0,317,0,293,324);
-   SLK_rgb_sprite_copy_partial(gui_help,sheet,0,0,610,0,325,324);
-   SLK_rgb_sprite_copy_partial(gui_help_bar,sheet,0,0,273,71,12,17);
+   SLK_rgb_sprite_copy_partial(gui_options,sheet,0,0,317,0,256,280);
+   SLK_rgb_sprite_copy_partial(gui_help,sheet,0,0,610,0,288,280);
+   SLK_rgb_sprite_copy_partial(gui_help_bar,sheet,0,0,273,76,10,12);
    SLK_rgb_sprite_copy_partial(button_0_pressed,sheet,0,0,273,88,44,44);
    SLK_rgb_sprite_copy_partial(button_1_pressed,sheet,0,0,273,136,44,44);
    SLK_rgb_sprite_copy_partial(button_2_pressed,sheet,0,0,273,184,44,44);
@@ -309,9 +309,9 @@ void gui_update()
          {
             int x,y;
             SLK_mouse_get_layer_pos(0,&x,&y);
-            if(x>pos_x+86&&x<pos_x+103)
+            if(x>pos_x+88&&x<pos_x+101)
             {
-               if(y>pos_y+78&&y<pos_y+95) //Button scale minus
+               if(y>pos_y+36&&y<pos_y+49) //Button scale minus
                {
                   gui_scale-=0.1f;
                   int width_l,height_l;
@@ -324,7 +324,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+142&&y<pos_y+159) //Button red minus
+               else if(y>pos_y+100&&y<pos_y+113) //Button red minus
                {
                   background_color.r-=5;
                   SLK_layer_set_current(5);
@@ -332,7 +332,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+174&&y<pos_y+191) //Button green minus
+               else if(y>pos_y+132&&y<pos_y+145) //Button green minus
                {
                   background_color.g-=5;
                   SLK_layer_set_current(5);
@@ -340,7 +340,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+206&&y<pos_y+223) //Button blue minus
+               else if(y>pos_y+164&&y<pos_y+177) //Button blue minus
                {
                   background_color.b-=5;
                   SLK_layer_set_current(5);
@@ -348,18 +348,18 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+264&&y<pos_y+281) //Button width minus
+               else if(y>pos_y+222&&y<pos_y+235) //Button width minus
                {
                   canvas_width-=100;
                }
-               else if(y>pos_y+296&&y<pos_y+313) //Button height minus
+               else if(y>pos_y+254&&y<pos_y+267) //Button height minus
                {
                   canvas_height-=100;
                }
             }
-            else if(x>pos_x+210&&x<pos_x+227)
+            else if(x>pos_x+212&&x<pos_x+225)
             {
-               if(y>pos_y+78&&y<pos_y+95) //Button scale plus
+               if(y>pos_y+36&&y<pos_y+49) //Button scale plus
                {
                   gui_scale+=0.1f;
                   int width_l,height_l;
@@ -372,7 +372,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+142&&y<pos_y+159) //Button red plus
+               else if(y>pos_y+100&&y<pos_y+113) //Button red plus
                {
                   background_color.r+=5;
                   SLK_layer_set_current(5);
@@ -380,7 +380,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+174&&y<pos_y+191) //Button green plus
+               else if(y>pos_y+132&&y<pos_y+145) //Button green plus
                {
                   background_color.g+=5;
                   SLK_layer_set_current(5);
@@ -388,7 +388,7 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+206&&y<pos_y+223) //Button blue plus
+               else if(y>pos_y+164&&y<pos_y+177) //Button blue plus
                {
                   background_color.b+=5;
                   SLK_layer_set_current(5);
@@ -396,18 +396,18 @@ void gui_update()
                   SLK_draw_rgb_clear();
                   SLK_draw_rgb_set_changed(1);
                }
-               else if(y>pos_y+264&&y<pos_y+281) //Button width plus
+               else if(y>pos_y+222&&y<pos_y+235) //Button width plus
                {
                   canvas_width+=100;
                }
-               else if(y>pos_y+296&&y<pos_y+313) //Button height plus
+               else if(y>pos_y+254&&y<pos_y+267) //Button height plus
                {
                   canvas_height+=100;
                }
             }
             
             //Button close
-            if(x>pos_x+245&&x<pos_x+286&&y>pos_y+8&&y<pos_y+56)
+            if(x>pos_x+237&&x<pos_x+250&&y>pos_y+6&&y<pos_y+19)
             {
                gui_mode = 0; 
                SLK_layer_set_current(0);
@@ -426,7 +426,7 @@ void gui_update()
          {
             int x,y;
             SLK_mouse_get_layer_pos(0,&x,&y);
-            if(x>pos_x+277&&x<pos_x+317&&y>pos_y+8&&y<pos_y+56)
+            if(x>pos_x+269&&x<pos_x+282&&y>pos_y+6&&y<pos_y+19)
             {
                gui_mode = 0; 
                SLK_layer_set_current(0);
@@ -553,17 +553,17 @@ void gui_draw()
          SLK_draw_rgb_sprite(gui_options,pos_x,pos_y);
          char temp_str[256] = "";
          sprintf(temp_str,"%03f",gui_scale);
-         SLK_draw_rgb_string(pos_x+128,pos_y+83,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+124,pos_y+39,1,temp_str,SLK_color_create(203,219,252,255));
          sprintf(temp_str,"%03d",background_color.r);
-         SLK_draw_rgb_string(pos_x+144,pos_y+147,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+144,pos_y+103,1,temp_str,SLK_color_create(203,219,252,255));
          sprintf(temp_str,"%03d",background_color.g);
-         SLK_draw_rgb_string(pos_x+144,pos_y+179,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+144,pos_y+135,1,temp_str,SLK_color_create(203,219,252,255));
          sprintf(temp_str,"%03d",background_color.b);
-         SLK_draw_rgb_string(pos_x+144,pos_y+211,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+144,pos_y+167,1,temp_str,SLK_color_create(203,219,252,255));
          sprintf(temp_str,"%05d",canvas_width);
-         SLK_draw_rgb_string(pos_x+136,pos_y+269,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+136,pos_y+225,1,temp_str,SLK_color_create(203,219,252,255));
          sprintf(temp_str,"%05d",canvas_height);
-         SLK_draw_rgb_string(pos_x+136,pos_y+301,1,temp_str,SLK_color_create(203,219,252,255));
+         SLK_draw_rgb_string(pos_x+136,pos_y+257,1,temp_str,SLK_color_create(203,219,252,255));
       }
       break;
   case 3:
@@ -571,9 +571,7 @@ void gui_draw()
          int pos_x = (width-gui_help->width)/2;
          int pos_y = (height-gui_help->height)/2;
          SLK_draw_rgb_sprite(gui_help,pos_x,pos_y);
-         SLK_draw_rgb_sprite(gui_help_text,pos_x+6,pos_y+74);
-         int y = (int)(((float)(scroll_y)/(float)(scroll_max))*178.0f);
-         SLK_draw_rgb_sprite(gui_help_bar,289+pos_x,pos_y+y+99);
+         SLK_draw_rgb_sprite(gui_help_text,pos_x+7,pos_y+28);
       }
       break;
    }
