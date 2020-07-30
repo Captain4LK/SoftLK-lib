@@ -1,6 +1,8 @@
 ## Resize example
 
-This example demonstrates dynamic sized windows, layer scaling, moving and resizing. The image is drawn on a seperate layer, the window itself is resizeable with layer 1 being resized dynamicly. Hold the ctrl key and scroll  the mouse wheel to scale the layer, hold the mouse wheel and move the mouse to move it.
+This example demonstrates dynamic sized windows, layer scaling, moving and resizing. The image is drawn on a seperate layer, the window itself is resizeable with layer 1 being resized dynamicly. Hold the ctrl key and scroll the mouse wheel to scale the layer, hold the mouse wheel and move the mouse to move it.
+
+Also, if you haven't noticed yet, the entire image is made of of just 256 colors and is using a pal layer.
 
 ## How to compile
 
