@@ -25,7 +25,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 3. Clone this repository: `` git clone https://codeberg.org/Captain4LK/SoftLK-lib.git``
 4. Compile SoftLK: 
 	
-	You can either use the provided makefile:
+	You can either use the provided makefile (on freebsd please use gmake):
 
 	```
 	cd SoftLK-lib/lib
@@ -37,7 +37,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	```	
 	cd SoftLK-lib/lib
 	gcc -O3 -c ../src/*.c ../src/backend/backend_sdl2_gl.c -lm -lSDL2 -lGL #Compile to object files first
-	ar cr libSLK.a *.o #Then link them together
+	ar crs libSLK.a *.o #Then link them together
 	```
 
 5.  If everything went right you are now ready to start using SoftLK. Now you can either look at some of the examples, look at the [Getting started](https://codeberg.org/Captain4LK/SoftLK-lib/wiki/Getting-started) wikipage or figure things out yourself by looking at the source. 
@@ -47,7 +47,8 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 
 SoftLK has been tested and is working on the following plattforms/os:
 
-* Void GNU/Linux, amd64 (glibc/musl-libc)
+* Void GNU/Linux, amd64
+* FreeBSD 12.1, amd64
 
 SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, the plattforms listed here are just the ones I frequently test SoftLK on.
 

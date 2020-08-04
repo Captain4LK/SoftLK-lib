@@ -8,10 +8,10 @@ On the top left you can see to numbers. The number on the left displays the aver
 
 ## How to compile
 
-If you are on linux and have gcc installed you can just use the provided shell script to compile this example, otherwise you can compile it like this (again, clang should work too):
+If you are on linux and have gcc installed you can just use the provided shell script to compile this example (the build_linux.sh script also works for FreeBSD), otherwise you can compile it like this (again, clang should work too):
 
 
 ```
-gcc -O3 -o resize main.c ../../lib/libSLK.a -lm -lSDL2 -lGL  -Wall #Compile to executable
+gcc -O3 -o resize main.c -L../../lib/ -lSLK -lm -lSDL2 -lGL  -Wall #Compile to executable
 chmod +x ./resize #Only needed on unix(-like) systems
 ```

@@ -10,10 +10,10 @@ In the program itself you can just press the information button (the one with an
 
 ## How to compile
 
-If you are on linux and have gcc installed you can just use the provided shell script to compile this example, otherwise you can compile it like this (again, clang should work too):
+If you are on linux (or FreeBSD, build_linux.sh works, too)  and have gcc installed you can just use the provided shell script to compile this example, otherwise you can compile it like this (again, clang should work too):
 
 
 ```
-gcc -O3 -o resize *.c ../../lib/libSLK.a -lm -lSDL2 -lGL  -Wall #Compile to executable
+gcc -O3 -o resize *.c -L../../lib/ -lSLK -lm -lSDL2 -lGL  -Wall #Compile to executable
 chmod +x ./resize #Only needed on unix(-like) systems
 ```
