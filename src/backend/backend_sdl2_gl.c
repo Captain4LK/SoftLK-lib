@@ -277,8 +277,9 @@ void backend_handle_events()
                   SLK_layer_set_size(l,new_width,new_height);
             }
 
-            backend_update_viewport();
          }
+
+         backend_update_viewport();
 
          break;
       }

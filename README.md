@@ -22,7 +22,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	On Debian/Ubuntu: `` sudo apt install libsdl2-dev``  (Note: I haven't used a Debian/Ubuntu based distro in a while)
 
 	On Void-Linux: `` sudo xbps-install  SDL2-devel``
-3. Clone this repository: `` git clone https://codeberg.org/Captain4LK/SoftLK-lib.git``
+3. Clone this repository: `` git clone --recursive https://codeberg.org/Captain4LK/SoftLK-lib.git``
 4. Compile SoftLK: 
 	
 	You can either use the provided makefile (on freebsd please use gmake):
@@ -35,7 +35,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	Or compile it yourself:
 	
 	```	
-	cd SoftLK-lib/lib
+	cd SoftLK-lib/lib/[YOUR OS]/
 	gcc -O3 -c ../src/*.c ../src/backend/backend_sdl2_gl.c -lm -lSDL2 -lGL #Compile to object files first
 	ar crs libSLK.a *.o #Then link them together
 	```
