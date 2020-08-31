@@ -44,9 +44,10 @@ void draw_shapes();
 
 int main(int argc, char *argv[])
 {
+   if(argc<2)
+      return -1;
    settings_init_default();
-   shapes_load_file("objects.json");
-   //load_shapes();
+   shapes_load_file(argv[1]);
 
    SLK_setup(800,600,6,"Efelder",0,1,1);
    SLK_core_set_visible(0);

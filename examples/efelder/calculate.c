@@ -35,9 +35,12 @@
 //-------------------------------------
 
 //Variables
+static int potential_mode = 0;
 //-------------------------------------
 
 //Function prototypes
+static void calculate_potential_0();
+static void calculate_potential_1();
 static void calculate_circle(int shape);
 static void draw_shapes();
 //-------------------------------------
@@ -100,6 +103,9 @@ void shapes_load_file(const char *path)
    rectangles_tmp_count = rectangles_count;
    rectangles_tmp = malloc(sizeof(Rectangle)*rectangles_count);
    objects_count = 0;
+
+   //Set how the potential is supposed to be drawn
+   potential_mode = cJSON_GetObjectItem(json,"mode")->valueint;
    
    //Load all circles
    for(int i = 0;i<circles_count;i++)
@@ -108,6 +114,14 @@ void shapes_load_file(const char *path)
 
       shapes[objects_count].circle.x = cJSON_GetObjectItem(circle,"x")->valueint;
       shapes[objects_count].circle.y = cJSON_GetObjectItem(circle,"y")->valueint;
+      shapes[objects_count].circle.color.r = cJSON_GetObjectItem(circle,"r")->valueint;
+      shapes[objects_count].circle.color.g = cJSON_GetObjectItem(circle,"g")->valueint;
+      shapes[objects_count].circle.color.b = cJSON_GetObjectItem(circle,"b")->valueint;
+      shapes[objects_count].circle.color.a = 255;
+      shapes[objects_count].circle.color_inv.r = 255-shapes[objects_count].circle.color.r;
+      shapes[objects_count].circle.color_inv.g = 255-shapes[objects_count].circle.color.g;
+      shapes[objects_count].circle.color_inv.b = 255-shapes[objects_count].circle.color.b;
+      shapes[objects_count].circle.color_inv.a = 255;
       shapes[objects_count].circle.radius = cJSON_GetObjectItem(circle,"radius")->valueint;
       shapes[objects_count].circle.charge = cJSON_GetObjectItem(circle,"charge")->valuedouble;
       shapes[objects_count].circle.test_points = cJSON_GetObjectItem(circle,"test_points")->valueint;
@@ -130,10 +144,18 @@ void shapes_load_file(const char *path)
       float charge = (cJSON_GetObjectItem(rectangle,"charge")->valuedouble)/(double)(divisions);
       int test_points = cJSON_GetObjectItem(rectangle,"test_points")->valueint;
       int radius = width>height?height:width;
+      SLK_Color color;
+      color.r = cJSON_GetObjectItem(rectangle,"r")->valueint;
+      color.g = cJSON_GetObjectItem(rectangle,"g")->valueint;
+      color.b = cJSON_GetObjectItem(rectangle,"b")->valueint;
+      color.a = 255;
       rectangles_tmp[i].x = x;
       rectangles_tmp[i].y = y;
       rectangles_tmp[i].width = width;
       rectangles_tmp[i].height = height;
+      rectangles_tmp[i].charge = charge*divisions;
+      rectangles_tmp[i].color.n = color.n;
+      rectangles_tmp[i].color_inv = SLK_color_create(255-color.r,255-color.g,255-color.b,255);
       sprintf(rectangles_tmp[i].charge_str,"%07fC",charge*divisions);
       float lerp_val;
       float av_points = (float)(test_points)/(float)(divisions);
@@ -157,6 +179,8 @@ void shapes_load_file(const char *path)
          }
          shapes[objects_count].circle.radius = radius/2;
          shapes[objects_count].circle.charge = charge;
+         shapes[objects_count].circle.color.n = color.n;
+         shapes[objects_count].circle.color_inv.n = rectangles_tmp[i].color_inv.n;
          shapes[objects_count].circle.test_points = (int)(av_points+error);
          error+=(av_points-shapes[objects_count].circle.test_points);
          shapes[objects_count].type = 1;
@@ -202,7 +226,7 @@ void calculate()
    printf("\nCalculating electrical field: \n");
    for(i = 0;i<shapes_count;i++)
       calculate_circle(i);
-   printf("\n");
+   puts("");
 
    SLK_layer_set_current(3);
    SLK_draw_rgb_set_changed(1);
@@ -210,40 +234,13 @@ void calculate()
 
    //Calculate electrical potential
    printf("Calculating electric potential: \n");
-   int part = canvas_width/100;
-   for(int x = 0;x<canvas_width;x++)
+   if(potential_mode==0)
+      calculate_potential_0();
+   else
    {
-      for(int y = 0;y<canvas_height;y++)
-      {
-         ULK_vector_2d point;
-         ULK_vector_2d center;
-         ULK_vector_2d_set(point,(float)x,(float)y);
-         float potential = 0.0f;
-
-         for(int i = 0;i<shapes_count;i++)
-         {
-            ULK_vector_2d distance;
-            float length;
-           
-            ULK_vector_2d_set(center,(float)shapes[i].circle.x,(float)shapes[i].circle.y);
-            ULK_vector_2d_subtract(distance,center,point);
-            length = ULK_vector_2d_length(distance);
-            
-            if(length!=0.0f)
-               potential+=8987551788.0f*(shapes[i].circle.charge/length);
-         }
-
-         uint8_t color = (uint8_t)(((potential/10000000.000000f)*255.0f));
-         if(color<5)
-            SLK_draw_rgb_color(x,y,SLK_color_create(255,255,255,255));
-      }
-      if(x%part==0)
-      {
-         putchar('=');
-         fflush(stdout);
-      }
+      calculate_potential_1();
+      calculate_potential_0();
    }
-   puts("");
 
    SLK_core_set_visible(1);
 }
@@ -303,7 +300,7 @@ static void calculate_circle(int shape)
 
          ULK_vector_2d_normalize(force_result,force_result);
          ULK_vector_2d_add(pos,pos,force_result);
-         SLK_draw_rgb_color((int)pos[0],(int)pos[1],SLK_color_create(255,128,0,255));
+         SLK_draw_rgb_color((int)pos[0],(int)pos[1],shapes[shape].circle.color);
       }
    }
 
@@ -323,17 +320,134 @@ static void draw_shapes()
 
    for(i = 0;i<shapes_count;i++)
    {
-      if(shapes[i].type==0) //Circle
+      if(shapes[i].type==0) //Circle, all shapes are calculated as circles, but only real circles are drawn as such
       {
-         SLK_draw_rgb_fill_circle(shapes[i].circle.x,shapes[i].circle.y,shapes[i].circle.radius,SLK_color_create(255,255,255,255));
-         SLK_draw_rgb_string(shapes[i].circle.x-72,shapes[i].circle.y-8,2,shapes[i].circle.charge_str,SLK_color_create(255,0,0,255));
+         SLK_draw_rgb_fill_circle(shapes[i].circle.x,shapes[i].circle.y,shapes[i].circle.radius,shapes[i].circle.color);
+         SLK_draw_rgb_string(shapes[i].circle.x-72,shapes[i].circle.y-8,2,shapes[i].circle.charge_str,shapes[i].circle.color_inv);
       }
    }
 
    for(int i = 0;i<rectangles_tmp_count;i++)
    {
-      SLK_draw_rgb_fill_rectangle(rectangles_tmp[i].x,rectangles_tmp[i].y,rectangles_tmp[i].width,rectangles_tmp[i].height,SLK_color_create(255,255,255,255));
-      SLK_draw_rgb_string(rectangles_tmp[i].x+rectangles_tmp[i].width/2-48,rectangles_tmp[i].y+rectangles_tmp[i].height/2-4,2,rectangles_tmp[i].charge_str,SLK_color_create(255,0,0,255));
+      SLK_draw_rgb_fill_rectangle(rectangles_tmp[i].x,rectangles_tmp[i].y,rectangles_tmp[i].width,rectangles_tmp[i].height,rectangles_tmp[i].color);
+      SLK_draw_rgb_string(rectangles_tmp[i].x+rectangles_tmp[i].width/2-48,rectangles_tmp[i].y+rectangles_tmp[i].height/2-4,2,rectangles_tmp[i].charge_str,rectangles_tmp[i].color_inv);
    }
+}
+
+static void calculate_potential_0()
+{
+   int part = canvas_width/100;
+   for(int x = 0;x<canvas_width;x++)
+   {
+      for(int y = 0;y<canvas_height;y++)
+      {
+         ULK_vector_2d point;
+         ULK_vector_2d center;
+         ULK_vector_2d_set(point,(float)x,(float)y);
+         float potential = 0.0f;
+
+         for(int i = 0;i<shapes_count;i++)
+         {
+            ULK_vector_2d distance;
+            float length;
+           
+            ULK_vector_2d_set(center,(float)shapes[i].circle.x,(float)shapes[i].circle.y);
+            ULK_vector_2d_subtract(distance,center,point);
+            length = ULK_vector_2d_length(distance);
+            
+            if(length!=0.0f)
+               potential+=8987551788.0f*(shapes[i].circle.charge/length);
+         }
+
+         uint8_t color = (uint8_t)(((potential/10000000.000000f)*255.0f));
+         if(color<5)
+            SLK_draw_rgb_color(x,y,SLK_color_create(255,255,255,255));
+      }
+      if(x%part==0)
+      {
+         putchar('=');
+         fflush(stdout);
+      }
+   }
+   puts("");
+}
+
+static void calculate_potential_1()
+{
+   Circle *min = &shapes[0].circle;
+   Circle *max = &shapes[0].circle;
+   for(int i = 0;i<shapes_count;i++)
+   {
+      if(shapes[i].circle.charge>max->charge)
+         max = &shapes[i].circle;
+      if(shapes[i].circle.charge<min->charge)
+         min = &shapes[i].circle;
+   }
+   float potential_min = 8987551788.0f*(min->charge/min->radius);
+   float potential_max = 8987551788.0f*(max->charge/max->radius);
+
+   for(int i = 0;i<rectangles_tmp_count;i++)
+   {
+      int rad = rectangles_tmp[i].width>rectangles_tmp[i].height?rectangles_tmp[i].height:rectangles_tmp[i].width;
+      float pot = 8987551788.0f*(rectangles_tmp[i].charge)/rad;
+      if(pot>potential_max)
+         potential_max = pot;
+      if(pot<potential_min)
+         potential_min = pot;
+   }
+   if(min->charge>0.0f)
+      potential_min = 0.0f;
+   if(max->charge<0.0f)
+      potential_max = 0.0f;
+
+   int part = canvas_width/100;
+   for(int x = 0;x<canvas_width;x++)
+   {
+      for(int y = 0;y<canvas_height;y++)
+      {
+         ULK_vector_2d point;
+         ULK_vector_2d center;
+         ULK_vector_2d_set(point,(float)x,(float)y);
+         float potential = 0.0f;
+
+         for(int i = 0;i<shapes_count;i++)
+         {
+            ULK_vector_2d distance;
+            float length;
+           
+            ULK_vector_2d_set(center,(float)shapes[i].circle.x,(float)shapes[i].circle.y);
+            ULK_vector_2d_subtract(distance,center,point);
+            length = ULK_vector_2d_length(distance);
+            
+            if(length!=0.0f)
+               potential+=8987551788.0f*(shapes[i].circle.charge/length);
+         }
+         
+         float t = (potential-potential_min)/(potential_max-potential_min);
+         if(t<0.0f||t>1.0f)
+         {
+            SLK_draw_rgb_color(x,y,SLK_color_create(0,0,0,255));
+         }
+         else 
+         {
+            SLK_Color o;
+            SLK_Color a = SLK_color_create(0,0,255,255);
+            SLK_Color b = SLK_color_create(255,0,0,255);
+            o.r = a.r+t*(b.r-a.r);
+            o.g = a.g+t*(b.g-a.g);
+            o.b = a.b+t*(b.b-a.b);
+            o.a = 255;
+
+            SLK_draw_rgb_color(x,y,o);
+         }
+         
+      }
+      if(x%part==0)
+      {
+         putchar('=');
+         fflush(stdout);
+      }
+   }
+   puts("");
 }
 //-------------------------------------

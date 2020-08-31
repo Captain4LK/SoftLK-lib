@@ -28,7 +28,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	You can either use the provided makefile (on freebsd please use gmake):
 
 	```
-	cd SoftLK-lib/lib
+	cd SoftLK-lib/lib/[YOUR OS]/
 	make backend_sdl2_gl
 	```
 

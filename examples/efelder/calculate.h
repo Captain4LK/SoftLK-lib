@@ -19,6 +19,8 @@
 
 #define _CALCULATE_H_
 
+#include "../../include/SLK/SLK.h"
+
 typedef struct
 {
    int x;
@@ -27,6 +29,8 @@ typedef struct
    float charge;
    char charge_str[16];
    int test_points;
+   SLK_Color color;
+   SLK_Color color_inv;
 }Circle;
 
 typedef struct
@@ -38,6 +42,8 @@ typedef struct
    float charge;
    char charge_str[16];
    int test_points;
+   SLK_Color color;
+   SLK_Color color_inv;
 }Rectangle;
 
 typedef struct
