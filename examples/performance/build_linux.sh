@@ -1,8 +1,8 @@
 #!/bin/sh
 
 cd "$(dirname "$0")"
-gcc -O3 -o engine main.c -L../../lib/unix -lSLK -lm -lSDL2 -lGL -Wall
-chmod +x engine
-./engine
+gcc -O3 -o performance main.c -L../../lib/unix -lSLK -lm -lSDL2 -lGL -Wall
+chmod +x performance
+./performance
 exit
 

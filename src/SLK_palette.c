@@ -64,7 +64,6 @@ SLK_Palette *SLK_palette_load(const char *path)
       if(i==2)
       {
          sscanf(buffer,"%d",&found);
-         printf("Found %d colors\n",found);
       }
       else if(i>2&&buffer[0]!='\0')
       {

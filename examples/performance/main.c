@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
    SLK_layer_activate(2,1);
    SLK_layer_activate(4,1);
 
-   //SLK_layer_set_size(0,100,100);
    SLK_layer_set_tint(1,SLK_color_create(255,255,255,128));
    SLK_layer_set_tint(2,SLK_color_create(255,255,255,128));
 
@@ -229,9 +228,7 @@ void load_rgb_sprites()
       for(int x = 0;x<4;x++)
       {
          dino_sprites_rgb[y][x] = SLK_rgb_sprite_create(16,24);
-         SLK_draw_rgb_set_target(dino_sprites_rgb[y][x]);
-         SLK_draw_rgb_clear();
-         SLK_draw_rgb_sprite_partial(tileset,0,0,x*16,y*24,16,24);
+         SLK_rgb_sprite_copy_partial(dino_sprites_rgb[y][x],tileset,0,0,x*16,y*24,16,24);
       }
    }
    SLK_rgb_sprite_destroy(tileset);

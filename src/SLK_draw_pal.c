@@ -26,8 +26,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //#defines
 #define SWAP(x,y) \
             { (x)=(x)^(y); (y)=(x)^(y); (x)=(x)^(y); }
+
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
             ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
+
 #define SIGNUM(NUM) \
    NUM==0?0:(NUM<0?-1:1)
 //-------------------------------------
@@ -122,37 +124,34 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel pa
    int sx = 0;
    int sy = 0;
 
-	for (int i = 0;text[i];i++)
+	for(int i = 0;text[i];i++)
 	{
-		if (text[i]=='\n')
+		if(text[i]=='\n')
 		{
 			sx = 0; 
          sy+=8*scale;
+         continue;
 		}
-		else
-		{
-			int ox = (text[i]-32)&15;
-			int oy = (text[i]-32)/16;
+      int ox = (text[i]-32)&15;
+      int oy = (text[i]-32)/16;
 
-				for(int x_ = 0;x_<8;x_++)
+      for(int x_ = 0;x_<8;x_++)
+      {
+         for(int y_ = 0;y_<8;y_++)
+         {
+            if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
             {
-					for(int y_ = 0;y_<8;y_++)
+               for(int o = 0;o<scale;o++)
                {
-						if(!text_sprite_pal->data[(y_+oy*8)*128+x_+ox*8].mask)
+                  for(int m = 0;m<scale;m++)
                   {
-							for(int o = 0;o<scale;o++)
-                     {
-								for(int m = 0;m<scale;m++)
-                        {
-									SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
-                        }
-                     }
+                     SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
                   }
                }
             }
-
-			sx += 8*scale;
-		}
+         }
+      }
+      sx += 8*scale;
 	}
 }
 
@@ -174,9 +173,9 @@ void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
    if(y+draw_end_y>target_pal->height)
       draw_end_y = s->height+(target_pal->height-y-draw_end_y);
     
-   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
          SLK_Paxel p = s->data[y1*s->width+x1];
          int index = (y1+y)*target_pal->width+x1+x;
@@ -191,10 +190,11 @@ void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
 //when splitting the spritesheet into individual sprites.
 void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height)
 {
-   int draw_start_y = oy;
-   int draw_start_x = ox;
-   int draw_end_x = ox+width;
-   int draw_end_y = oy+height;
+
+   int draw_start_y = 0;
+   int draw_start_x = 0;
+   int draw_end_x = width;
+   int draw_end_y = height;
 
    if(x<0)
       draw_start_x = -x;
@@ -205,12 +205,12 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
    if(y+draw_end_y>target_pal->height)
       draw_end_y = s->height+(target_pal->height-y-draw_end_y);
     
-   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
-         SLK_Paxel p = s->data[y1*s->width+x1];
-         int index = (y1+y-oy)*target_pal->width+x1+x-ox;
+         SLK_Paxel p = s->data[(y1+oy)*s->width+x1+ox];
+         int index = (y1+y)*target_pal->width+x1+x;
          target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
       }
    }
@@ -236,53 +236,52 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
    if(y+draw_end_y>target_pal->height)
       draw_end_y = s->height+(target_pal->height-y-draw_end_y);
 
-   if(flip==SLK_FLIP_NONE)
+   switch(flip)
    {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   case SLK_FLIP_NONE:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Paxel p = s->data[y1*s->width+x1];
             int index = (y1+y)*target_pal->width+x1+x;
             target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
          }
       }
-   }
-   else if(flip==SLK_FLIP_VERTICAL)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case SLK_FLIP_VERTICAL:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Paxel p = s->data[(s->height-y1-1)*s->width+x1];
             int index = (y1+y)*target_pal->width+x1+x;
             target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
          }
       }
-   }
-   else if(flip==SLK_FLIP_HORIZONTAL)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case SLK_FLIP_HORIZONTAL:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Paxel p = s->data[y1*s->width+(s->width-x1-1)];
             int index = (y1+y)*target_pal->width+x1+x;
             target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
          }
       }
-   }
-   else if(flip==(SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL))
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case (SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL):
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Paxel p = s->data[(s->height-y1-1)*s->width+(s->width-x1)];
             int index = (y1+y)*target_pal->width+x1+x;
             target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
          }
       }
+      break;
    }
 }
 
@@ -330,34 +329,43 @@ void SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel)
     }
 }
 
-//Draws a line between to points, with a fixed x value.
+//Draws a line between to points up to but not including the second point,
+//with a fixed x value.
 void SLK_draw_pal_vertical_line(int x, int y0, int y1, SLK_Paxel paxel)
 {
+   if(x<0||x>=target_pal->width||y0>=target_pal->height||y1<0)
+      return;
+   if(y0<0)
+      y0 = 0;
+   if(y1>target_pal->height)
+      y1 = target_pal->height;
+
    for(int y = y0;y<y1;y++)
-      SLK_draw_pal_paxel(x,y,paxel);
+      target_pal->data[y*target_pal->width+x] = paxel;
 }
 
-//Draws a line between to points, with a fixed y value.
+//Draws a line between to points up to but not including the second point,
+//with a fixed y value.
 void SLK_draw_pal_horizontal_line(int x0, int x1, int y, SLK_Paxel paxel)
 {
+   if(y<0||y>=target_pal->height||x0>=target_pal->width||x1<0)
+      return;
+   if(x0<0)
+      x0 = 0;
+   if(x1>target_pal->width)
+      x1 = target_pal->width;
+
    for(int x = x0;x<x1;x++)
-      SLK_draw_pal_paxel(x,y,paxel);
+      target_pal->data[y*target_pal->width+x] = paxel;
 }
 
 //Draws the outline of a colored rectangle.
 void SLK_draw_pal_rectangle(int x, int y, int width, int height, SLK_Paxel paxel)
 {
-   for(int y_ = y;y_<y+height;y_++)
-   {
-      SLK_draw_pal_paxel(x,y_,paxel);
-      SLK_draw_pal_paxel(x+width-1,y_,paxel);
-   }
-
-   for(int x_ = x;x_<x+width;x_++)
-   {
-      SLK_draw_pal_paxel(x_,y,paxel);
-      SLK_draw_pal_paxel(x_,y+height-1,paxel);
-   }
+   SLK_draw_pal_horizontal_line(x,x+width,y,paxel);
+   SLK_draw_pal_horizontal_line(x,x+width,y+height-1,paxel);
+   SLK_draw_pal_vertical_line(x,y,y+height,paxel);
+   SLK_draw_pal_vertical_line(x+width-1,y,y+height-1,paxel);
 }
 
 //Draws a colored filled rectangle.
@@ -455,3 +463,7 @@ void SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel)
    }
 }
 //-------------------------------------
+
+#undef SWAP
+#undef SIGNUM
+#undef INBOUNDS

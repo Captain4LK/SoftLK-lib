@@ -4,6 +4,7 @@
 	This program is free software: you can redistribute it and/or modify
    	it under the terms of the GNU General Public License as published by
    	the Free Software Foundation, either version 3 of the License, or
+   	the Free Software Foundation, either version 3 of the License, or
    	(at your option) any later version.
 
    	This program is distributed in the hope that it will be useful,
@@ -36,6 +37,7 @@
 
 //Variables
 static int potential_mode = 0;
+static float divider_potential = 1000000.0f;
 //-------------------------------------
 
 //Function prototypes
@@ -106,6 +108,7 @@ void shapes_load_file(const char *path)
 
    //Set how the potential is supposed to be drawn
    potential_mode = cJSON_GetObjectItem(json,"mode")->valueint;
+   divider_potential = cJSON_GetObjectItem(json,"divisions")->valuedouble;
    
    //Load all circles
    for(int i = 0;i<circles_count;i++)
@@ -359,7 +362,7 @@ static void calculate_potential_0()
                potential+=8987551788.0f*(shapes[i].circle.charge/length);
          }
 
-         uint8_t color = (uint8_t)(((potential/10000000.000000f)*255.0f));
+         uint8_t color = (uint8_t)(((potential/divider_potential)*255.0f));
          if(color<5)
             SLK_draw_rgb_color(x,y,SLK_color_create(255,255,255,255));
       }
@@ -426,7 +429,10 @@ static void calculate_potential_1()
          float t = (potential-potential_min)/(potential_max-potential_min);
          if(t<0.0f||t>1.0f)
          {
-            SLK_draw_rgb_color(x,y,SLK_color_create(0,0,0,255));
+            if(t>1.0f)
+               SLK_draw_rgb_color(x,y,SLK_color_create(255,0,0,255));
+            else
+               SLK_draw_rgb_color(x,y,SLK_color_create(0,0,255,255));
          }
          else 
          {

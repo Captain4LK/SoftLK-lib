@@ -204,4 +204,49 @@ void backend_create_layer(unsigned index, int type)
 {
    
 }
+
+int backend_key_down(int key)
+{
+   return 0;
+}
+
+int backend_key_pressed(int key)
+{
+   return 0;
+}
+
+int backend_key_released(int key)
+{
+   return 0;
+}
+
+int backend_mouse_down(int key)
+{
+   return 0;
+}
+
+int backend_mouse_pressed(int key)
+{
+   return 0;
+}
+
+int backend_mouse_released(int key)
+{
+   return 0;
+}
+
+int backend_mouse_wheel_get_scroll()
+{
+   return 0;
+}
+
+void backend_mouse_get_pos(int *x, int *y)
+{
+
+}
+
+void backend_mouse_get_relative_pos(int *x, int *y)
+{
+
+}
 //-------------------------------------

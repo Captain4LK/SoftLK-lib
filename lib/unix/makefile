@@ -24,7 +24,7 @@ SLK_draw_pal.o: ../../src/SLK_draw_pal.c ../../include/SLK/SLK_functions.h ../..
 SLK_draw_rgb.o: ../../src/SLK_draw_rgb.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h ../../src/SLK_draw_rgb_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_input.o: ../../src/SLK_input.c  ../../include/SLK/SLK_types.h ../../src/backend.h ../../src/SLK_input_i.h ../../src/SLK_layer_i.h
+SLK_input.o: ../../src/SLK_input.c  ../../include/SLK/SLK_types.h ../../src/backend.h ../../src/SLK_layer_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_layer.o: ../../src/SLK_layer.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../src/backend.h ../../src/SLK_draw_rgb_i.h ../../src/SLK_draw_pal_i.h ../../src/SLK_layer_i.h

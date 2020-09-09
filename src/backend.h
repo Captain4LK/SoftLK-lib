@@ -20,7 +20,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../include/SLK/SLK_types.h"
 
 //Every backend needs to implement all of these functions. You can however just keep the implementation empty.
-
 void backend_set_title(const char *title);
 void backend_set_fullscreen(int fullscreen);
 void backend_update_viewport();
@@ -44,9 +43,18 @@ void backend_input_init();
 void backend_show_cursor(int shown);
 void backend_mouse_set_relative(int relative);
 void backend_mouse_capture(int capture);
-void backend_start_text_input();
+void backend_start_text_input(char *text);
 void backend_stop_text_input();
 void backend_render_update();
 void backend_create_layer(unsigned index, int type);
+int backend_key_down(int key);
+int backend_key_pressed(int key);
+int backend_key_released(int key);
+int backend_mouse_down(int key);
+int backend_mouse_pressed(int key);
+int backend_mouse_released(int key);
+int backend_mouse_wheel_get_scroll();
+void backend_mouse_get_pos(int *x, int *y);
+void backend_mouse_get_relative_pos(int *x, int *y);
 
 #endif

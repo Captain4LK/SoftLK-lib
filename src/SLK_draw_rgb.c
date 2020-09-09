@@ -28,6 +28,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
             ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
 #define SIGNUM(NUM) \
    NUM==0?0:(NUM<0?-1:1)
+
 #define SWAP(x,y) \
             { (x)=(x)^(y); (y)=(x)^(y); (x)=(x)^(y); }
 //-------------------------------------
@@ -87,7 +88,7 @@ void SLK_draw_rgb_load_font(const char *path)
 {
    SLK_rgb_sprite_destroy(text_sprite_rgb_default);
    text_sprite_rgb_default = SLK_rgb_sprite_load(path);
-   text_sprite_rgb= text_sprite_rgb_default;
+   text_sprite_rgb = text_sprite_rgb_default;
 }
 
 //Sets the current font sprite from a 
@@ -98,7 +99,6 @@ void SLK_draw_rgb_set_font_sprite(SLK_RGB_sprite *font)
    if(font==NULL)
    {
       text_sprite_rgb = text_sprite_rgb_default;
-
       return;
    }
 
@@ -127,37 +127,35 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
    int sx = 0;
    int sy = 0;
 
-	for (int i = 0;text[i];i++)
+	for(int i = 0;text[i];i++)
 	{
-		if (text[i]=='\n')
+		if(text[i]=='\n')
 		{
 			sx = 0; 
          sy+=8*scale;
+         continue;
 		}
-		else
-		{
-			int ox = (text[i]-32)&15;
-			int oy = (text[i]-32)/16;
 
-         for(int x_ = 0;x_<8;x_++)
+      int ox = (text[i]-32)&15;
+      int oy = (text[i]-32)/16;
+
+      for(int x_ = 0;x_<8;x_++)
+      {
+         for(int y_ = 0;y_<8;y_++)
          {
-            for(int y_ = 0;y_<8;y_++)
+            if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
             {
-               if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
+               for(int o = 0;o<scale;o++)
                {
-                  for(int o = 0;o<scale;o++)
+                  for(int m = 0;m<scale;m++)
                   {
-                     for(int m = 0;m<scale;m++)
-                     {
-                        SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
-                     }
+                     SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
                   }
                }
             }
          }
-
-			sx += 8*scale;
-		}
+      }
+      sx += 8*scale;
 	}
 }
 
@@ -182,9 +180,9 @@ void SLK_draw_rgb_sprite(const SLK_RGB_sprite *s, int x, int y)
    if(y+draw_end_y>target_rgb->height)
       draw_end_y = s->height+(target_rgb->height-y-draw_end_y);
     
-   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
          SLK_Color c = s->data[y1*s->width+x1];
          if(c.a)
@@ -201,12 +199,28 @@ void SLK_draw_rgb_sprite(const SLK_RGB_sprite *s, int x, int y)
 //than in VRAM.
 void SLK_draw_rgb_sprite_partial(const SLK_RGB_sprite *s, int x, int y, int ox, int oy, int width, int height)
 {
-   for(int tx = 0; tx < width; tx++)
+   int draw_start_y = 0;
+   int draw_start_x = 0;
+   int draw_end_x = width;
+   int draw_end_y = height;
+
+   if(x<0)
+      draw_start_x = -x;
+   if(y<0)
+      draw_start_y = -y;
+   if(x+draw_end_x>target_rgb->width)
+      draw_end_x = s->width+(target_rgb->width-x-draw_end_x);
+   if(y+draw_end_y>target_rgb->height)
+      draw_end_y = s->height+(target_rgb->height-y-draw_end_y);
+    
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
-      for(int ty = 0; ty < height; ty++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
-         SLK_Color c = SLK_rgb_sprite_get_pixel(s, tx + ox, ty + oy);
-         SLK_draw_rgb_color(x + tx, y +ty, c);
+         SLK_Color c = s->data[(y1+oy)*s->width+x1+ox];
+         int index = (y1+y)*target_rgb->width+x1+x;
+         if(c.a)
+            target_rgb->data[index] = c;
       }
    }
 }
@@ -230,53 +244,52 @@ void SLK_draw_rgb_sprite_flip(const SLK_RGB_sprite *s, int x, int y, int flip)
    if(y+draw_end_y>target_rgb->height)
       draw_end_y = s->height+(target_rgb->height-y-draw_end_y);
 
-   if(flip==SLK_FLIP_NONE)
+   switch(flip)
    {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   case SLK_FLIP_NONE:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Color c = s->data[y1*s->width+x1];
             if(c.a)
                target_rgb->data[(y1+y)*target_rgb->width+x1+x] = c;
          }
       }
-   }
-   else if(flip==SLK_FLIP_VERTICAL)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case SLK_FLIP_VERTICAL:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Color c = s->data[(s->height-y1-1)*s->width+x1];
             if(c.a)
                target_rgb->data[(y1+y)*target_rgb->width+x1+x] = c;
          }
       }
-   }
-   else if(flip==SLK_FLIP_HORIZONTAL)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case SLK_FLIP_HORIZONTAL:
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Color c = s->data[y1*s->width+(s->width-x1-1)];
             if(c.a)
                target_rgb->data[(y1+y)*target_rgb->width+x1+x] = c;
          }
       }
-   }
-   else if(flip==(SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL))
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+      break;
+   case (SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL):
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
-         for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
             SLK_Color c = s->data[(s->height-y1-1)*s->width+(s->width-x1)];
             if(c.a)
                target_rgb->data[(y1+y)*target_rgb->width+x1+x] = c;
          }
       }
+      break;
    }
 }
 
@@ -325,45 +338,70 @@ void SLK_draw_rgb_line(int x0, int y0, int x1, int y1, SLK_Color color)
 
 }
 
-//Draws a line between two points
+//Draws a line between two points up two but not including the second point
 //with fixed x coordinates.
 void SLK_draw_rgb_vertical_line(int x, int y0, int y1, SLK_Color color)
 {
+   if(x<0||x>=target_rgb->width||y0>=target_rgb->height||y1<0)
+      return;
+   if(y0<0)
+      y0 = 0;
+   if(y1>target_rgb->height)
+      y1 = target_rgb->height;
+
    for(int y = y0;y<y1;y++)
-      SLK_draw_rgb_color(x,y,color);
+      target_rgb->data[y*target_rgb->width+x] = color;
 }
 
-//Draws a line between two points
-//with fixed y coordinates
+//Draws a line between two points up two but not including the second point
+//with fixed y coordinates.
 void SLK_draw_rgb_horizontal_line(int x0, int x1, int y, SLK_Color color)
 {
+   if(y<0||y>=target_rgb->height||x0>=target_rgb->width||x1<0)
+      return;
+   if(x0<0)
+      x0 = 0;
+   if(x1>target_rgb->width)
+      x1 = target_rgb->width;
+
    for(int x = x0;x<x1;x++)
-      SLK_draw_rgb_color(x,y,color);
+      target_rgb->data[y*target_rgb->width+x] = color;
 }
 
-//Draws the outline of a colored
-//rectangle.
+//Draws the outline of a colored rectangle.
 void SLK_draw_rgb_rectangle(int x, int y, int width, int height, SLK_Color color)
 {
-   for(int i = x;i<x+width;i++)
-   {
-      SLK_draw_rgb_color(i,y,color);
-      SLK_draw_rgb_color(i,y+height-1,color);
-   }
-
-   for(int i = y;i<y+height;i++)
-   {
-      SLK_draw_rgb_color(x,i,color);
-      SLK_draw_rgb_color(x+width-1,i,color);
-   }
+   SLK_draw_rgb_horizontal_line(x,x+width,y,color);
+   SLK_draw_rgb_horizontal_line(x,x+width,y+height-1,color);
+   SLK_draw_rgb_vertical_line(x,y,y+height,color);
+   SLK_draw_rgb_vertical_line(x+width-1,y,y+height-1,color);
 }
 
 //Draws a solid colored rectangle.
 void SLK_draw_rgb_fill_rectangle(int x, int y, int width, int height, SLK_Color color)
 {
-   for(int x_ = x;x_<x+width;x_++)
-      for(int y_ = y;y_<y+height;y_++)
-         SLK_draw_rgb_color(x_,y_,color);
+   int draw_start_y = 0;
+   int draw_start_x = 0;
+   int draw_end_x = width;
+   int draw_end_y = height;
+
+   if(x<0)
+      draw_start_x = -x;
+   if(y<0)
+      draw_start_y = -y;
+   if(x+draw_end_x>target_rgb->width)
+      draw_end_x = width+(target_rgb->width-x-draw_end_x);
+   if(y+draw_end_y>target_rgb->height)
+      draw_end_y = height+(target_rgb->height-y-draw_end_y);
+    
+   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   {
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      {
+         int index = (y1+y)*target_rgb->width+x1+x;
+         target_rgb->data[index] = color;
+      }
+   }
 }
 
 //Draws the outline of a colored circle.
@@ -434,3 +472,7 @@ void SLK_draw_rgb_fill_circle(int x, int y, int radius, SLK_Color color)
    }
 }
 //-------------------------------------
+
+#undef SWAP
+#undef SIGNUM
+#undef INBOUNDS

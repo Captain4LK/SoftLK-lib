@@ -1,0 +1,32 @@
+{
+   "mode": 1,
+   "divisions": 50000000,
+	"circles":
+	[
+		{
+         "x": 1750,
+         "y": 980,
+         "r": 255,
+         "g": 255,
+         "b": 255,
+         "radius": 20,
+         "charge": -2.0,
+         "test_points": 35
+	  }
+   ],
+   "rectangles":
+   [
+      {
+         "x":1500,
+         "y":1000,
+         "r": 0,
+         "g": 128,
+         "b": 0,
+         "width":500,
+         "height":50,
+		 "charge":-2.0,
+         "divisions":40,
+			"test_points":101
+      }
+   ]
+}

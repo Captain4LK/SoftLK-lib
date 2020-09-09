@@ -104,7 +104,6 @@ void SLK_update()
 
 //The first function you should call in your code.
 //Creates a window, sets its title and allocates space for the layers.
-//Also loads the font files in the data dir if availible.
 void SLK_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
 {
    backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);

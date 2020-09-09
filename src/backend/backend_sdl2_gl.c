@@ -25,7 +25,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
 #include "../SLK_layer_i.h"
-#include "../SLK_input_i.h"
 #include "../backend.h"
 //-------------------------------------
 
@@ -52,9 +51,20 @@ static int frametime;
 static int framedelay;
 static int framestart;
 static float delta;
-GLuint *layer_textures;
+static GLuint *layer_textures;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
+static uint8_t new_key_state[256];
+static uint8_t old_key_state[256];
+static uint8_t new_mouse_state[6];
+static uint8_t old_mouse_state[6];
+static int mouse_x_rel;
+static int mouse_y_rel;
+static char *text_input;
+static int text_input_active;
+static int mouse_x;
+static int mouse_y;
+static int mouse_wheel;
 //-------------------------------------
 
 //Function prototypes
@@ -217,7 +227,7 @@ float backend_timer_get_delta()
 //Handles window and input events.
 void backend_handle_events()
 {
-   SLK_i_mouse_update_wheel(0);
+   mouse_wheel = 0;
    memcpy(old_key_state,new_key_state,sizeof(new_key_state));
    memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
 
@@ -257,7 +267,7 @@ void backend_handle_events()
 
          break;
       case SDL_MOUSEWHEEL:
-         SLK_i_mouse_update_wheel(event.wheel.y);
+         mouse_wheel = event.wheel.y;
          break;
     case SDL_MOUSEMOTION:
          mouse_x_rel+=event.motion.xrel;
@@ -288,8 +298,21 @@ void backend_handle_events()
    
    int x,y;
    SDL_GetMouseState(&x,&y);
-   SLK_i_mouse_update(x,y);
 
+   x-=view_x;
+   y-=view_y;
+   mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
+   mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+
+   if(mouse_x>=screen_width)
+     mouse_x= screen_width-1;
+   if(mouse_y>=screen_height)
+     mouse_y= screen_height-1;
+
+   if(mouse_x<0)
+     mouse_x= 0;
+   if(mouse_y<1)
+     mouse_y= 1;
 }
 
 //Creates the window, etc.
@@ -502,14 +525,19 @@ void backend_mouse_capture(int capture)
 }
 
 //Starts text input.
-void backend_start_text_input()
+void backend_start_text_input(char *text)
 {
+   text_input = text;
+   text_input_active = 1;
+
    SDL_StartTextInput();
 }
 
 //Stops text input.
 void backend_stop_text_input()
 {
+   text_input_active = 0;
+   
    SDL_StopTextInput();
 }
 
@@ -599,13 +627,13 @@ void backend_create_layer(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
-         glGenTextures(1,&layer_textures[index]);
-         glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
-         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-         glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-         glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
-                      0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
+      glGenTextures(1,&layer_textures[index]);
+      glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
+                   0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
       break;
    case SLK_LAYER_RGB:
       glGenTextures(1,&layer_textures[index]);
@@ -617,5 +645,52 @@ void backend_create_layer(unsigned index, int type)
                    0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_1.target->data);
       break;
    }
+}
+
+int backend_key_down(int key)
+{
+   return new_key_state[key];
+}
+
+int backend_key_pressed(int key)
+{
+   return new_key_state[key]&&!old_key_state[key];
+}
+
+int backend_key_released(int key)
+{
+   return !new_key_state[key]&&old_key_state[key];
+}
+
+int backend_mouse_down(int key)
+{
+   return new_mouse_state[key];
+}
+
+int backend_mouse_pressed(int key)
+{
+   return new_mouse_state[key]&&!old_mouse_state[key];
+}
+
+int backend_mouse_released(int key)
+{
+   return !new_mouse_state[key]&&old_mouse_state[key];
+}
+
+int backend_mouse_wheel_get_scroll()
+{
+   return mouse_wheel;
+}
+
+void backend_mouse_get_pos(int *x, int *y)
+{
+   *x = mouse_x;
+   *y = mouse_y;
+}
+
+void backend_mouse_get_relative_pos(int *x, int *y)
+{
+   *x = mouse_x_rel;
+   *y = mouse_y_rel;
 }
 //-------------------------------------

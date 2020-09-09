@@ -1,5 +1,6 @@
 {
    "mode": 1,
+   "divisions": 10000000,
 	"circles":
 	[
       {
@@ -10,7 +11,17 @@
          "b": 255,
          "radius": 80,
          "charge": -1.0,
-         "test_points": 40
+         "test_points": 45
+      },
+		{
+         "x": 850,
+         "y": 1000,
+         "r": 255,
+         "g": 255,
+         "b": 255,
+         "radius": 80,
+         "charge": -1.0,
+         "test_points": 50
       },
       {
          "x": 1200,
@@ -20,7 +31,7 @@
          "b": 255,
          "radius": 80,
          "charge": 1.0,
-         "test_points": 40
+         "test_points": 35
       }
    ],
    "rectangles":
