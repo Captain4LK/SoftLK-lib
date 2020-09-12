@@ -131,10 +131,10 @@ int main(int argc, char *argv[])
       if(next_frame)
          sprintf(time_stat,"%08lf %04d",time/((double)frame)/*/world.used*10.0f*/,world.used);
  
-      if(SLK_key_down(SLK_KEY_SPACE)&&world.used<9999)
+      if((SLK_key_down(SLK_KEY_SPACE)||SLK_gamepad_down(0,SLK_PAD_A))&&world.used<9999)
          add_entity();
 
-      if(SLK_key_pressed(SLK_KEY_P))
+      if(SLK_key_pressed(SLK_KEY_P)||SLK_gamepad_pressed(0,SLK_PAD_LEFTSHOULDER))
       {
          render_mode = 0;
          time = 0.0f;
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
          SLK_draw_rgb_sprite(gui_01,206,2);
          SLK_draw_rgb_string(214,10,1,"pal renderer",SLK_color_create(255,255,255,255));
       }
-      if(SLK_key_pressed(SLK_KEY_R))
+      if(SLK_key_pressed(SLK_KEY_R)||SLK_gamepad_pressed(0,SLK_PAD_RIGHTSHOULDER))
       {
          render_mode = 1;
          time = 0.0f;

@@ -240,6 +240,26 @@ int backend_mouse_wheel_get_scroll()
    return 0;
 }
 
+int backend_gamepad_down(int index, int key)
+{
+   return 0;
+}
+
+int backend_gamepad_pressed(int index, int key)
+{
+   return 0;
+}
+
+int backend_gamepad_released(int index, int key)
+{
+   return 0;
+}
+
+int backend_get_gamepad_count()
+{
+   return 0;
+}
+
 void backend_mouse_get_pos(int *x, int *y)
 {
 

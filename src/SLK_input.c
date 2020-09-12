@@ -57,6 +57,33 @@ int SLK_key_released(int key)
    return backend_key_released(key);
 }
 
+//Returns wether the button belonging to 
+//the SLK_button enum is held on the specified gamepad.
+int SLK_gamepad_down(int id, int key)
+{
+   return backend_gamepad_down(id,key);
+}
+
+//Returns wether the button belonging to 
+//the SLK_button enum has been pressed on the specified gamepad.
+int SLK_gamepad_pressed(int id, int key)
+{
+   return backend_gamepad_pressed(id,key);
+}
+
+//Returns wether the button belonging to 
+//the SLK_button enum has been released on the specified gamepad.
+int SLK_gamepad_released(int id, int key)
+{
+   return backend_gamepad_released(id,key);
+}
+
+//Returns how many gamepads are currently plugged in.
+int SLK_gamepad_count()
+{
+   return backend_get_gamepad_count();
+}
+
 //Returns wether the mouse button
 //refered to by SLK_mouse_button enum
 //is held.

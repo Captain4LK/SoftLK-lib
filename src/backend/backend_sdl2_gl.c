@@ -29,9 +29,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //#defines
+#define MAX_CONTROLLERS 4
 //-------------------------------------
 
 //Typedefs
+typedef struct
+{
+   SDL_GameController *gamepad;
+   SDL_Haptic *haptic;
+   SDL_JoystickID id;
+   int connected;
+   uint8_t new_button_state[16];
+   uint8_t old_button_state[16];
+}Gamepad;
 //-------------------------------------
 
 //Variables
@@ -54,10 +64,12 @@ static float delta;
 static GLuint *layer_textures;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
+static uint8_t gamepad_map[16];
 static uint8_t new_key_state[256];
 static uint8_t old_key_state[256];
 static uint8_t new_mouse_state[6];
 static uint8_t old_mouse_state[6];
+static Gamepad gamepads[MAX_CONTROLLERS];
 static int mouse_x_rel;
 static int mouse_y_rel;
 static char *text_input;
@@ -68,6 +80,7 @@ static int mouse_wheel;
 //-------------------------------------
 
 //Function prototypes
+static int get_gamepad_index(int which);
 //-------------------------------------
 
 //Function implementations
@@ -230,6 +243,8 @@ void backend_handle_events()
    mouse_wheel = 0;
    memcpy(old_key_state,new_key_state,sizeof(new_key_state));
    memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
+   for(int i = 0;i<MAX_CONTROLLERS;i++)
+      memcpy(gamepads[i].old_button_state,gamepads[i].new_button_state,sizeof(gamepads[0].new_button_state));
 
    mouse_x_rel = 0;
    mouse_y_rel = 0;
@@ -264,14 +279,49 @@ void backend_handle_events()
       case SDL_TEXTINPUT:
          if(text_input_active)
             strcat(text_input,event.text.text);
-
          break;
       case SDL_MOUSEWHEEL:
          mouse_wheel = event.wheel.y;
          break;
-    case SDL_MOUSEMOTION:
+      case SDL_MOUSEMOTION:
          mouse_x_rel+=event.motion.xrel;
          mouse_y_rel+=event.motion.yrel;
+         break;
+      case SDL_CONTROLLERBUTTONDOWN:
+         if(event.cbutton.state==SDL_PRESSED)
+         {
+            int id = get_gamepad_index(event.cbutton.which);
+            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 1;
+         }
+         break;
+      case SDL_CONTROLLERBUTTONUP:
+         if(event.cbutton.state==SDL_RELEASED)
+         {
+            int id = get_gamepad_index(event.cbutton.which);
+            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 0;
+         }
+         break;
+      case SDL_CONTROLLERDEVICEADDED:
+         {
+            int which = event.cdevice.which;
+            if(which<MAX_CONTROLLERS)
+            {
+               gamepads[which].gamepad = SDL_GameControllerOpen(which);
+               gamepads[which].connected = 1;
+               SDL_Joystick *j = SDL_GameControllerGetJoystick(gamepads[which].gamepad);
+               gamepads[which].id = SDL_JoystickInstanceID(j);
+            }
+         }
+         break;
+      case SDL_CONTROLLERDEVICEREMOVED:
+         {
+            int which = event.cdevice.which;
+            if(which<0)
+               break;
+            int id = get_gamepad_index(which);
+            gamepads[id].connected = 0;
+            SDL_GameControllerClose(gamepads[id].gamepad);
+         }
          break;
       case SDL_WINDOWEVENT:
          if(event.window.event==SDL_WINDOWEVENT_RESIZED&&dynamic)
@@ -288,9 +338,7 @@ void backend_handle_events()
             }
 
          }
-
          backend_update_viewport();
-
          break;
       }
    }
@@ -497,12 +545,34 @@ void backend_input_init()
    mouse_map[SDL_BUTTON_X1] = SLK_BUTTON_X1;
    mouse_map[SDL_BUTTON_X2] = SLK_BUTTON_X2;
 
+   gamepad_map[SDL_CONTROLLER_BUTTON_A] = SLK_PAD_A;
+   gamepad_map[SDL_CONTROLLER_BUTTON_B] = SLK_PAD_B;
+   gamepad_map[SDL_CONTROLLER_BUTTON_X] = SLK_PAD_X;
+   gamepad_map[SDL_CONTROLLER_BUTTON_Y] = SLK_PAD_Y;
+   gamepad_map[SDL_CONTROLLER_BUTTON_BACK] = SLK_PAD_BACK;
+   gamepad_map[SDL_CONTROLLER_BUTTON_GUIDE] = SLK_PAD_GUIDE;
+   gamepad_map[SDL_CONTROLLER_BUTTON_START] = SLK_PAD_START;
+   gamepad_map[SDL_CONTROLLER_BUTTON_LEFTSTICK] = SLK_PAD_LEFTSTICK;
+   gamepad_map[SDL_CONTROLLER_BUTTON_RIGHTSTICK] = SLK_PAD_RIGHTSTICK;
+   gamepad_map[SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = SLK_PAD_LEFTSHOULDER;
+   gamepad_map[SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = SLK_PAD_RIGHTSHOULDER;
+   gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_UP] = SLK_PAD_UP;
+   gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = SLK_PAD_DOWN;
+   gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = SLK_PAD_LEFT;
+   gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = SLK_PAD_RIGHT;
+   gamepad_map[SDL_CONTROLLER_BUTTON_MAX] = SLK_PAD_MAX;
+
    //Clear key states, just in case,
    //should already be empty since known at compile time
    memset(new_key_state,0,sizeof(new_key_state));
    memset(old_key_state,0,sizeof(old_key_state));
    memset(new_mouse_state,0,sizeof(new_mouse_state));
    memset(old_mouse_state,0,sizeof(old_mouse_state));
+   for(int i = 0;i<MAX_CONTROLLERS;i++)
+   {
+      memset(gamepads[i].new_button_state,0,sizeof(gamepads[i].new_button_state));
+      memset(gamepads[i].old_button_state,0,sizeof(gamepads[i].old_button_state));
+   }
 }
 
 //Shows or hides the mouse cursor.
@@ -682,6 +752,26 @@ int backend_mouse_wheel_get_scroll()
    return mouse_wheel;
 }
 
+int backend_gamepad_down(int index, int key)
+{
+   return gamepads[index].new_button_state[key];
+}
+
+int backend_gamepad_pressed(int index, int key)
+{
+   return gamepads[index].new_button_state[key]&&!gamepads[index].old_button_state[key];
+}
+
+int backend_gamepad_released(int index, int key)
+{
+   return !gamepads[index].new_button_state[key]&&gamepads[index].old_button_state[key];
+}
+
+int backend_get_gamepad_count()
+{
+   return SDL_NumJoysticks();
+}
+
 void backend_mouse_get_pos(int *x, int *y)
 {
    *x = mouse_x;
@@ -693,4 +783,16 @@ void backend_mouse_get_relative_pos(int *x, int *y)
    *x = mouse_x_rel;
    *y = mouse_y_rel;
 }
+
+static int get_gamepad_index(int which)
+{
+
+   for(int i = 0;i<MAX_CONTROLLERS;i++)
+      if(gamepads[i].connected&&gamepads[i].id==which)
+         return i;
+
+   return -1;
+}
 //-------------------------------------
+
+#undef MAX_CONTROLLERS 

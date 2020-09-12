@@ -54,6 +54,10 @@ int backend_mouse_down(int key);
 int backend_mouse_pressed(int key);
 int backend_mouse_released(int key);
 int backend_mouse_wheel_get_scroll();
+int backend_gamepad_down(int index, int key);
+int backend_gamepad_pressed(int index, int key);
+int backend_gamepad_released(int index, int key);
+int backend_get_gamepad_count();
 void backend_mouse_get_pos(int *x, int *y);
 void backend_mouse_get_relative_pos(int *x, int *y);
 
