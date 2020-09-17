@@ -26,6 +26,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //#defines
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
             ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
+
 #define SIGNUM(NUM) \
    NUM==0?0:(NUM<0?-1:1)
 
@@ -80,6 +81,14 @@ void SLK_draw_rgb_set_clear_color(SLK_Color color)
 void SLK_draw_rgb_set_changed(int changed)
 {
    target_rgb->changed = changed;
+}
+
+//Returns wether the changed
+//attribute has been set on the current
+//draw target.
+int SLK_draw_rgb_get_changed()
+{
+   return target_rgb->changed;
 }
 
 //Loads a new font sprite.

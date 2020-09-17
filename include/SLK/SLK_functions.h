@@ -94,6 +94,7 @@ SLK_RGB_sprite *SLK_draw_rgb_get_target();
 void SLK_draw_rgb_set_target(SLK_RGB_sprite *s);
 void SLK_draw_rgb_set_clear_color(SLK_Color color);
 void SLK_draw_rgb_set_changed(int changed);
+int SLK_draw_rgb_get_changed();
 void SLK_draw_rgb_load_font(const char *path);
 void SLK_draw_rgb_set_font_sprite(SLK_RGB_sprite *font);
 void SLK_draw_rgb_clear();
