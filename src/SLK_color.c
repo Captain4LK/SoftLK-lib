@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#include <math.h>
 //-------------------------------------
 
 //Internal includes
@@ -46,6 +47,154 @@ SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
    
    return c;
 } 
+
+//Creates a SLK_Color struct from 4 floats.
+SLK_Color SLK_color_create_float(float r, float g, float b, float a)
+{
+   SLK_Color c;
+   c.r = r*255.0f;
+   c.g = g*255.0f;
+   c.b = b*255.0f;
+   c.a = a*255.0f;
+
+   return c;
+}
+
+//Creates a SLK_Color struct from 4 floats.
+//h is expected to be in range [0,360].
+SLK_Color SLK_color_create_hsv(float h, float s, float v, float a)
+{
+   SLK_Color c;
+   if(s<=0.0f)
+   {
+      c.r = 0;
+      c.g = 0;
+      c.b = 0;
+      c.a = a*255.0f;
+
+      return c;
+   }
+
+   float ch = s*v;
+   if(h>=360.0f)
+      h = 0.0f;
+   h/=60;
+   float x = ch*(1-fabs(fmod(h,2)-1));
+   float m = v-ch;
+   float r,g,b;
+
+   if(h>=0.0f&&h<=1.0f)
+   {
+      r = ch;
+      g = x;
+      b = 0.0f;
+   }
+   else if(h>1.0f&&h<=2.0f)
+   {
+      r = x;
+      g = ch;
+      b = 0.0f;
+   }
+   else if(h>2.0f&&h<=3.0f)
+   {
+      r = 0.0f;
+      g = ch;
+      b = x;
+   }
+   else if(h>3.0f&&h<=4.0f)
+   {
+      r = 0.0f;
+      g = x;
+      b = ch;
+   }
+   else if(h>4.0f&&h<=5.0f)
+   {
+      r = x;
+      g = 0.0f;
+      b = ch;
+   }
+   else
+   {
+      r = ch;
+      g = 0.0f;
+      b = x;
+   }
+
+   c.r = (r+m)*255.0f;
+   c.g = (g+m)*255.0f;
+   c.b = (b+m)*255.0f;
+   c.a = a*255.0f;
+
+   return c;
+}
+
+//Creates a SLK_Color struct from 4 floats.
+//h is expected to be in range [0,360].
+SLK_Color SLK_color_create_hsl(float h, float s, float l, float a)
+{
+   SLK_Color c;
+   if(s<=0.0f)
+   {
+      c.r = 0;
+      c.g = 0;
+      c.b = 0;
+      c.a = a*255.0f;
+
+      return c;
+   }
+
+   float ch = (1.0f-fabs(2.0f*l-1.0f))*s;
+   if(h>=360.0f)
+      h = 0.0f;
+   h/=60;
+   float x = ch*(1-fabs(fmod(h,2)-1));
+   float m = l-(ch/2.0f);
+   float r,g,b;
+
+   if(h>=0.0f&&h<=1.0f)
+   {
+      r = ch;
+      g = x;
+      b = 0.0f;
+   }
+   else if(h>1.0f&&h<=2.0f)
+   {
+      r = x;
+      g = ch;
+      b = 0.0f;
+   }
+   else if(h>2.0f&&h<=3.0f)
+   {
+      r = 0.0f;
+      g = ch;
+      b = x;
+   }
+   else if(h>3.0f&&h<=4.0f)
+   {
+      r = 0.0f;
+      g = x;
+      b = ch;
+   }
+   else if(h>4.0f&&h<=5.0f)
+   {
+      r = x;
+      g = 0.0f;
+      b = ch;
+   }
+   else
+   {
+      r = ch;
+      g = 0.0f;
+      b = x;
+   }
+
+   c.r = (r+m)*255.0f;
+   c.g = (g+m)*255.0f;
+   c.b = (b+m)*255.0f;
+   c.a = a*255.0f;
+
+   return c;
+}
 
 //Creates a SLK_Paxel struct from 2 unsigned 8bit ints.
 //index is the index of the currently used palette.

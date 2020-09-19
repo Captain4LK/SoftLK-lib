@@ -113,6 +113,9 @@ void SLK_draw_rgb_fill_circle(int x, int y, int radius, SLK_Color color);
 
 //Color subsystem: SLK_color.c
 SLK_Color SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+SLK_Color SLK_color_create_float(float r, float g, float b, float a);
+SLK_Color SLK_color_create_hsv(float h, float s, float v, float a);
+SLK_Color SLK_color_create_hsl(float h, float s, float l, float a);
 SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask);
 
 //Input subsystem: SLK_input.c 
