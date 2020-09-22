@@ -16,9 +16,9 @@
 */
 
 //External includes
-#include <cjson/cJSON.h>
+#include "cJSON.h"
 #include "../../include/SLK/SLK.h"
-#include "ULK_vector.h"
+#include "../../external/UtilityLK/include/ULK_vector.h"
 //-------------------------------------
 
 //Internal includes

@@ -19,8 +19,8 @@
 //External includes
 #include <stdio.h>
 #include <stdlib.h>
-#include <cjson/cJSON.h>
-#include "ULK_vector.h"
+#include "cJSON.h"
+#include "../../external/UtilityLK/include/ULK_vector.h"
 //-------------------------------------
 
 //Internal includes
@@ -264,7 +264,7 @@ static void calculate_circle(int shape)
 
       ULK_vector_2d_set(origin,shapes[shape].circle.x,shapes[shape].circle.y);
       ULK_vector_2d_set(point,shapes[shape].circle.x,shapes[shape].circle.y-shapes[shape].circle.radius);
-      ULK_vector_2d_rotate(point,point,origin,angle);
+      ULK_vector_2d_rot(point,point,origin,angle);
       ULK_vector_2d_copy(pos,point);
 
       while(tries<10000)
@@ -285,23 +285,23 @@ static void calculate_circle(int shape)
 
             ULK_vector_2d_set(center,shapes[o].circle.x,shapes[o].circle.y);
 
-            ULK_vector_2d_subtract(distance,center,pos);
-            length = ULK_vector_2d_length(distance);
-            ULK_vector_2d_normalize(norm,distance);
-            ULK_vector_2d_scale(norm,norm,-1.0f);
+            ULK_vector_2d_sub(distance,center,pos);
+            length = ULK_vector_2d_mag(distance);
+            ULK_vector_2d_norm(norm,distance);
+            ULK_vector_2d_mul(norm,norm,-1.0f);
 
             force = 8987551788.0f*(fabs(shapes[o].circle.charge)/(length*length))*0.000000001602;
             if(((shapes[o].circle.charge<0.0f)^negative)&&shape!=o)
-               ULK_vector_2d_scale(norm,norm,-force);
+               ULK_vector_2d_mul(norm,norm,-force);
             else
-               ULK_vector_2d_scale(norm,norm,force);
+               ULK_vector_2d_mul(norm,norm,force);
 
             ULK_vector_2d_copy(result,norm);
 
             ULK_vector_2d_add(force_result,force_result,result);
          }
 
-         ULK_vector_2d_normalize(force_result,force_result);
+         ULK_vector_2d_norm(force_result,force_result);
          ULK_vector_2d_add(pos,pos,force_result);
          SLK_draw_rgb_color((int)pos[0],(int)pos[1],shapes[shape].circle.color);
       }
@@ -355,8 +355,8 @@ static void calculate_potential_0()
             float length;
            
             ULK_vector_2d_set(center,(float)shapes[i].circle.x,(float)shapes[i].circle.y);
-            ULK_vector_2d_subtract(distance,center,point);
-            length = ULK_vector_2d_length(distance);
+            ULK_vector_2d_sub(distance,center,point);
+            length = ULK_vector_2d_mag(distance);
             
             if(length!=0.0f)
                potential+=8987551788.0f*(shapes[i].circle.charge/length);
@@ -419,8 +419,8 @@ static void calculate_potential_1()
             float length;
            
             ULK_vector_2d_set(center,(float)shapes[i].circle.x,(float)shapes[i].circle.y);
-            ULK_vector_2d_subtract(distance,center,point);
-            length = ULK_vector_2d_length(distance);
+            ULK_vector_2d_sub(distance,center,point);
+            length = ULK_vector_2d_mag(distance);
             
             if(length!=0.0f)
                potential+=8987551788.0f*(shapes[i].circle.charge/length);

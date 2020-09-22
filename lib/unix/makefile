@@ -1,6 +1,5 @@
 CC = gcc
 CFLAGS=-lm -Wall
-//CFLAGS+=-lm -Wall -pg
 DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o
 
 .PHONY: backend_sdl2_gl
