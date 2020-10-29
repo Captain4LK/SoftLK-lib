@@ -44,13 +44,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //and returns a pointer to its location.
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 {
-   SLK_Pal_sprite *s = malloc(sizeof(SLK_Pal_sprite));
+   SLK_Pal_sprite *s = malloc(sizeof(*s));
 
    s->width = width;
    s->height = height;
 
-   s->data = malloc(width*height*sizeof(SLK_Paxel));
-   memset(s->data,0,sizeof(SLK_Paxel)*width*height);
+   s->data = malloc(width*height*sizeof(*s->data));
+   memset(s->data,0,sizeof(*s->data)*width*height);
 
    return s;
 }
@@ -108,7 +108,7 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
       return SLK_pal_sprite_create(1,1);
    }
 
-   fread(file_type,sizeof(char),8,f);
+   fread(file_type,sizeof(file_type[0]),8,f);
    file_type[8] = '\0';
    if(strcmp(file_type,"SLKIMAGE")!=0)
    {
@@ -116,11 +116,11 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
       return SLK_pal_sprite_create(1,1);
    }
       
-   fread(&width,sizeof(int),1,f);
-   fread(&height,sizeof(int),1,f);   
+   fread(&width,sizeof(width),1,f);
+   fread(&height,sizeof(height),1,f);   
    
    s = SLK_pal_sprite_create(width,height);
-   fread(s->data,sizeof(SLK_Paxel),width*height,f);
+   fread(s->data,sizeof(*s->data),width*height,f);
    fclose(f);
    
    return s;
@@ -136,9 +136,9 @@ void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
    if(!f)
       return;
       
-   fwrite(&s->width,sizeof(int),1,f);
-   fwrite(&s->height,sizeof(int),1,f);
-   fwrite(s->data,sizeof(SLK_Paxel),s->width*s->height,f);
+   fwrite(&s->width,sizeof(s->width),1,f);
+   fwrite(&s->height,sizeof(s->height),1,f);
+   fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
    fclose(f);
 }
 

@@ -437,8 +437,21 @@ static void calculate_potential_1()
          else 
          {
             SLK_Color o;
-            SLK_Color a = SLK_color_create(0,0,255,255);
-            SLK_Color b = SLK_color_create(255,0,0,255);
+            SLK_Color a;;
+            SLK_Color b;
+            if(t<0.5)
+            {
+               t*=2.0f; 
+               a = SLK_color_create(0,0,255,255);
+               b = SLK_color_create(0,255,0,255);
+            }
+            else
+            {
+               t-=0.5f;
+               t*=2.0f;
+               a = SLK_color_create(0,255,0,255);
+               b = SLK_color_create(255,0,0,255);
+            }
             o.r = a.r+t*(b.r-a.r);
             o.g = a.g+t*(b.g-a.g);
             o.b = a.b+t*(b.b-a.b);

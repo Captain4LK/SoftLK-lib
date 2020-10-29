@@ -49,13 +49,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Creates a sprites with the specified dimensions and clear it.
 SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height)
 {   
-   SLK_RGB_sprite *s = malloc(sizeof(SLK_RGB_sprite));
+   SLK_RGB_sprite *s = malloc(sizeof(*s));
    
    s->width = width;
    s->height = height;
    
-   s->data = malloc(width*height*sizeof(SLK_Color));
-   memset(s->data,0,width*height*sizeof(SLK_Color));
+   s->data = malloc(width*height*sizeof(*s->data));
+   memset(s->data,0,width*height*sizeof(*s->data));
     
    return s;
 }
@@ -107,7 +107,7 @@ SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
    }
 
    out = SLK_rgb_sprite_create(width,height);
-   memcpy(out->data,data,width*height*sizeof(SLK_Color));
+   memcpy(out->data,data,width*height*sizeof(*out->data));
 
    stbi_image_free(data);
 
@@ -119,7 +119,7 @@ SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
 //supported by this function (png etc.).
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s)
 {
-   stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(SLK_Color));
+   stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(*s->data));
 }
 
 //Copies the data of a sprite to another one.

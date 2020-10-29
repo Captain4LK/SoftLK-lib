@@ -42,10 +42,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //returns a pointer to it.
 SLK_RGB_sheet *SLK_rgb_sheet_create(int size)
 {
-   SLK_RGB_sheet *sheet = malloc(sizeof(SLK_RGB_sheet));
-   memset(sheet,0,sizeof(SLK_RGB_sheet));
+   SLK_RGB_sheet *sheet = malloc(sizeof(*sheet));
+   memset(sheet,0,sizeof(*sheet));
    sheet->size = size;
-   sheet->sheet = malloc(sizeof(SLK_RGB_sprite *)*size);
+   sheet->sheet = malloc(sizeof(sheet->sheet)*size);
 
    return sheet;
 }
@@ -60,9 +60,9 @@ void SLK_rgb_sheet_expand(SLK_RGB_sheet *sheet, int new_size)
          SLK_rgb_sprite_destroy(sheet->sheet[i]);
    }
    sheet->size = new_size;
-   sheet->sheet = realloc(sheet->sheet,sizeof(SLK_RGB_sprite *)*new_size);
+   sheet->sheet = realloc(sheet->sheet,sizeof(sheet->sheet)*new_size);
    if(old_size<new_size)
-      memset(sheet->sheet+old_size,0,sizeof(SLK_RGB_sprite *)*(new_size-old_size));
+      memset(sheet->sheet+old_size,0,sizeof(sheet->sheet)*(new_size-old_size));
 }
 
 //Destroys a sprite sheet.

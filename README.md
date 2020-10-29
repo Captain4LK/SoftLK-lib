@@ -1,4 +1,4 @@
-# SoftLK Engine
+# SoftLK-lib
 
 A software accelerated engine using OpenGL to bring the graphics to the screen. It's made for low resolutions (eg. 256x240), but should handle higher resolutions, too.
 
@@ -36,7 +36,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 	
 	```	
 	cd SoftLK-lib/lib/[YOUR OS]/
-	gcc -O3 -c ../src/*.c ../src/backend/backend_sdl2_gl.c -lm -lSDL2 -lGL #Compile to object files first
+	gcc -O3 -c ../../src/*.c ../../src/backend/backend_sdl2_gl.c -lm -lSDL2 -lGL #Compile to object files first
 	ar crs libSLK.a *.o #Then link them together
 	```
 

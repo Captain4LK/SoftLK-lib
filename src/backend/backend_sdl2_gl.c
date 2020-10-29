@@ -444,8 +444,8 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 
-   layer_textures = malloc(sizeof(GLuint)*layer_num);
-   memset(layer_textures,0,sizeof(GLuint)*layer_num);
+   layer_textures = malloc(sizeof(*layer_textures)*layer_num);
+   memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
 }
 
 //Creates the keymap.

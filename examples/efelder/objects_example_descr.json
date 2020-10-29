@@ -1,5 +1,6 @@
 {
    "mode": 1,
+   "divisions": 10000000,
 	"circles":
 	[
       {

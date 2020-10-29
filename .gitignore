@@ -2,3 +2,9 @@
 *.exe
 *.o
 *.a
+
+examples/3d/3d_demo
+examples/efelder/efelder
+examples/performance/performance
+examples/resize/resize
+examples/template/template

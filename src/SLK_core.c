@@ -109,8 +109,8 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
    backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);
 
    //Allocate space for layers, max layer num is fixed.
-   layers = malloc(sizeof(SLK_Layer)*layer_num);
-   memset(layers,0,sizeof(SLK_Layer)*layer_num);
+   layers = malloc(sizeof(layers[0])*layer_num);
+   memset(layers,0,sizeof(layers[0])*layer_num);
 
    running = 1;
    SLK_core_set_fullscreen(fullscreen);
