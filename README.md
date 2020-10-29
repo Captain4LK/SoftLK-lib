@@ -1,14 +1,23 @@
 # SoftLK-lib
 
-A software accelerated engine using OpenGL to bring the graphics to the screen. It's made for low resolutions (eg. 256x240), but should handle higher resolutions, too.
+A library trying to make graphics in game development (simulations etc.) easy. It is using software rendering (but using OpenGL on the default backend) and tries to be as portable as possible.
 
 ## Features
+
+What it does:
 
 * Layers: Draw to multiple independent layers
 * RGB drawing: Draw in 32bit rgba colorspace
 * Pal drawing: Draw in palletized 8bit colorspace and change the palette on the fly, without needing to redraw
 * Image loading: Load and save sprites from and to multiple file formats
-* OpenGL 2.1: It's old. It's antiquated. I mean, who needs shaders anyway?
+* Backends: Plattform specific code is seperate from general code, however only an SDL2 backend has been implemented yet.
+* Input: Gamepad, mouse and keyboard input.
+
+What it doesn't:
+
+* Sound: You need to bring your own audio library (eg. SDL_mixer)
+* Asset managment: It can load multiple image formats, but managing what should or should'nt be loaded is up to you.
+* typical engine stuff in general: SoftLK tries to be integrable into many different kinds of projects by not restricting the programmer too much.
 
 ## License
 
@@ -16,7 +25,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 
 ## Getting started
 
-1. Get a compiler: I use gcc but clang works too.
+1. Get a compiler: I recommend gcc but clang works too.
 2. Install the SDL2 development files:
 	
 	On Debian/Ubuntu: `` sudo apt install libsdl2-dev``  (Note: I haven't used a Debian/Ubuntu based distro in a while)
@@ -54,12 +63,11 @@ SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, 
 
 ## Library Credits
 
-Here I shall list all external libraries used by SoftLK:
+Here is a list of all external libraries used by SoftLK:
 
 * [SDL2](https://www.libsdl.org/) 
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h)
 * [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h)
-* [stb_rect_pack](https://github.com/nothings/stb/blob/master/stb_rect_pack.h)
 
 ## Gallery
 
