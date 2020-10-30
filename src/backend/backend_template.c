@@ -23,7 +23,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../../include/SLK/SLK_types.h"
 #include "../../include/SLK/SLK_functions.h"
 #include "../SLK_layer_i.h"
-#include "../SLK_input_i.h"
 #include "../backend.h"
 //-------------------------------------
 
@@ -181,7 +180,7 @@ void backend_mouse_capture(int capture)
 }
 
 //Starts text input.
-void backend_start_text_input()
+void backend_start_text_input(char *text)
 {
 
 }

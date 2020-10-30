@@ -8,6 +8,9 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 	ar crs libSLK.a $^
 
+backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
+	ar crs libSLK.a $^
+
 SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d_fixed.o
 	ar crs "libSLK3d_fixed.a" $^
 
@@ -49,6 +52,9 @@ SLK_sheet_pal.o: ../../src/SLK_sheet_pal.c ../../include/SLK/SLK_functions.h ../
 
 backend_sdl2_gl.o: ../../src/backend/backend_sdl2_gl.c ../../src/backend.h
 	$(CC) -O3 -c $< -lm -lSDL2 -lGL -Wall
+
+backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h
+	$(CC) -O3 -c $< -lm -lSDL2 -Wall
 
 ULK_vector.o: ../../external/UtilityLK/src/ULK_vector.c ../../external/UtilityLK/include/ULK_vector.h
 	$(CC) -O3 -c $< $(CFLAGS) 
