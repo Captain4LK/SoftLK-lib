@@ -47,18 +47,16 @@ SLK_Palette *SLK_palette_load(const char *path)
    char buffer[512];
    int colors = 0,i,found;
    int r,g,b,a;
-   SLK_Palette *palette = malloc(sizeof(*palette));
-
-   memset(palette,0,sizeof(*palette));
 
    FILE *f = fopen(path,"r");
    if(!f)
    {
       printf("Unable to load palette\n");
-      return palette;
+      return NULL;
    }
-   
-   
+
+   SLK_Palette *palette = malloc(sizeof(*palette));
+   memset(palette,0,sizeof(*palette));
    for(i = 0;i<259&&fgets(buffer,512,f);i++)
    {
       if(i==2)
