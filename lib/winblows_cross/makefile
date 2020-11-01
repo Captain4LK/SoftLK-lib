@@ -1,12 +1,14 @@
 CC = i686-w64-mingw32-gcc 
 CFLAGS=-lmingw32 -Wall
-//CFLAGS+=-lm -Wall -pg
 DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o
 
 .PHONY: backend_sdl2_gl
 .PHONY: SLK_3d_fixed
 
 backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
+	ar crs libSLK.a $^
+
+backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
 	ar crs libSLK.a $^
 
 SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d_fixed.o
@@ -50,6 +52,9 @@ SLK_sheet_pal.o: ../../src/SLK_sheet_pal.c ../../include/SLK/SLK_functions.h ../
 
 backend_sdl2_gl.o: ../../src/backend/backend_sdl2_gl.c ../../src/backend.h
 	$(CC) -O3 -c $< -lmingw32 -lSDL2 -lopengl32 -Wall
+
+backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h
+	$(CC) -O3 -c $< -lmingw32 -lSDL2 -Wall
 
 ULK_vector.o: ../../external/UtilityLK/src/ULK_vector.c ../../external/UtilityLK/include/ULK_vector.h
 	$(CC) -O3 -c $< $(CFLAGS) 
