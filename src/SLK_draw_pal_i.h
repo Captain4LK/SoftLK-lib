@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "../include/SLK/SLK_types.h"
 
-SLK_Pal_sprite *target_pal;
-SLK_Pal_sprite *target_pal_default;
+extern SLK_Pal_sprite *target_pal;
+extern SLK_Pal_sprite *target_pal_default;
 
 #endif

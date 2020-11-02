@@ -41,6 +41,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 static SLK_Color target_rgb_clear;
 static SLK_RGB_sprite *text_sprite_rgb;
 static SLK_RGB_sprite *text_sprite_rgb_default;
+
+SLK_RGB_sprite *target_rgb;
+SLK_RGB_sprite *target_rgb_default;
 //-------------------------------------
 
 //Function prototypes

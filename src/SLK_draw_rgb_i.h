@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "../include/SLK/SLK_types.h"
 
-SLK_RGB_sprite *target_rgb;
-SLK_RGB_sprite *target_rgb_default;
+extern SLK_RGB_sprite *target_rgb;
+extern SLK_RGB_sprite *target_rgb_default;
 
 #endif

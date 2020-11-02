@@ -41,6 +41,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 static SLK_Paxel target_pal_clear;
 static SLK_Pal_sprite *text_sprite_pal;
 static SLK_Pal_sprite *text_sprite_pal_default;
+
+SLK_Pal_sprite *target_pal;
+SLK_Pal_sprite *target_pal_default;
 //-------------------------------------
 
 //Function prototypes

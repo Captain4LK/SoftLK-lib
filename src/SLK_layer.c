@@ -53,6 +53,11 @@ static uint32_t rgb332_int[256] =
    0xFFC0C000, 0xFFC0C020, 0xFFC0C040, 0xFFC0C060, 0xFFC0C080, 0xFFC0C0A0, 0xFFC0C0C0, 0xFFC0C0E0, 0xFFC0E000, 0xFFC0E020, 0xFFC0E040, 0xFFC0E060, 0xFFC0E080, 0xFFC0E0A0, 0xFFC0E0C0, 0xFFC0E0E0,
 };
 static SLK_Palette *rgb332 = (SLK_Palette*)rgb332_int;
+
+int dynamic;
+int layer_count;
+SLK_Layer *layers;
+SLK_Layer *current_layer;
 //-------------------------------------
 
 //Function prototypes
