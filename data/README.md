@@ -12,6 +12,7 @@ Not all fonts listed here are actively used in the examples, but they can be fou
 |solar.png|![solar](fonts/solar.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |cursive1.png|![cursive1](fonts/cursive1.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |cursive2.png|![cursive2](fonts/cursive2.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
+|5x8mono.png|![5x8mono](fonts/5x8mono.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 
 ------------
 ## Assets used in examples

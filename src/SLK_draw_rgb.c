@@ -136,6 +136,9 @@ void SLK_draw_rgb_color(int x, int y, SLK_Color color)
 //Color and scale must be specified.
 void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color color)
 {
+   int x_dim = text_sprite_rgb->width/16;
+   int y_dim = text_sprite_rgb->height/6;
+   int x_len = x_dim*16;
    int sx = 0;
    int sy = 0;
 
@@ -144,18 +147,17 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 		if(text[i]=='\n')
 		{
 			sx = 0; 
-         sy+=8*scale;
+         sy+=y_dim*scale;
          continue;
 		}
-
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
 
-      for(int x_ = 0;x_<8;x_++)
+      for(int x_ = 0;x_<x_dim;x_++)
       {
-         for(int y_ = 0;y_<8;y_++)
+         for(int y_ = 0;y_<y_dim;y_++)
          {
-            if(text_sprite_rgb->data[(y_+oy*8)*128+x_+ox*8].a)
+            if(text_sprite_rgb->data[(y_+oy*y_dim)*x_len+x_+ox*x_dim].a)
             {
                for(int o = 0;o<scale;o++)
                {
@@ -167,7 +169,7 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
             }
          }
       }
-      sx += 8*scale;
+      sx += x_dim*scale;
 	}
 }
 
