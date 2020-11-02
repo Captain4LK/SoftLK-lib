@@ -29,6 +29,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+SLK_3d_polygon *skybox;
+
 ULK_vertex cube_temp[6][4] = 
 {
    {

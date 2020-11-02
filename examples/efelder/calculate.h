@@ -53,10 +53,10 @@ typedef struct
    Circle circle;
 }Shape;
 
-Shape *shapes;
-int shapes_count;
-Rectangle *rectangles_tmp;
-int rectangles_tmp_count;
+extern Shape *shapes;
+extern int shapes_count;
+extern Rectangle *rectangles_tmp;
+extern int rectangles_tmp_count;
 
 void shapes_load_file(const char *path);
 void calculate();

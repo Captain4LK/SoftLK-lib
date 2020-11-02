@@ -19,7 +19,7 @@
 
 #define _GUI_H_
 
-int mode;
+extern int mode;
 
 void gui_init();
 void gui_update();

@@ -31,6 +31,10 @@
 
 //Variables
 //-------------------------------------
+SLK_Color background_color;
+int canvas_width;
+int canvas_height;
+float gui_scale;
 
 //Function prototypes
 //-------------------------------------

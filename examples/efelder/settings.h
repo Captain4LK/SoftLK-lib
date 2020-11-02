@@ -21,10 +21,10 @@
 
 #include "../../include/SLK/SLK_types.h"
 
-SLK_Color background_color;
-int canvas_width;
-int canvas_height;
-float gui_scale;
+extern SLK_Color background_color;
+extern int canvas_width;
+extern int canvas_height;
+extern float gui_scale;
 
 void settings_init_default();
 

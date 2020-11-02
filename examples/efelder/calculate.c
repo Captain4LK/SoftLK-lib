@@ -36,6 +36,11 @@
 //-------------------------------------
 
 //Variables
+Shape *shapes;
+int shapes_count;
+Rectangle *rectangles_tmp;
+int rectangles_tmp_count;
+
 static int potential_mode = 0;
 static float divider_potential = 1000000.0f;
 //-------------------------------------

@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../../include/SLK/SLK.h"
 #include "../../extensions/3d_renderer/SLK_3d.h"
 
-SLK_3d_polygon *skybox;
+extern SLK_3d_polygon *skybox;
 
 void assets_load();
 

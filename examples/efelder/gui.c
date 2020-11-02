@@ -39,6 +39,8 @@
 //-------------------------------------
 
 //Variables
+int mode;
+
 static SLK_RGB_sprite *gui_top_right;
 static SLK_RGB_sprite *gui_options;
 static SLK_RGB_sprite *gui_help;
