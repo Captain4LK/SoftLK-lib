@@ -6,6 +6,8 @@ Here is a list of all assets used by SoftLK and its examples.
 
 Not all fonts listed here are actively used in the examples, but they can be found in the data/fonts directory and used by you.
 
+### Normal fonts
+
 |File name|Image|License|Source/Author|
 |---|---|---|---|
 |techno.png|![techno](fonts/techno.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
@@ -13,6 +15,12 @@ Not all fonts listed here are actively used in the examples, but they can be fou
 |cursive1.png|![cursive1](fonts/cursive1.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |cursive2.png|![cursive2](fonts/cursive2.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |5x8mono.png|![5x8mono](fonts/5x8mono.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
+
+### Image fonts
+
+|File name|Image|License|Source/Author|
+|---|---|---|---|
+|SaikyoBlack.png|![SaikyoBlack](fonts/SaikyoBlack.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 
 ------------
 ## Assets used in examples

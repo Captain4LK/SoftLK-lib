@@ -100,6 +100,7 @@ void SLK_draw_rgb_set_font_sprite(SLK_RGB_sprite *font);
 void SLK_draw_rgb_clear();
 void SLK_draw_rgb_color(int x, int y, SLK_Color color);
 void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color color);
+void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text);
 void SLK_draw_rgb_sprite(const SLK_RGB_sprite *s, int x, int y);
 void SLK_draw_rgb_sprite_partial(const SLK_RGB_sprite *s, int x, int y, int ox, int oy, int width, int height);
 void SLK_draw_rgb_sprite_flip(const SLK_RGB_sprite *s, int x, int y, int flip);
