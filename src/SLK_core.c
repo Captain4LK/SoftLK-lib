@@ -54,8 +54,6 @@ int SLK_core_running()
 }
 
 //Sets the title of the window.
-//I did not test this since I am using
-//a window manager without titlebars.
 void SLK_core_set_title(const char *title)
 {
    backend_set_title(title);
@@ -74,8 +72,6 @@ void SLK_core_set_visible(int visible)
 }
 
 //Sets the icon of the window.
-//I did not test this since I am using
-//a window manager without titlebars.
 void SLK_core_set_icon(const SLK_RGB_sprite *icon)
 {
    backend_set_icon(icon);

@@ -65,7 +65,11 @@ SLK_Palette *SLK_palette_load(const char *path)
       }
       else if(i>2&&buffer[0]!='\0')
       {
-         sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a);
+         if(sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a)!=4)
+         {
+            sscanf(buffer,"%d %d %d",&r,&g,&b);
+            a = 255;
+         }
 
          palette->colors[colors].r = r;
          palette->colors[colors].g = g;
