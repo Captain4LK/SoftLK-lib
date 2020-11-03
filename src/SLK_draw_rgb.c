@@ -142,14 +142,14 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
    int sx = 0;
    int sy = 0;
 
-	for(int i = 0;text[i];i++)
-	{
-		if(text[i]=='\n')
-		{
-			sx = 0; 
+   for(int i = 0;text[i];i++)
+   {
+      if(text[i]=='\n')
+      {
+         sx = 0; 
          sy+=y_dim*scale;
          continue;
-		}
+      }
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
 
@@ -170,7 +170,7 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
          }
       }
       sx += x_dim*scale;
-	}
+   }
 }
 
 //Draws a string to the draw target.
@@ -184,14 +184,14 @@ void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text)
    int sx = 0;
    int sy = 0;
 
-	for(int i = 0;text[i];i++)
-	{
-		if(text[i]=='\n')
-		{
-			sx = 0; 
+   for(int i = 0;text[i];i++)
+   {
+      if(text[i]=='\n')
+      {
+         sx = 0; 
          sy+=y_dim*scale;
          continue;
-		}
+      }
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
 
@@ -213,7 +213,7 @@ void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text)
          }
       }
       sx += x_dim*scale;
-	}
+   }
 }
 
 //Draws a sprite to the draw target.
