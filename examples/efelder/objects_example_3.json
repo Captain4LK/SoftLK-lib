@@ -1,0 +1,46 @@
+{
+   "mode": 1,
+   "divisions": 10000000,
+	"circles":
+	[
+   ],
+   "rectangles":
+   [
+      {
+         "x":1000,
+         "y":1000,
+         "r": 0,
+         "g": 128,
+         "b": 0,
+         "width":1000,
+         "height":90,
+       "charge":-1.0,
+         "divisions":40,
+			"test_points":71
+      },
+      {
+         "x":1000,
+         "y":1000,
+         "r": 0,
+         "g": 128,
+         "b": 0,
+         "width":90,
+         "height":750,
+		 "charge":-1.0,
+         "divisions":40,
+			"test_points":71
+      },
+      {
+         "x":1500,
+         "y":1250,
+         "r": 0,
+         "g": 128,
+         "b": 0,
+         "width":500,
+         "height":500,
+		 "charge":2.0,
+         "divisions":40,
+			"test_points":71
+      }
+   ]
+}

@@ -69,6 +69,7 @@ typedef struct
 typedef struct
 {
    Pixel colors[256];
+   int used;
 }Palette;
 //-------------------------------------
 
@@ -307,7 +308,7 @@ static inline uint8_t closest_b(uint8_t c)
 static void palette_load(const char *path)
 {
    char buffer[512];
-   int colors = 0,i,found;
+   int colors = 0;
    int r,g,b,a;
 
    FILE *f = fopen(path,"r");
@@ -318,11 +319,11 @@ static void palette_load(const char *path)
    }
 
    memset(&pal,0,sizeof(pal));
-   for(i = 0;i<259&&fgets(buffer,512,f);i++)
+   for(int i = 0;i<259&&fgets(buffer,512,f);i++)
    {
       if(i==2)
       {
-         sscanf(buffer,"%d",&found);
+         sscanf(buffer,"%d",&(pal.used));
       }
       else if(i>2&&buffer[0]!='\0')
       {
@@ -355,7 +356,7 @@ static Pixel find_closest(Pixel in)
    int min_dist = INT_MAX;
    int min_index = 0;
 
-   for(int i = 0;i<256;i++)
+   for(int i = 0;i<pal.used;i++)
    {   
       int dist = color_dist2(in,pal.colors[i]);
       if(dist<min_dist)
