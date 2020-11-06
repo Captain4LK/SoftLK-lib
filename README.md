@@ -61,6 +61,10 @@ SoftLK has been tested and is working on the following plattforms/os:
 
 SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, the plattforms listed here are just the ones I frequently test SoftLK on.
 
+## Questions?
+
+Feel free to open an issue if you have any questions or problems!
+
 ## Library Credits
 
 Here is a list of all external libraries used by SoftLK:
