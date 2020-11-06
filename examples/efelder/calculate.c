@@ -317,8 +317,24 @@ static void calculate_circle(int shape)
          }
 
          ULK_vector_2d_norm(force_result,force_result);
+         if(tries%200==0)
+         {
+            ULK_vector_2d arrow_0;
+            ULK_vector_2d arrow_1;
+            ULK_vector_2d_copy(arrow_0,force_result);
+            if(negative)
+               ULK_vector_2d_mul(arrow_0,arrow_0,-20.0f);
+            else
+               ULK_vector_2d_mul(arrow_0,arrow_0,20.0f);
+            ULK_vector_2d_copy(arrow_1,arrow_0);
+            ULK_vector_2d_rot(arrow_0,arrow_0,(ULK_vector_2d){0.0f,0.0f},2.617994f);
+            SLK_draw_rgb_line(pos[0],pos[1],pos[0]+arrow_0[0],pos[1]+arrow_0[1],shapes[shape].circle.color);
+            ULK_vector_2d_rot(arrow_1,arrow_1,(ULK_vector_2d){0.0f,0.0f},-2.617994f);
+            SLK_draw_rgb_line(pos[0],pos[1],pos[0]+arrow_1[0],pos[1]+arrow_1[1],shapes[shape].circle.color);
+         }
          ULK_vector_2d_add(pos,pos,force_result);
          SLK_draw_rgb_color((int)pos[0],(int)pos[1],shapes[shape].circle.color);
+
       }
    }
 
