@@ -295,44 +295,54 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
 //the Bresenham line drawing algorythm.
 void SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel)
 {
-   int changed = 0;
-   int x = x0;
-   int y = y0;
-
-   int dx = abs(x1-x0);
-   int dy = abs(y1-y0);
-
-   
-   int sign_x = SIGNUM(x1-x0);
-   int sign_y = SIGNUM(y1-y0);
-
-   if(dy>dx)
+   if(x0>x1||y0>y1)
    {
-      SWAP(dx,dy);
-      changed = 1;
+      SWAP(x0,x1);
+      SWAP(y0,y1);
    }
+   int dx = x1-x0;
+   int ix = (dx>0)-(dx<0);
+   dx = abs(dx)<<1;
+   int dy = y1-y0;
+   int iy = (dy>0)-(dy<0);
+   dy = abs(dy)<<1;
+   SLK_draw_pal_paxel(x0,y0,paxel);
 
-    int error = 2*dy-dx;
+   if(dx>=dy)
+   {
+      int error = dy-(dx>>1);
+      while(x0!=x1)
+      {
+         if(error>0||(!error&&ix>0))
+         {
+            error-=dx;
+            y0+=iy;
+         }
 
-    for(int i = 1;i<=dx;i++)
-    {
-        SLK_draw_pal_paxel(x,y,paxel);
+         error+=dy;
+         x0+=ix;
 
-        while(error>=0)
-        {
-            if(changed)
-                x+=1;
-            else
-                y+=1;
-            error-=2*dx;
-        }
+         SLK_draw_pal_paxel(x0,y0,paxel);
+      }
+   }
+   else
+   {
+      int error = dx-(dy>>1);
 
-        if(changed)
-            y+=sign_y;
-        else
-            x+=sign_x;
-        error+=2*dy;
-    }
+      while(y0!=y1)
+      {
+         if(error>0||(!error&&iy>0))
+         {
+            error-=dy;
+            x0+=ix;
+         }
+
+         error+=dx;
+         y0+=iy;
+
+         SLK_draw_pal_paxel(x0,y0,paxel);
+      }
+   }
 }
 
 //Draws a line between to points up to but not including the second point,
