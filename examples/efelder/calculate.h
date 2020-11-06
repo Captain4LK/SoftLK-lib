@@ -57,6 +57,7 @@ extern Shape *shapes;
 extern int shapes_count;
 extern Rectangle *rectangles_tmp;
 extern int rectangles_tmp_count;
+extern SLK_RGB_sprite *key_potential;
 
 void shapes_load_file(const char *path);
 void calculate();

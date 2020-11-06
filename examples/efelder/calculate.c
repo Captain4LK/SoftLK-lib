@@ -40,9 +40,13 @@ Shape *shapes;
 int shapes_count;
 Rectangle *rectangles_tmp;
 int rectangles_tmp_count;
+SLK_RGB_sprite *key_potential;
 
 static int potential_mode = 0;
 static float divider_potential = 1000000.0f;
+static int manual_potential = 0;
+static float charge_min;
+static float charge_max;
 //-------------------------------------
 
 //Function prototypes
@@ -114,6 +118,12 @@ void shapes_load_file(const char *path)
    //Set how the potential is supposed to be drawn
    potential_mode = cJSON_GetObjectItem(json,"mode")->valueint;
    divider_potential = cJSON_GetObjectItem(json,"divisions")->valuedouble;
+   manual_potential = cJSON_GetObjectItem(json,"manual_potential")->valueint;
+   if(manual_potential)
+   {
+      charge_min = cJSON_GetObjectItem(json,"charge_min")->valuedouble;
+      charge_max = cJSON_GetObjectItem(json,"charge_max")->valuedouble;
+   }
    
    //Load all circles
    for(int i = 0;i<circles_count;i++)
@@ -382,31 +392,91 @@ static void calculate_potential_0()
 
 static void calculate_potential_1()
 {
-   Circle *min = &shapes[0].circle;
-   Circle *max = &shapes[0].circle;
+   float potential_min;
+   float potential_max;
+
+   Circle min = shapes[0].circle;
+   Circle max = shapes[0].circle;
    for(int i = 0;i<shapes_count;i++)
    {
-      if(shapes[i].circle.charge>max->charge)
-         max = &shapes[i].circle;
-      if(shapes[i].circle.charge<min->charge)
-         min = &shapes[i].circle;
+      if(shapes[i].circle.charge>max.charge)
+         max = shapes[i].circle;
+      if(shapes[i].circle.charge<min.charge)
+         min = shapes[i].circle;
    }
-   float potential_min = 8987551788.0f*(min->charge/min->radius);
-   float potential_max = 8987551788.0f*(max->charge/max->radius);
 
    for(int i = 0;i<rectangles_tmp_count;i++)
    {
       int rad = rectangles_tmp[i].width>rectangles_tmp[i].height?rectangles_tmp[i].height:rectangles_tmp[i].width;
-      float pot = 8987551788.0f*(rectangles_tmp[i].charge)/rad;
-      if(pot>potential_max)
-         potential_max = pot;
-      if(pot<potential_min)
-         potential_min = pot;
+      if(rectangles_tmp[i].charge>max.charge)
+      {
+         max.charge = rectangles_tmp[i].charge;
+         max.radius = rad;
+      }
+      if(rectangles_tmp[i].charge<min.charge)
+      {
+         min.charge = rectangles_tmp[i].charge;
+         min.radius = rad;
+      }
    }
-   if(min->charge>0.0f)
+
+   if(!manual_potential)
+   {
+      potential_min = 8987551788.0f*(min.charge/min.radius);
+      potential_max = 8987551788.0f*(max.charge/max.radius);
+   }
+   else
+   {
+      potential_min = 8987551788.0f*(charge_min/min.radius);
+      potential_max = 8987551788.0f*(charge_max/max.radius);
+   }
+
+   if(min.charge>0.0f)
       potential_min = 0.0f;
-   if(max->charge<0.0f)
+   if(max.charge<0.0f)
       potential_max = 0.0f;
+
+   SLK_draw_rgb_set_target(key_potential);
+
+   for(int y = 0;y<256;y++)
+   {
+      for(int x = 0;x<256;x++)
+      {
+         float t = (float)y/255.0f;
+
+         SLK_Color o;
+         SLK_Color a;;
+         SLK_Color b;
+         if(t<0.5)
+         {
+            t*=2.0f; 
+            a = SLK_color_create(0,0,255,255);
+            b = SLK_color_create(0,255,0,255);
+         }
+         else
+         {
+            t-=0.5f;
+            t*=2.0f;
+            a = SLK_color_create(0,255,0,255);
+            b = SLK_color_create(255,0,0,255);
+         }
+         o.r = a.r+t*(b.r-a.r);
+         o.g = a.g+t*(b.g-a.g);
+         o.b = a.b+t*(b.b-a.b);
+         o.a = 255;
+
+         SLK_draw_rgb_color(x,y,o);
+      }
+   }
+   char buffer[256];
+   sprintf(buffer,"%f",potential_min);
+   SLK_draw_rgb_string(0,0,2,buffer,SLK_color_create(255,255,255,255));
+   sprintf(buffer,"%f",potential_min+0.5f*(potential_max-potential_min));
+   SLK_draw_rgb_string(0,120,2,buffer,SLK_color_create(255,255,255,255));
+   sprintf(buffer,"%f",potential_max);
+   SLK_draw_rgb_string(0,240,2,buffer,SLK_color_create(255,255,255,255));
+
+   SLK_draw_rgb_set_target(NULL);
 
    int part = canvas_width/100;
    for(int x = 0;x<canvas_width;x++)
@@ -428,7 +498,7 @@ static void calculate_potential_1()
             length = ULK_vector_2d_mag(distance);
             
             if(length!=0.0f)
-               potential+=8987551788.0f*(shapes[i].circle.charge/length);
+               potential+=(8987551788.0f*(shapes[i].circle.charge/length));
          }
          
          float t = (potential-potential_min)/(potential_max-potential_min);

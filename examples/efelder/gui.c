@@ -256,6 +256,8 @@ void gui_update()
                SLK_draw_rgb_sprite(layer0->type_1.target,0,0);
                sprintf(path,"potential_%ld.png",time(NULL));
                SLK_rgb_sprite_save(path,sprite_to_save);
+               sprintf(path,"key_%ld.png",time(NULL));
+               SLK_rgb_sprite_save(path,key_potential);
 
                SLK_draw_rgb_set_target(NULL);
                SLK_rgb_sprite_destroy(sprite_to_save);

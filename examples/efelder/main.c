@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
    SLK_layer_set_dynamic(5,1);
 
    SLK_draw_rgb_load_font("../../data/fonts/cursive2.png");
+   key_potential = SLK_rgb_sprite_create(256,256);
 
    gui_init();
 

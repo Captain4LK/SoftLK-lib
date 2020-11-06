@@ -1,6 +1,7 @@
 {
    "mode": 1,
    "divisions": 50000000,
+   "manual_potential": 0,
 	"circles":
 	[
 		{

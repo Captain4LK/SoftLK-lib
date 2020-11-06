@@ -1,8 +1,9 @@
 {
    "mode": 1,
    "divisions": 10000000,
-	"circles":
-	[
+   "manual_potential": 0,
+   "circles":
+   [
    ],
    "rectangles":
    [
@@ -14,9 +15,9 @@
          "b": 0,
          "width":1000,
          "height":90,
-       "charge":-1.0,
+         "charge":-1.0,
          "divisions":40,
-			"test_points":71
+         "test_points":71
       },
       {
          "x":1000,
@@ -26,9 +27,9 @@
          "b": 0,
          "width":90,
          "height":750,
-		 "charge":-1.0,
+         "charge":-1.0,
          "divisions":40,
-			"test_points":71
+         "test_points":71
       },
       {
          "x":1500,
@@ -38,9 +39,9 @@
          "b": 0,
          "width":500,
          "height":500,
-		 "charge":2.0,
+         "charge":2.0,
          "divisions":40,
-			"test_points":71
+         "test_points":71
       }
    ]
 }
