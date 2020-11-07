@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include "../../include/SLK/SLK.h"
-#include "../../extensions/3d_renderer/SLK_3d.h"
+#include "../../include/SLK/SLK_3d.h"
 //-------------------------------------
 
 //Internal includes
@@ -30,6 +30,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Variables
 SLK_3d_polygon *skybox;
+SLK_3d_mesh *house;
+static SLK_RGB_sprite *house_sprite;
 
 ULK_vertex cube_temp[6][4] = 
 {
@@ -75,12 +77,15 @@ ULK_vertex cube_temp[6][4] =
 
 //Function prototypes
 static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, SLK_RGB_sprite *t2, SLK_RGB_sprite *t3, SLK_RGB_sprite *t4, SLK_RGB_sprite *t5);
+SLK_RGB_sprite *sprite_loader(const char *path);
 //-------------------------------------
 
 //Function implementations
 
 void assets_load()
 {
+   SLK_3d_set_rgb_sprite_loader(sprite_loader);
+   house_sprite = SLK_rgb_sprite_load("assets/house.png");
    SLK_RGB_sprite *xor = SLK_rgb_sprite_create(256,256);
    for(int y = 0;y<256;y++)
    {
@@ -89,9 +94,9 @@ void assets_load()
          SLK_rgb_sprite_set_pixel(xor,x,y,SLK_color_create(x^y,x^y,x^y,255));
       }
    }
-   skybox = create_mesh_cube(SLK_rgb_sprite_load("assets/skybox_0.png"),SLK_rgb_sprite_load("assets/skybox_1.png"),SLK_rgb_sprite_load("assets/skybox_2.png"),
-                    SLK_rgb_sprite_load("assets/skybox_3.png"),SLK_rgb_sprite_load("assets/skybox_4.png"),SLK_rgb_sprite_load("assets/skybox_5.png"));
-   //skybox = create_mesh_cube(xor,xor,xor,xor,xor,xor);
+   skybox = create_mesh_cube(xor,xor,xor,xor,xor,xor);
+   
+   house = SLK_3d_load_obj("assets/house.obj");
 }
 
 static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, SLK_RGB_sprite *t2, SLK_RGB_sprite *t3, SLK_RGB_sprite *t4, SLK_RGB_sprite *t5)
@@ -123,5 +128,10 @@ static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, 
    poly->next = NULL;
 
    return poly_org;
+}
+
+SLK_RGB_sprite *sprite_loader(const char *path)
+{
+   return house_sprite;
 }
 //-------------------------------------

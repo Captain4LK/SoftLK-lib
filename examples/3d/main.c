@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include "../../include/SLK/SLK.h"
-#include "../../extensions/3d_renderer/SLK_3d.h"
+#include "../../include/SLK/SLK_3d.h"
 //-------------------------------------
 
 //Internal includes
@@ -48,10 +48,10 @@ static void draw();
 //Function implementations
 int main()
 {
-   SLK_setup(640,480,1,"SoftLK 3d demo",1,SLK_WINDOW_MAX,0);
+   SLK_setup(640,480,1,"SoftLK 3d demo",0,SLK_WINDOW_MAX,0);
    SLK_mouse_set_relative(1);
    SLK_mouse_capture(1);
-   SLK_timer_set_fps(60);
+   SLK_timer_set_fps(60); //DO NOT set this lower (will cause headaches)
 
    SLK_layer_create(0,SLK_LAYER_RGB);
    SLK_layer_set_dynamic(0,0);
@@ -68,7 +68,7 @@ int main()
    ULK_vector_3d_set(pos,0.0f,0.0f,0.0f);
    ULK_vector_3d_set(front,0.0f,0.0f,-1.0f);
    ULK_vector_3d_set(up,0.0f,1.0f,0.0f);
-   speed = 0.001f;
+   speed = 0.005f;
    yaw = -90.0f;
    pitch = -58.0f;
    sensitivity = 0.5f;
@@ -155,10 +155,6 @@ static void camera_update()
 
 static void draw()
 {
-   //ULK_vector_3d trans; 
-   //ULK_vector_3d_negate(trans,pos);
-   //ULK_matrix_4x4_set_translation(*SLK_3d_get_model(),trans);
-   ULK_matrix_4x4_scale(*SLK_3d_get_model(),*SLK_3d_get_model(),0.1f);
    SLK_3d_polygon *p = skybox;
    while(p)
    {
@@ -167,6 +163,9 @@ static void draw()
 
       p = p->next;
    }
+
+   ULK_matrix_4x4_scale(*SLK_3d_get_model(),*SLK_3d_get_model(),0.1f);
+   SLK_3d_draw_mesh(house);
 }
 //-------------------------------------
 

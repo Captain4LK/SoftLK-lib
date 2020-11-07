@@ -33,7 +33,8 @@ For more information, please refer to <http://unlicense.org/>
 //-------------------------------------
 
 //Internal includes
-#include "SLK_3d.h"
+#include "../../include/SLK/SLK_3d.h"
+#include "kixor/kixor_obj_parser.h"
 //-------------------------------------
 
 //#defines
@@ -108,6 +109,8 @@ static SLK_RGB_sprite *target_rgb;
 static SLK_Pal_sprite *target_pal;
 static SLK_RGB_sprite *texture_rgb;
 static SLK_Pal_sprite *texture_pal;
+static SLK_RGB_sprite *(*rgb_loader)(const char *path);
+static SLK_Pal_sprite *(*pal_loader)(const char *path);
 
 #if INTERLACING
 
@@ -121,6 +124,105 @@ static inline int logb2(unsigned in);
 //-------------------------------------
 
 //Function implementations
+
+void SLK_3d_set_rgb_sprite_loader(SLK_RGB_sprite *(*loader)(const char *path))
+{
+   rgb_loader = loader;
+}
+
+void SLK_3d_set_pal_sprite_loader(SLK_Pal_sprite *(*loader)(const char *path))
+{
+   pal_loader = loader;
+}
+
+//Load a mesh from a obj file
+SLK_3d_mesh *SLK_3d_load_obj(char *path)
+{
+   Kixor_obj_scene_data data;
+   if(!kixor_parse_obj_scene(&data,path))
+      return NULL;
+
+   SLK_3d_mesh *m = malloc(sizeof(SLK_3d_mesh)); 
+   m->polygons = malloc(sizeof(SLK_3d_polygon));
+   SLK_3d_polygon *cur = m->polygons;
+   cur->next = NULL;
+   for(int i = 0;i<data.face_count;i++)
+   {
+      Kixor_obj_face *f = data.face_list[i];
+      cur->texture_rgb = NULL;
+      cur->texture_pal = NULL;
+      if(f->material_index>=0)
+      {
+         cur->texture_rgb = rgb_loader(data.material_list[f->material_index]->texture_filename);
+      }
+      cur->vertices = malloc(sizeof(ULK_vertex));
+      ULK_vertex *v = cur->vertices;
+      v->next = NULL;
+      for(int o = 0;o<f->vertex_count;o++)
+      {
+         int index_vert = f->vertex_index[o];
+         int index_tex = f->texture_index[o];
+
+         if(index_vert<0)
+         {
+            v->pos[0] = 0.0f;
+            v->pos[1] = 0.0f;
+            v->pos[2] = 0.0f;
+         }
+         else
+         {
+            v->pos[0] = data.vertex_list[index_vert]->e[0];
+            v->pos[1] = data.vertex_list[index_vert]->e[1];
+            v->pos[2] = data.vertex_list[index_vert]->e[2];
+         }
+         if(index_tex<0)
+         {
+            v->u = 0.0f;
+            v->v = 0.0f;
+         }
+         else
+         {
+            v->v = data.vertex_texture_list[index_tex]->e[0];
+            v->u = data.vertex_texture_list[index_tex]->e[1];
+         }
+
+         if(o!=f->vertex_count-1)
+         {
+            v->next = malloc(sizeof(ULK_vertex));
+            v = v->next;
+            v->next = NULL;
+         }
+      }
+
+      if(i!=data.face_count-1)
+      {
+         cur->next = malloc(sizeof(SLK_3d_polygon));
+         cur = cur->next;
+         cur->next = NULL;
+      }
+   }
+
+   return m;
+}
+
+void SLK_3d_draw_mesh(SLK_3d_mesh *mesh)
+{
+   SLK_3d_polygon *p = mesh->polygons;
+   while(p)
+   {
+      if(p->texture_rgb!=NULL)
+      {
+         SLK_3d_set_texture_rgb(p->texture_rgb);
+         SLK_3d_draw_poly_rgb_subaffine(p->vertices);
+      }
+      else
+      {
+
+      }
+
+      p = p->next;
+   }
+}
 
 //Finds the log base 2 of an integer (faster than log for useless optimization purposes)
 static inline int logb2(unsigned in)
@@ -288,6 +390,8 @@ void SLK_3d_start_pal(SLK_Pal_sprite *target)
 //Use this if you don't know better.
 void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
 {
+   if(texture_rgb==NULL)
+      return;
    const int tex_mask_x = texture_rgb->width-1;
    const int tex_mask_y = texture_rgb->height-1;
    const int power = logb2(texture_rgb->width);

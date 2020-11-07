@@ -32,7 +32,7 @@ For more information, please refer to <http://unlicense.org/>
 #include "../../external/UtilityLK/include/ULK_vector.h"
 #include "../../external/UtilityLK/include/ULK_matrix.h"
 #include "../../external/UtilityLK/include/ULK_3d.h"
-#include "../../include/SLK/SLK.h"
+#include "SLK.h"
 
 typedef struct SLK_3d_polygon
 {
@@ -41,6 +41,16 @@ typedef struct SLK_3d_polygon
    SLK_Pal_sprite *texture_pal;
    struct SLK_3d_polygon *next;
 }SLK_3d_polygon;
+
+typedef struct
+{
+   SLK_3d_polygon *polygons;
+}SLK_3d_mesh;
+
+void SLK_3d_set_rgb_sprite_loader(SLK_RGB_sprite *(*loader)(const char *path));
+void SLK_3d_set_pal_sprite_loader(SLK_Pal_sprite *(*loader)(const char *path));
+SLK_3d_mesh *SLK_3d_load_obj(char *path);
+void SLK_3d_draw_mesh(SLK_3d_mesh *mesh);
 
 void SLK_3d_camera_set_pos(const ULK_vector_3d pos);
 void SLK_3d_camera_set_front(const ULK_vector_3d front);

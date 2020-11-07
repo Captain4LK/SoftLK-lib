@@ -18,9 +18,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define _ASSETS_H_
 
 #include "../../include/SLK/SLK.h"
-#include "../../extensions/3d_renderer/SLK_3d.h"
+#include "../../include/SLK/SLK_3d.h"
 
 extern SLK_3d_polygon *skybox;
+extern SLK_3d_mesh *house;
 
 void assets_load();
 
