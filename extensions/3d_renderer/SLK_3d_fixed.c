@@ -146,13 +146,11 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
       m->texture_rgb[i] = rgb_loader(data.material_list[i]->texture_filename);
    }
 
-   SLK_3d_polygon *cur = m->polygons;
+   SLK_3d_mesh_polygon *cur = m->polygons;
    cur->next = NULL;
    for(int i = 0;i<data.face_count;i++)
    {
       Kixor_obj_face *f = data.face_list[i];
-      cur->texture_rgb = NULL;
-      cur->texture_pal = NULL;
       cur->index_material_rgb = f->material_index;
       cur->vertices = malloc(sizeof(ULK_vertex));
       ULK_vertex *v = cur->vertices;
@@ -206,7 +204,7 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
 
 void SLK_3d_draw_mesh(SLK_3d_mesh *mesh)
 {
-   SLK_3d_polygon *p = mesh->polygons;
+   SLK_3d_mesh_polygon *p = mesh->polygons;
    while(p)
    {
       if(p->index_material_rgb>=0)
