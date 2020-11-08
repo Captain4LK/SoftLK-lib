@@ -37,6 +37,7 @@ For more information, please refer to <http://unlicense.org/>
 typedef struct SLK_3d_polygon
 {
    ULK_vertex *vertices;
+   int index_material_rgb;
    SLK_RGB_sprite *texture_rgb;
    SLK_Pal_sprite *texture_pal;
    struct SLK_3d_polygon *next;
@@ -44,11 +45,11 @@ typedef struct SLK_3d_polygon
 
 typedef struct
 {
+   SLK_RGB_sprite **texture_rgb;
    SLK_3d_polygon *polygons;
 }SLK_3d_mesh;
 
 void SLK_3d_set_rgb_sprite_loader(SLK_RGB_sprite *(*loader)(const char *path));
-void SLK_3d_set_pal_sprite_loader(SLK_Pal_sprite *(*loader)(const char *path));
 SLK_3d_mesh *SLK_3d_load_obj(char *path);
 void SLK_3d_draw_mesh(SLK_3d_mesh *mesh);
 

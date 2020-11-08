@@ -31,7 +31,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Variables
 SLK_3d_polygon *skybox;
 SLK_3d_mesh *house;
-static SLK_RGB_sprite *house_sprite;
 
 ULK_vertex cube_temp[6][4] = 
 {
@@ -85,7 +84,6 @@ SLK_RGB_sprite *sprite_loader(const char *path);
 void assets_load()
 {
    SLK_3d_set_rgb_sprite_loader(sprite_loader);
-   house_sprite = SLK_rgb_sprite_load("assets/house.png");
    SLK_RGB_sprite *xor = SLK_rgb_sprite_create(256,256);
    for(int y = 0;y<256;y++)
    {
@@ -132,6 +130,6 @@ static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, 
 
 SLK_RGB_sprite *sprite_loader(const char *path)
 {
-   return house_sprite;
+   return SLK_rgb_sprite_load(path);
 }
 //-------------------------------------

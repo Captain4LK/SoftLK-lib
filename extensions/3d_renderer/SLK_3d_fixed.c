@@ -110,7 +110,6 @@ static SLK_Pal_sprite *target_pal;
 static SLK_RGB_sprite *texture_rgb;
 static SLK_Pal_sprite *texture_pal;
 static SLK_RGB_sprite *(*rgb_loader)(const char *path);
-static SLK_Pal_sprite *(*pal_loader)(const char *path);
 
 #if INTERLACING
 
@@ -130,12 +129,8 @@ void SLK_3d_set_rgb_sprite_loader(SLK_RGB_sprite *(*loader)(const char *path))
    rgb_loader = loader;
 }
 
-void SLK_3d_set_pal_sprite_loader(SLK_Pal_sprite *(*loader)(const char *path))
-{
-   pal_loader = loader;
-}
-
 //Load a mesh from a obj file
+//Meshes only support rgb textures for now.
 SLK_3d_mesh *SLK_3d_load_obj(char *path)
 {
    Kixor_obj_scene_data data;
@@ -144,6 +139,13 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
 
    SLK_3d_mesh *m = malloc(sizeof(SLK_3d_mesh)); 
    m->polygons = malloc(sizeof(SLK_3d_polygon));
+   m->texture_rgb = malloc(sizeof(SLK_RGB_sprite *)*data.material_count);
+
+   for(int i = 0;i<data.material_count;i++)
+   {
+      m->texture_rgb[i] = rgb_loader(data.material_list[i]->texture_filename);
+   }
+
    SLK_3d_polygon *cur = m->polygons;
    cur->next = NULL;
    for(int i = 0;i<data.face_count;i++)
@@ -151,10 +153,7 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
       Kixor_obj_face *f = data.face_list[i];
       cur->texture_rgb = NULL;
       cur->texture_pal = NULL;
-      if(f->material_index>=0)
-      {
-         cur->texture_rgb = rgb_loader(data.material_list[f->material_index]->texture_filename);
-      }
+      cur->index_material_rgb = f->material_index;
       cur->vertices = malloc(sizeof(ULK_vertex));
       ULK_vertex *v = cur->vertices;
       v->next = NULL;
@@ -210,14 +209,10 @@ void SLK_3d_draw_mesh(SLK_3d_mesh *mesh)
    SLK_3d_polygon *p = mesh->polygons;
    while(p)
    {
-      if(p->texture_rgb!=NULL)
+      if(p->index_material_rgb>=0)
       {
-         SLK_3d_set_texture_rgb(p->texture_rgb);
+         SLK_3d_set_texture_rgb(mesh->texture_rgb[p->index_material_rgb]);
          SLK_3d_draw_poly_rgb_subaffine(p->vertices);
-      }
-      else
-      {
-
       }
 
       p = p->next;
