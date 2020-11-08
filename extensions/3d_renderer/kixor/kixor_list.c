@@ -76,7 +76,7 @@ int kixor_list_add_item(Kixor_list *listo, void *item, char *name)
 	{
 		name_length = strlen(name);
 		new_name = (char*) malloc(sizeof(char) * name_length + 1);
-		strncpy(new_name, name, name_length);
+		strcpy(new_name, name);
 		listo->names[listo->item_count] = new_name;
 	}
 
