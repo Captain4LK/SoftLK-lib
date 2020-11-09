@@ -1,4 +1,4 @@
-# SLK_3d_fixed
+# SLK_3d_fixed [WIP]
 
 A polygon sowftware renderer. For an example see examples/3d, the wiki contains documentation for the types and functions availible.
 

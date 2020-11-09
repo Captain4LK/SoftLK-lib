@@ -198,6 +198,7 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
          cur->next = NULL;
       }
    }
+   kixor_delete_obj_data(&data);
 
    return m;
 }
