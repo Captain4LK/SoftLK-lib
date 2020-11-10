@@ -4,12 +4,17 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 
 .PHONY: backend_sdl2_gl
 .PHONY: SLK_3d_fixed
+.PHONY: install
 
 backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 	ar crs libSLK.a $^
 
 backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
 	ar crs libSLK.a $^
+
+install: backend_sdl2_gl SLK_3d_fixed
+	cp *.a /usr/local/lib 
+	cp ../../include/SLK/ /usr/local/include -r
 
 SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d_fixed.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
 	ar crs "libSLK3d_fixed.a" $^
