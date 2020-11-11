@@ -69,6 +69,12 @@ For more information, please refer to <http://unlicense.org/>
 //Use branchless macros when possible.
 #define BRANCHLESS_MACROS 1
 
+//Use backface culling
+//0 for no culling
+//1 for counter clockwise culling
+//2 for clockwise culling
+#define BACKFACE_CULLING 1
+
 //Macros
 
 #if BRANCHLESS_MACROS 
@@ -450,6 +456,25 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    }
    y_min = (int)y_min_f;
    y_max = (int)y_max_f;
+   
+#if BACKFACE_CULLING == 1
+
+   if(ULK_vertex_winding(vn,1))
+   {
+      ULK_vertex_reset_temp();
+      return;
+   }
+
+#elif BACKFACE_CULLING == 2
+
+   if(!ULK_vertex_winding(vn,1))
+   {
+      ULK_vertex_reset_temp();
+      return;
+   }
+
+#endif
+
    //Shouldn't happen because of frustum clipping --> commented out
    /*if(y_min>y_max||y_min>Y_RES-1||y_max<0)
    {
@@ -608,7 +633,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
          int su = start_u;
          int sv = start_v;
 
-         for(int o = 0;o<len;o++)
+         for(int o = len;o;o--)
          {
             if(z>(*spanz))
             {
