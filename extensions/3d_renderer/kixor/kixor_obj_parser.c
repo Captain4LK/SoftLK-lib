@@ -300,8 +300,8 @@ int kixor_obj_parse_mtl_file(char *filename, Kixor_list *material_list)
 		// texture map
 		else if( kixor_strequal(current_token, "map_Kd") && material_open)
 		{
-			strncpy(current_mtl->texture_filename, strtok(NULL, " \t"), OBJ_FILENAME_LENGTH);
-         current_mtl->texture_filename[strlen(current_mtl->texture_filename)-2] = 0;
+			strncpy(current_mtl->texture_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
+         current_mtl->texture_filename[strlen(current_mtl->texture_filename)] = 0;
 		}
 		else
 		{

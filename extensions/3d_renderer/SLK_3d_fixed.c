@@ -392,6 +392,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
 {
    if(texture_rgb==NULL)
       return;
+
    const int tex_mask_x = texture_rgb->width-1;
    const int tex_mask_y = texture_rgb->height-1;
    const int power = logb2(texture_rgb->width);
@@ -456,7 +457,16 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    }
    y_min = (int)y_min_f;
    y_max = (int)y_max_f;
-   
+
+   //Shouldn't happen because of frustum clipping --> commented out
+   /*if(y_min>y_max||y_min>Y_RES-1||y_max<0)
+   {
+      ULK_vertex_reset_temp();
+      return;
+   }*/
+   //-------------------------------------
+  
+   //Backface culling
 #if BACKFACE_CULLING == 1
 
    if(ULK_vertex_winding(vn,1))
@@ -474,15 +484,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    }
 
 #endif
-
-   //Shouldn't happen because of frustum clipping --> commented out
-   /*if(y_min>y_max||y_min>Y_RES-1||y_max<0)
-   {
-      ULK_vertex_reset_temp();
-      return;
-   }*/
    //-------------------------------------
-
 
    //Set back to defaults for later calculations.
    for(int i = y_min;i<y_max;i++)
