@@ -16,7 +16,7 @@ install: backend_sdl2_gl SLK_3d_fixed
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
 
-SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d_fixed.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
+SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d.o SLK_3d_rgb.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
 	ar crs "libSLK3d_fixed.a" $^
 
 SLK_core.o: ../../src/SLK_core.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../src/backend.h ../../src/SLK_layer_i.h
@@ -70,7 +70,10 @@ ULK_matrix.o: ../../external/UtilityLK/src/ULK_matrix.c ../../external/UtilityLK
 ULK_3d.o: ../../external/UtilityLK/src/ULK_3d.c ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_3d_fixed.o: ../../extensions/3d_renderer/SLK_3d_fixed.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+SLK_3d.o: ../../extensions/3d_renderer/SLK_3d.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_3d_rgb.o: ../../extensions/3d_renderer/SLK_3d_rgb.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 kixor_list.o: ../../extensions/3d_renderer/kixor/kixor_list.c
