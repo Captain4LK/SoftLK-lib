@@ -303,6 +303,18 @@ int kixor_obj_parse_mtl_file(char *filename, Kixor_list *material_list)
          strncpy(current_mtl->texture_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
          current_mtl->texture_filename[strlen(current_mtl->texture_filename)] = 0;
       }
+      // ambiant map
+      else if( kixor_strequal(current_token, "map_Ka") && material_open)
+      {
+         strncpy(current_mtl->ambiant_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
+         current_mtl->ambiant_filename[strlen(current_mtl->ambiant_filename)] = 0;
+      }
+      // dissolve map
+      else if( kixor_strequal(current_token, "map_d") && material_open)
+      {
+         strncpy(current_mtl->dissolve_filename, strtok(NULL, WHITESPACE), OBJ_FILENAME_LENGTH);
+         current_mtl->dissolve_filename[strlen(current_mtl->dissolve_filename)] = 0;
+      }
       else
       {
          fprintf(stderr, "Unknown command '%s' in material file %s at line %i:\n\t%s\n",

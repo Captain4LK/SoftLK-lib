@@ -44,6 +44,8 @@ typedef struct Kixor_obj_material
 {
    char name[MATERIAL_NAME_SIZE+1];
    char texture_filename[OBJ_FILENAME_LENGTH+1];
+   char ambiant_filename[OBJ_FILENAME_LENGTH+1];
+   char dissolve_filename[OBJ_FILENAME_LENGTH+1];
    double amb[3];
    double diff[3];
    double spec[3];

@@ -222,7 +222,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    for(int i = y_min;i<y_max;i++)
    {
       x_startf[i] = X_RES;
-      x_endf[i] = 0;
+      x_endf[i] = 0.0f;
    }
    //-------------------------------------
 
