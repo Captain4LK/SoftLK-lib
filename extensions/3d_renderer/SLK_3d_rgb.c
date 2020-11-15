@@ -25,6 +25,12 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org/>
 */
 
+/*
+Used ressources:
+   * https://gitlab.com/drummyfish/small3dlib (Public Domain)
+
+*/
+
 //External includes
 #include "../../external/UtilityLK/include/ULK_vector.h"
 #include "../../external/UtilityLK/include/ULK_matrix.h"
@@ -69,14 +75,14 @@ typedef struct
    SLK_RGB_sprite *texture;
 }SLK_3d_triangle;
 
-typedef struct sbuffer_tree
+typedef struct SLK_3d_sbuffer_tree
 {
    int x0;
    int x1;
    int len;
-   struct sbuffer_tree *left;
-   struct sbuffer_tree *right;
-}Sbuffer_tree;
+   struct SLK_3d_sbuffer_tree *left;
+   struct SLK_3d_sbuffer_tree *right;
+}SLK_3d_sbuffer_tree;
 
 #endif
 
@@ -85,13 +91,6 @@ typedef struct sbuffer_tree
 //Variables
 static SLK_RGB_sprite *target_rgb;
 static SLK_RGB_sprite *texture_rgb;
-
-#if !USE_SPAN_BUFFER
-
-static int z_buffer[X_RES*Y_RES];
-
-#endif
-
 static int x_start[Y_RES];
 static float x_startf[Y_RES];
 static int x_end[Y_RES];
@@ -103,6 +102,13 @@ static int v_end[Y_RES];
 static int z_start[Y_RES];
 static int z_end[Y_RES];
 
+#if !USE_SPAN_BUFFER
+
+//Not needed when using span buffering
+static int z_buffer[X_RES*Y_RES];
+
+#endif
+
 #if INTERLACING
 
 int line;
@@ -111,14 +117,19 @@ int line;
 
 #if USE_SPAN_BUFFER
 
+//Triangle buffer
+//Keeping track of n-gons is hard, so all
+//polygons get triangualized
 static SLK_3d_triangle *tri_buffer;
 static int tri_buffer_used;
 static int tri_buffer_space;
-static Sbuffer_tree *span_base = NULL;
-static int spans = 0;
-static Sbuffer_tree *sbuffer[Y_RES] = {NULL};
+
+//span_base: keep track of allocated and unused spans --> allocate less (during most frames no) new memory each frame
+static SLK_3d_sbuffer_tree *span_base = NULL;
+static SLK_3d_sbuffer_tree *sbuffer[Y_RES] = {NULL};
 
 #endif
+
 //-------------------------------------
 
 //Function prototypes
@@ -127,12 +138,13 @@ static inline int logb2(unsigned in);
 #if USE_SPAN_BUFFER
 
 static int comp_float(const void *e0, const void* e1);
-static Sbuffer_tree *new_span();
-static void free_span(Sbuffer_tree *t);
-static void draw_span(const Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
-static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
+static SLK_3d_sbuffer_tree *span_new();
+static void span_free(SLK_3d_sbuffer_tree *t);
+static void span_draw(const SLK_3d_sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
+static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
 
 #endif
+
 //-------------------------------------
 
 //Function implementations
@@ -183,11 +195,12 @@ void SLK_3d_start_rgb(SLK_RGB_sprite *target)
       tri_buffer = malloc(sizeof(*tri_buffer)*tri_buffer_space);
    }
 
+   //"Free" all currently existing spans
    for(int i = 0;i<Y_RES;i++)
    {
-      Sbuffer_tree *t = sbuffer[i];
+      SLK_3d_sbuffer_tree *t = sbuffer[i];
       if(t)
-         free_span(t);
+         span_free(t);
       sbuffer[i] = NULL;
    }
 
@@ -202,13 +215,18 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    if(texture_rgb==NULL)
       return;
 
+#if !USE_SPAN_BUFFER
+
    const int tex_mask_x = texture_rgb->width-1;
    const int tex_mask_y = texture_rgb->height-1;
    const int power = logb2(texture_rgb->width);
-   ULK_vertex *v = verts;
-   ULK_vertex *vn = NULL;
    int y_min = Y_RES;
    int y_max = 0;
+
+#endif
+
+   ULK_vertex *v = verts;
+   ULK_vertex *vn = NULL;
    float y_min_f = Y_RES;
    float y_max_f = 0.0f;
    int count = 0;
@@ -266,15 +284,6 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
       count++;
       v = v->next;
    }
-   y_min = (int)y_min_f;
-   y_max = (int)y_max_f;
-
-   //Shouldn't happen because of frustum clipping --> commented out
-   /*if(y_min>y_max||y_min>Y_RES-1||y_max<0)
-   {
-      ULK_vertex_reset_temp();
-      return;
-   }*/
    //-------------------------------------
   
    //Backface culling
@@ -331,6 +340,8 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
 #else
 
    //Set back to defaults for later calculations.
+   y_min = (int)y_min_f;
+   y_max = (int)y_max_f;
    for(int i = y_min;i<y_max;i++)
    {
       x_startf[i] = X_RES;
@@ -512,6 +523,8 @@ void SLK_3d_dispatch()
 #if SPAN_ZSORT
 
    //Sort by depth
+   //Can be disabled if the engine you may
+   //write on top already draws triangles from front to back.
    qsort(tri_buffer,tri_buffer_used,sizeof(*tri_buffer),comp_float);
 
 #endif
@@ -654,7 +667,7 @@ void SLK_3d_dispatch()
          int ut = u_start[i];
          int vt = v_start[i];
 
-         Sbuffer_tree *node = new_span();
+         SLK_3d_sbuffer_tree *node = span_new();
          node->x0 = start_x;
          node->x1 = end_x;
          node->len = ilen;
@@ -662,11 +675,11 @@ void SLK_3d_dispatch()
          if(!sbuffer[i])
          {
             sbuffer[i] = node;
-            draw_span(node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
+            span_draw(node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
          }
          else
          {
-            add_span(sbuffer[i],node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
+            span_add(sbuffer[i],node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
          }
       }
    }
@@ -684,18 +697,17 @@ static int comp_float(const void *e0, const void* e1)
    return (*(const SLK_3d_triangle*)e0).sz>(*(const SLK_3d_triangle*)e1).sz;
 }
 
-static Sbuffer_tree *new_span()
+static SLK_3d_sbuffer_tree *span_new()
 {
    if(!span_base)
    {
-      spans++;
-      Sbuffer_tree *s = malloc(sizeof(*s));
+      SLK_3d_sbuffer_tree *s = malloc(sizeof(*s));
       s->left = NULL;
       s->right = NULL;
       return s;
    }
    
-   Sbuffer_tree *t = span_base;
+   SLK_3d_sbuffer_tree *t = span_base;
    span_base = t->right;
    t->right = NULL;
    t->left = NULL;
@@ -703,17 +715,17 @@ static Sbuffer_tree *new_span()
    return t;
 }
 
-static void free_span(Sbuffer_tree *t)
+static void span_free(SLK_3d_sbuffer_tree *t)
 {
    if(t->right)
-      free_span(t->right);
+      span_free(t->right);
    if(t->left)
-      free_span(t->left);
+      span_free(t->left);
    t->right = span_base;
    span_base = t;
 }
 
-static void draw_span(const Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
+static void span_draw(const SLK_3d_sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
 {
    SLK_Color *span = &target_rgb->data[y*X_RES]+t->x0;
    for(int x = t->x0;x<t->x1;x+=SUB_SPAN)
@@ -744,7 +756,7 @@ static void draw_span(const Sbuffer_tree *t, int y, int u, int v, int z, int du,
    }
 }
 
-static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
+static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
 {
    //While span length greater than 0
    while(t->x1>t->x0)
@@ -756,9 +768,10 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
          if(!cur->right)
          {
             cur->right = t;
-            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             return;
          }
+         //Skip to next span, if not rightmost one
          else
          {
             cur = cur->right;
@@ -771,9 +784,10 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
          if(!cur->left)
          {
             cur->left = t;
-            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             return;
          }
+         //Skip to next span, if not leftmost one
          else
          {
             cur = cur->left;
@@ -785,7 +799,7 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
          //Completely in exisiting span
          if(t->x1<=cur->x1)
          {
-            free_span(t);
+            span_free(t);
             return;
          }
          //Clip, removes from the left of span
@@ -798,12 +812,13 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
             t->x0 = cur->x1;
             if(!cur->right)
             {
-               draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+               span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
                cur->len+=t->len;
                cur->x1 = t->x1;
-               free_span(t);
+               span_free(t);
                return;
             }
+            //Skip to next span if not rightmost one
             else
             {
                cur = cur->right;
@@ -813,7 +828,7 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
       //Starts outside and ends outside of existing span
       else if(t->x1>cur->x1)
       {
-         Sbuffer_tree *t0 = new_span();
+         SLK_3d_sbuffer_tree *t0 = span_new();
          *t0 = *t;
          //Clip, removes from the left of span
          if(t0->x1>cur->x1)
@@ -825,33 +840,36 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
             t0->x0 = cur->x1;
             if(!cur->right)
             {
-               draw_span(t0,y,u,v,z,du,dv,dz,tx,ty,p);
+               span_draw(t0,y,u,v,z,du,dv,dz,tx,ty,p);
                cur->x1 = t0->x1;
                cur->len+=t0->len;
-               free_span(t0);
+               span_free(t0);
             }
             //Recursion! Start a second span
             else
             {
-               add_span(cur->right,t0,y,u,v,z,du,dv,dz,tx,ty,p);
+               span_add(cur->right,t0,y,u,v,z,du,dv,dz,tx,ty,p);
             }
          }
          //Completely inside current span
          if(t->x0>=cur->x0)
          {
-            free_span(t);
+            span_free(t);
             return;
          }
+
          //Clip, remove from the right of span
          t->x1 = cur->x0;
+
          if(!cur->left)
          {
-            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             cur->x0 = t->x0;
             cur->len+=t->len;
-            free_span(t);
+            span_free(t);
             return;
          }
+         //Skip to next span if not leftmost one
          else
          {
             cur = cur->left;
@@ -860,20 +878,24 @@ static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, in
       //Everything else
       else
       {
-         if(cur->x0<=t->x0)
+         if(t->x0>=cur->x0)
          {
-            free_span(t);
+            span_free(t);
             return;
          }
+
+         //Clip, remove from the right of span
          t->x1 = cur->x0;
+
          if(!cur->left)
          {
-            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             cur->x0 = t->x0;
             cur->len+=t->len;
-            free_span(t);
+            span_free(t);
             return;
          }
+         //Skip to next span if not leftmost one
          else
          {
             cur = cur->left;
