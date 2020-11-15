@@ -79,7 +79,6 @@ typedef struct SLK_3d_sbuffer_tree
 {
    int x0;
    int x1;
-   int len;
    struct SLK_3d_sbuffer_tree *left;
    struct SLK_3d_sbuffer_tree *right;
 }SLK_3d_sbuffer_tree;
@@ -165,6 +164,7 @@ void SLK_3d_set_texture_rgb(SLK_RGB_sprite *tex)
 {
    texture_rgb = tex;
 }
+
 //Sets the render target for the rgb renderer and clears the zbuffer, call
 //before starting to draw.
 void SLK_3d_start_rgb(SLK_RGB_sprite *target)
@@ -513,11 +513,14 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    }
 
    ULK_vertex_reset_temp();
+
 #endif
+
 }
 
 void SLK_3d_dispatch()
 {
+
 #if USE_SPAN_BUFFER
 
 #if SPAN_ZSORT
@@ -670,7 +673,6 @@ void SLK_3d_dispatch()
          SLK_3d_sbuffer_tree *node = span_new();
          node->x0 = start_x;
          node->x1 = end_x;
-         node->len = ilen;
 
          if(!sbuffer[i])
          {
@@ -813,7 +815,6 @@ static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, in
             if(!cur->right)
             {
                span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
-               cur->len+=t->len;
                cur->x1 = t->x1;
                span_free(t);
                return;
@@ -834,21 +835,20 @@ static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, in
          if(t0->x1>cur->x1)
          {
             int diff = cur->x1-t0->x0;
-            u+=diff*du;
-            v+=diff*dv;
-            z+=diff*dz;
+            int u0 = u+diff*du;
+            int v0 = v+diff*dv;
+            int z0 = z+diff*dz;
             t0->x0 = cur->x1;
             if(!cur->right)
             {
-               span_draw(t0,y,u,v,z,du,dv,dz,tx,ty,p);
+               span_draw(t0,y,u0,v0,z0,du,dv,dz,tx,ty,p);
                cur->x1 = t0->x1;
-               cur->len+=t0->len;
                span_free(t0);
             }
             //Recursion! Start a second span
             else
             {
-               span_add(cur->right,t0,y,u,v,z,du,dv,dz,tx,ty,p);
+               span_add(cur->right,t0,y,u0,v0,z0,du,dv,dz,tx,ty,p);
             }
          }
          //Completely inside current span
@@ -865,7 +865,6 @@ static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, in
          {
             span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             cur->x0 = t->x0;
-            cur->len+=t->len;
             span_free(t);
             return;
          }
@@ -891,7 +890,6 @@ static void span_add(SLK_3d_sbuffer_tree *cur, SLK_3d_sbuffer_tree *t, int y, in
          {
             span_draw(t,y,u,v,z,du,dv,dz,tx,ty,p);
             cur->x0 = t->x0;
-            cur->len+=t->len;
             span_free(t);
             return;
          }
