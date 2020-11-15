@@ -88,6 +88,7 @@ int main()
       SLK_3d_start_rgb(SLK_layer_get(0)->type_1.target);
       camera_update();
       draw();
+      SLK_3d_dispatch();
 
       SLK_render_update();
    }
@@ -155,16 +156,7 @@ static void camera_update()
 
 static void draw()
 {
-   SLK_3d_polygon *p = skybox;
-   while(p)
-   {
-      SLK_3d_set_texture_rgb(p->texture_rgb);
-      SLK_3d_draw_poly_rgb_subaffine(p->vertices);
-
-      p = p->next;
-   }
-
-   ULK_matrix_4x4_scale(*SLK_3d_get_model(),*SLK_3d_get_model(),0.1f);
+   ULK_matrix_4x4_set_scale(*SLK_3d_get_model(),0.1f);
    SLK_3d_draw_mesh(house);
 }
 //-------------------------------------

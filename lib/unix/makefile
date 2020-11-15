@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS=-lm -Wall
+CFLAGS=-lm -Wall -g
 DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o
 
 .PHONY: backend_sdl2_gl
@@ -70,10 +70,10 @@ ULK_matrix.o: ../../external/UtilityLK/src/ULK_matrix.c ../../external/UtilityLK
 ULK_3d.o: ../../external/UtilityLK/src/ULK_3d.c ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_3d.o: ../../extensions/3d_renderer/SLK_3d.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+SLK_3d.o: ../../extensions/3d_renderer/SLK_3d.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_3d_rgb.o: ../../extensions/3d_renderer/SLK_3d_rgb.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+SLK_3d_rgb.o: ../../extensions/3d_renderer/SLK_3d_rgb.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 kixor_list.o: ../../extensions/3d_renderer/kixor/kixor_list.c

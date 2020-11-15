@@ -29,53 +29,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
-SLK_3d_polygon *skybox;
 SLK_3d_mesh *house;
-
-ULK_vertex cube_temp[6][4] = 
-{
-   {
-      {{-1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,1.0f,&cube_temp[0][1]},
-      {{1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,0.0f,&cube_temp[0][2]},
-      {{1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[0][3]},
-      {{-1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,NULL}
-   },
-
-   {
-      {{1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,1.0f,&cube_temp[1][1]},
-      {{1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},1.0f,0.0f,&cube_temp[1][2]},
-      {{1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[1][3]},
-      {{1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,NULL}
-   },
-   {
-      {{-1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[2][1]},
-      {{1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,&cube_temp[2][2]},
-      {{1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},1.0f,1.0f,&cube_temp[2][3]},
-      {{-1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},1.0f,0.0f,NULL}
-   },
-   {
-      {{-1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[3][1]},
-      {{-1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,&cube_temp[3][2]},
-      {{-1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},1.0f,1.0f,&cube_temp[3][3]},
-      {{-1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,0.0f,NULL}
-   },
-   {
-      {{-1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0,1.0,&cube_temp[4][1]},
-      {{1.0f,1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0,0.0f,&cube_temp[4][2]},
-      {{1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[4][3]},
-      {{-1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,NULL}
-   },
-   {
-      {{-1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,1.0f,&cube_temp[5][1]},
-      {{1.0f,-1.0f,1.0f},{0.0f,0.0f,0.0f},0.0f,0.0f,&cube_temp[5][2]},
-      {{1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,0.0f,&cube_temp[5][3]},
-      {{-1.0f,-1.0f,-1.0f},{0.0f,0.0f,0.0f},1.0f,1.0f,NULL}
-   }
-};
 //-------------------------------------
 
 //Function prototypes
-static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, SLK_RGB_sprite *t2, SLK_RGB_sprite *t3, SLK_RGB_sprite *t4, SLK_RGB_sprite *t5);
 SLK_RGB_sprite *sprite_loader(const char *path);
 //-------------------------------------
 
@@ -84,52 +41,12 @@ SLK_RGB_sprite *sprite_loader(const char *path);
 void assets_load()
 {
    SLK_3d_set_rgb_sprite_loader(sprite_loader);
-   SLK_RGB_sprite *xor = SLK_rgb_sprite_create(256,256);
-   for(int y = 0;y<256;y++)
-   {
-      for(int x = 0;x<256;x++)
-      {
-         SLK_rgb_sprite_set_pixel(xor,x,y,SLK_color_create(x^y,x^y,x^y,255));
-      }
-   }
-   skybox = create_mesh_cube(xor,xor,xor,xor,xor,xor);
-   
-   house = SLK_3d_load_obj("assets/house.obj");
-}
-
-static SLK_3d_polygon *create_mesh_cube(SLK_RGB_sprite *t0, SLK_RGB_sprite *t1, SLK_RGB_sprite *t2, SLK_RGB_sprite *t3, SLK_RGB_sprite *t4, SLK_RGB_sprite *t5)
-{
-   SLK_3d_polygon *poly_org = malloc(sizeof(SLK_3d_polygon));
-   SLK_3d_polygon *poly = poly_org;
-   poly->texture_rgb = t0;
-   poly->vertices = &cube_temp[0][0];
-   poly->next = malloc(sizeof(SLK_3d_polygon));
-   poly = poly->next;
-   poly->texture_rgb = t1;
-   poly->vertices = &cube_temp[1][0];
-   poly->next = malloc(sizeof(SLK_3d_polygon));
-   poly = poly->next;
-   poly->texture_rgb = t2;
-   poly->vertices = &cube_temp[2][0];
-   poly->next = malloc(sizeof(SLK_3d_polygon));
-   poly = poly->next;
-   poly->texture_rgb = t3;
-   poly->vertices = &cube_temp[3][0];
-   poly->next = malloc(sizeof(SLK_3d_polygon));
-   poly = poly->next;
-   poly->texture_rgb = t4;
-   poly->vertices = &cube_temp[4][0];
-   poly->next = malloc(sizeof(SLK_3d_polygon));
-   poly = poly->next;
-   poly->texture_rgb = t5;
-   poly->vertices = &cube_temp[5][0];
-   poly->next = NULL;
-
-   return poly_org;
+   house = SLK_3d_load_obj("assets/level-1.obj");
 }
 
 SLK_RGB_sprite *sprite_loader(const char *path)
 {
+   printf("Loading %s\n",path);
    return SLK_rgb_sprite_load(path);
 }
 //-------------------------------------

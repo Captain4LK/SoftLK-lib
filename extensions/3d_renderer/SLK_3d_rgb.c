@@ -41,6 +41,9 @@ For more information, please refer to <http://unlicense.org/>
 //#defines
 //Macros
 
+#define MINF(a,b) (a>b?b:a)
+#define MAXF(a,b) (a<b?b:a)
+
 #if BRANCHLESS_MACROS 
 
 //http://graphics.stanford.edu/~seander/bithacks.html (public domain, but credit were credit is due)
@@ -54,13 +57,41 @@ For more information, please refer to <http://unlicense.org/>
 //-------------------------------------
 
 //Typedefs
+
+#if USE_SPAN_BUFFER
+
+typedef struct
+{
+   ULK_vector_3d pos[3];
+   float u[3];
+   float v[3];
+   float sz;
+   SLK_RGB_sprite *texture;
+}SLK_3d_triangle;
+
+typedef struct sbuffer_tree
+{
+   int x0;
+   int x1;
+   int len;
+   struct sbuffer_tree *left;
+   struct sbuffer_tree *right;
+}Sbuffer_tree;
+
+#endif
+
 //-------------------------------------
 
 //Variables
 static SLK_RGB_sprite *target_rgb;
 static SLK_RGB_sprite *texture_rgb;
 
+#if !USE_SPAN_BUFFER
+
 static int z_buffer[X_RES*Y_RES];
+
+#endif
+
 static int x_start[Y_RES];
 static float x_startf[Y_RES];
 static int x_end[Y_RES];
@@ -77,10 +108,31 @@ static int z_end[Y_RES];
 int line;
 
 #endif
+
+#if USE_SPAN_BUFFER
+
+static SLK_3d_triangle *tri_buffer;
+static int tri_buffer_used;
+static int tri_buffer_space;
+static Sbuffer_tree *span_base = NULL;
+static int spans = 0;
+static Sbuffer_tree *sbuffer[Y_RES] = {NULL};
+
+#endif
 //-------------------------------------
 
 //Function prototypes
 static inline int logb2(unsigned in);
+
+#if USE_SPAN_BUFFER
+
+static int comp_float(const void *e0, const void* e1);
+static Sbuffer_tree *new_span();
+static void free_span(Sbuffer_tree *t);
+static void draw_span(const Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
+static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p);
+
+#endif
 //-------------------------------------
 
 //Function implementations
@@ -105,8 +157,13 @@ void SLK_3d_set_texture_rgb(SLK_RGB_sprite *tex)
 //before starting to draw.
 void SLK_3d_start_rgb(SLK_RGB_sprite *target)
 {
+
+#if !USE_SPAN_BUFFER
+
    for(int i = 0;i<X_RES*Y_RES;i++)
-      z_buffer[i] = -2147483647;
+      z_buffer[i] = -2147483647.0f;
+
+#endif
 
    ULK_matrix_4x4_identity(model);
    target_rgb = target;
@@ -116,6 +173,26 @@ void SLK_3d_start_rgb(SLK_RGB_sprite *target)
    line = !line;
 
 #endif
+
+#if USE_SPAN_BUFFER
+
+   tri_buffer_used = 0;
+   if(tri_buffer==NULL)
+   {
+      tri_buffer_space = 128;
+      tri_buffer = malloc(sizeof(*tri_buffer)*tri_buffer_space);
+   }
+
+   for(int i = 0;i<Y_RES;i++)
+   {
+      Sbuffer_tree *t = sbuffer[i];
+      if(t)
+         free_span(t);
+      sbuffer[i] = NULL;
+   }
+
+#endif
+
 }
 
 //The most optimized and the recommended one!
@@ -165,6 +242,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    //-------------------------------------
 
    //Project to screen, convert coordinates to screen space and find max/min y values.
+   count = 0;
    v = vn;
    while(v)
    {
@@ -185,6 +263,7 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
       if(v->pos_pr[1]>y_max_f)
          y_max_f = v->pos_pr[1];
 
+      count++;
       v = v->next;
    }
    y_min = (int)y_min_f;
@@ -218,11 +297,44 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
 #endif
    //-------------------------------------
 
+#if USE_SPAN_BUFFER
+   
+   v = vn;
+   for(int i = 0;i<count-2;i++)
+   {
+      SLK_3d_triangle g;
+      ULK_vector_3d_copy(g.pos[0],vn->pos_pr);
+      ULK_vector_3d_copy(g.pos[1],v->next->pos_pr);
+      ULK_vector_3d_copy(g.pos[2],v->next->next->pos_pr);
+      g.u[0] = vn->u;
+      g.u[1] = v->next->u;
+      g.u[2] = v->next->next->u;
+      g.v[0] = vn->v;
+      g.v[1] = v->next->v;
+      g.v[2] = v->next->next->v;
+      g.sz = g.pos[0][2]+g.pos[1][2]+g.pos[2][2];
+      g.texture = texture_rgb;
+      memcpy(&tri_buffer[tri_buffer_used],&g,sizeof(g));
+
+      tri_buffer_used++;
+      if(tri_buffer_used==tri_buffer_space)
+      {
+         tri_buffer_space+=128;
+         tri_buffer = realloc(tri_buffer,tri_buffer_space*sizeof(*tri_buffer));
+      }
+
+      v = v->next;
+   }
+
+   ULK_vertex_reset_temp();
+
+#else
+
    //Set back to defaults for later calculations.
    for(int i = y_min;i<y_max;i++)
    {
       x_startf[i] = X_RES;
-      x_endf[i] = 0.0f;
+      x_endf[i] = 0;
    }
    //-------------------------------------
 
@@ -390,5 +502,386 @@ void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts)
    }
 
    ULK_vertex_reset_temp();
+#endif
 }
+
+void SLK_3d_dispatch()
+{
+#if USE_SPAN_BUFFER
+
+#if SPAN_ZSORT
+
+   //Sort by depth
+   qsort(tri_buffer,tri_buffer_used,sizeof(*tri_buffer),comp_float);
+
+#endif
+
+   //Draw triangles
+   for(int b = 0;b<tri_buffer_used;b++)
+   {
+      SLK_3d_triangle *t = &tri_buffer[b];
+      texture_rgb = tri_buffer[b].texture; 
+      const int tex_mask_x = texture_rgb->width-1;
+      const int tex_mask_y = texture_rgb->height-1;
+      const int power = logb2(texture_rgb->width);
+      float y_min_f = MINF(t->pos[0][1],MINF(t->pos[1][1],t->pos[2][1]));
+      float y_max_f = MAXF(t->pos[0][1],MAXF(t->pos[1][1],t->pos[2][1]));
+      int y_min = (int)y_min_f;
+      int y_max = (int)y_max_f;
+
+      //Set back to defaults for later calculations.
+      for(int i = y_min;i<y_max;i++)
+      {
+         x_startf[i] = X_RES;
+         x_endf[i] = 0;
+      }
+      //-------------------------------------
+
+      //Trace edges and fill tables with necessary data for drawing the polygon
+      float x1 = t->pos[0][0];
+      float y1 = t->pos[0][1];
+      int z1 = (int)((1.0f/t->pos[0][2])*POINT_PER);
+      int iy1 = (int)y1;
+      int l;
+      float temp = ((float)(texture_rgb->height-1)*t->u[0]+0.5f);
+      int u1 = (int)(temp/t->pos[0][2]*POINT_PER);
+      temp = ((float)(texture_rgb->width-1)*t->v[0]+0.5f);
+      int v1 = (int)(temp/t->pos[0][2]*POINT_PER);
+      for(int i = 0;i<3;i++)
+      {
+         int next = (i+1)<3?(i+1):0;
+         float x2 = t->pos[next][0];
+         float y2 = t->pos[next][1];
+         int z2 = (int)((1.0f/t->pos[next][2])*POINT_PER);
+         int iy2 = (int)y2;
+         temp = ((float)(texture_rgb->height-1)*t->u[next]+0.5f);
+         int u2 = (int)((temp/t->pos[next][2])*POINT_PER);
+         temp = ((float)(texture_rgb->width-1)*t->v[next]+0.5f);
+         int v2 = (int)((temp/t->pos[next][2])*POINT_PER);
+
+         if(y2-y1==0.0f)
+         {
+            x1 = x2;
+            y1 = y2;
+            z1 = z2;
+            u1 = u2;
+            v1 = v2;
+            iy1 = iy2;
+            continue;
+         }
+
+         float ylen = 1.0f/(y2-y1);
+         float delta_x = (x2-x1)*ylen;
+         int delta_z = (z2-z1)*ylen;
+         int delta_u = (u2-u1)*ylen;
+         int delta_v = (v2-v1)*ylen;
+
+         if(iy2>iy1)
+         {
+            l = iy2-iy1;
+         }
+         else
+         {
+            l = iy1-iy2;
+            x1 = x2;
+            z1 = z2;
+            u1 = u2;
+            v1 = v2;
+            iy1 = iy2;
+         }
+
+         for(int s = 0;s<l;s++)
+         {
+            if(x1<x_startf[iy1])
+            {
+               x_start[iy1] = (int)x1;
+               x_startf[iy1] = x1;
+               z_start[iy1] = z1;
+               u_start[iy1] = u1;
+               v_start[iy1] = v1;
+            }
+            if(x1>x_endf[iy1])
+            {
+               x_end[iy1] = (int)x1;
+               x_endf[iy1] = x1;
+               z_end[iy1] = z1;
+               u_end[iy1] = u1;
+               v_end[iy1] = v1;
+            }
+
+            x1+=delta_x;
+            z1+=delta_z;
+            u1+=delta_u;
+            v1+=delta_v;
+            iy1++;
+         }
+
+         x1 = x2;
+         y1 = y2;
+         z1 = z2;
+         u1 = u2;
+         v1 = v2;
+         iy1 = iy2;
+      }
+      //-------------------------------------
+
+      for(int i = y_min;i<y_max;i++)
+      {
+         //If interlacing is enabled, we only render every second line 
+         //--> half the resolution, but looks like it is full resolution.
+         //DO NOT clear the screen!
+#if INTERLACING
+
+         if((i&1)==line)
+         {
+            continue;
+         }
+
+#endif
+
+         const int end_x = x_end[i];
+         const int start_x = x_start[i];
+         const int ilen = (int)(x_endf[i]-x_startf[i]);
+         if(ilen<=0)
+         {
+            continue;
+         }
+         const int delta_z = (z_end[i]-z_start[i])/ilen;
+         const int delta_u = (u_end[i]-u_start[i])/ilen;
+         const int delta_v = (v_end[i]-v_start[i])/ilen;
+
+         int z = z_start[i];
+         int ut = u_start[i];
+         int vt = v_start[i];
+
+         Sbuffer_tree *node = new_span();
+         node->x0 = start_x;
+         node->x1 = end_x;
+         node->len = ilen;
+
+         if(!sbuffer[i])
+         {
+            sbuffer[i] = node;
+            draw_span(node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
+         }
+         else
+         {
+            add_span(sbuffer[i],node,i,ut,vt,z,delta_u,delta_v,delta_z,tex_mask_x,tex_mask_y,power);
+         }
+      }
+   }
+
+#endif
+
+}
+
+#if USE_SPAN_BUFFER
+
+static int comp_float(const void *e0, const void* e1)
+{
+   if((*(const SLK_3d_triangle *)e0).sz<(*(const SLK_3d_triangle *)e1).sz)
+      return -1;
+   return (*(const SLK_3d_triangle*)e0).sz>(*(const SLK_3d_triangle*)e1).sz;
+}
+
+static Sbuffer_tree *new_span()
+{
+   if(!span_base)
+   {
+      spans++;
+      Sbuffer_tree *s = malloc(sizeof(*s));
+      s->left = NULL;
+      s->right = NULL;
+      return s;
+   }
+   
+   Sbuffer_tree *t = span_base;
+   span_base = t->right;
+   t->right = NULL;
+   t->left = NULL;
+   
+   return t;
+}
+
+static void free_span(Sbuffer_tree *t)
+{
+   if(t->right)
+      free_span(t->right);
+   if(t->left)
+      free_span(t->left);
+   t->right = span_base;
+   span_base = t;
+}
+
+static void draw_span(const Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
+{
+   SLK_Color *span = &target_rgb->data[y*X_RES]+t->x0;
+   for(int x = t->x0;x<t->x1;x+=SUB_SPAN)
+   {
+      const int len = MIN((SUB_SPAN),(t->x1-x));
+      const int start_u = (u/z)*POINT_PER;
+      const int start_v = (v/z)*POINT_PER;
+      const int end_z = (z+dz*len);
+      const int end_u = ((u+du*len)/end_z)*POINT_PER;
+      const int end_v = ((v+dv*len)/end_z)*POINT_PER;
+      const int delta_u = (end_u-start_u)/len;
+      const int delta_v = (end_v-start_v)/len;
+      int su = start_u;
+      int sv = start_v;
+
+      for(int o = len;o;o--)
+      {
+         *span = texture_rgb->data[((((su>>POINT_PER_POWER))&ty)<<p)+(((sv>>POINT_PER_POWER))&tx)];
+
+         span++;
+         z+=dz;
+         su+=delta_u;
+         sv+=delta_v;
+      }
+
+      u+=du*SUB_SPAN;
+      v+=dv*SUB_SPAN;
+   }
+}
+
+static void add_span(Sbuffer_tree *cur, Sbuffer_tree *t, int y, int u, int v, int z, int du, int dv, int dz, int tx, int ty, int p)
+{
+   //While span length greater than 0
+   while(t->x1>t->x0)
+   {
+      //To the right of existing span
+      if(t->x0>cur->x1)
+      {
+         //Early out 0: to the right of existing span(s)
+         if(!cur->right)
+         {
+            cur->right = t;
+            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            return;
+         }
+         else
+         {
+            cur = cur->right;
+         }
+      }
+      //To the left of existing span
+      else if(t->x1<cur->x0)
+      {
+         //Early out 1: to the left of existing span(s)
+         if(!cur->left)
+         {
+            cur->left = t;
+            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            return;
+         }
+         else
+         {
+            cur = cur->left;
+         }
+      }
+      //Starts in existing span
+      else if(t->x0>=cur->x0)
+      {
+         //Completely in exisiting span
+         if(t->x1<=cur->x1)
+         {
+            free_span(t);
+            return;
+         }
+         //Clip, removes from the left of span
+         if(t->x0<=cur->x1)
+         {
+            int diff = cur->x1-t->x0;
+            u+=diff*du;
+            v+=diff*dv;
+            z+=diff*dz;
+            t->x0 = cur->x1;
+            if(!cur->right)
+            {
+               draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+               cur->len+=t->len;
+               cur->x1 = t->x1;
+               free_span(t);
+               return;
+            }
+            else
+            {
+               cur = cur->right;
+            }
+         }
+      }
+      //Starts outside and ends outside of existing span
+      else if(t->x1>cur->x1)
+      {
+         Sbuffer_tree *t0 = new_span();
+         *t0 = *t;
+         //Clip, removes from the left of span
+         if(t0->x1>cur->x1)
+         {
+            int diff = cur->x1-t0->x0;
+            u+=diff*du;
+            v+=diff*dv;
+            z+=diff*dz;
+            t0->x0 = cur->x1;
+            if(!cur->right)
+            {
+               draw_span(t0,y,u,v,z,du,dv,dz,tx,ty,p);
+               cur->x1 = t0->x1;
+               cur->len+=t0->len;
+               free_span(t0);
+            }
+            //Recursion! Start a second span
+            else
+            {
+               add_span(cur->right,t0,y,u,v,z,du,dv,dz,tx,ty,p);
+            }
+         }
+         //Completely inside current span
+         if(t->x0>=cur->x0)
+         {
+            free_span(t);
+            return;
+         }
+         //Clip, remove from the right of span
+         t->x1 = cur->x0;
+         if(!cur->left)
+         {
+            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            cur->x0 = t->x0;
+            cur->len+=t->len;
+            free_span(t);
+            return;
+         }
+         else
+         {
+            cur = cur->left;
+         }
+      }
+      //Everything else
+      else
+      {
+         if(cur->x0<=t->x0)
+         {
+            free_span(t);
+            return;
+         }
+         t->x1 = cur->x0;
+         if(!cur->left)
+         {
+            draw_span(t,y,u,v,z,du,dv,dz,tx,ty,p);
+            cur->x0 = t->x0;
+            cur->len+=t->len;
+            free_span(t);
+            return;
+         }
+         else
+         {
+            cur = cur->left;
+         }
+      }
+   }
+}
+
+#endif
+
 //-------------------------------------

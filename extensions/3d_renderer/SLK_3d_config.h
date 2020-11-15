@@ -66,4 +66,16 @@ For more information, please refer to <http://unlicense.org/>
 //2 for clockwise culling
 #define BACKFACE_CULLING 1
 
+//Use spawn buffering,
+//buffers polygons first, all of them
+//get draw after SLK_3d_dispatch() function call
+#define USE_SPAN_BUFFER 1
+
+#if USE_SPAN_BUFFER
+
+//Use z sorting of polygons
+#define SPAN_ZSORT 1
+
+#endif
+
 #endif

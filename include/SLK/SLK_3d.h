@@ -85,4 +85,6 @@ void SLK_3d_start_pal(SLK_Pal_sprite *target);
 void SLK_3d_draw_poly_rgb_subaffine(ULK_vertex *verts);
 void SLK_3d_draw_poly_pal_subaffine(ULK_vertex *verts);
 
+void SLK_3d_dispatch();
+
 #endif
