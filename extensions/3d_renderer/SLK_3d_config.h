@@ -76,6 +76,10 @@ For more information, please refer to <http://unlicense.org/>
 //Use z sorting of polygons
 #define SPAN_ZSORT 1
 
+//Write to the zbuffer when drawing
+//spans (write but not read)
+#define WRITE_Z_BUFFER 0
+
 #endif
 
 #endif
