@@ -41,7 +41,7 @@ SLK_RGB_sprite *sprite_loader(const char *path);
 void assets_load()
 {
    SLK_3d_set_rgb_sprite_loader(sprite_loader);
-   house = SLK_3d_load_obj("assets/level-1.obj");
+   house = SLK_3d_load_obj("assets/level.obj");
 }
 
 SLK_RGB_sprite *sprite_loader(const char *path)

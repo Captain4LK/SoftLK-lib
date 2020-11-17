@@ -27,7 +27,8 @@ For more information, please refer to <http://unlicense.org/>
 
 /*
 Used ressources:
-   * https://gitlab.com/drummyfish/small3dlib (Public Domain)
+   * https://gitlab.com/drummyfish/small3dlib
+   * https://mikro.naprvyraz.sk/docs/Coding/2/SBUFF2.TXT
 
 */
 
@@ -715,10 +716,11 @@ static SLK_3d_sbuffer_tree *span_new()
 
 static void span_free(SLK_3d_sbuffer_tree *t)
 {
-   if(t->right)
-      span_free(t->right);
    if(t->left)
       span_free(t->left);
+   if(t->right)
+      span_free(t->right);
+
    t->left = span_base;
    span_base = t;
 }
