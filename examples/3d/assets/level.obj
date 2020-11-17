@@ -1,6 +1,6 @@
 # Blender v2.90.1 OBJ File: 'level-1.blend'
 # www.blender.org
-mtllib assets/level-1.mtl
+mtllib assets/level.mtl
 o Level
 v -3.721678 -0.049381 -0.189361
 v -3.721678 2.350619 1.010639
