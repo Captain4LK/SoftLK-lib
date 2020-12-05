@@ -22,6 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Internal includes
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
+#include "backend.h"
 //-------------------------------------
 
 //#defines
@@ -96,34 +97,7 @@ void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c)
 //width*height*SLK_Paxel data
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
 {
-   FILE *f = fopen(path,"rb");
-   SLK_Pal_sprite *s = NULL;
-   int width, height;
-   char file_type[512];
-
-   if(f==NULL)
-   {
-      printf("Failed to open %s!\n",path);
-
-      return SLK_pal_sprite_create(1,1);
-   }
-
-   fread(file_type,sizeof(file_type[0]),8,f);
-   file_type[8] = '\0';
-   if(strcmp(file_type,"SLKIMAGE")!=0)
-   {
-      printf("%s does not seem to be a SLKIMAGE file\n",path);
-      return SLK_pal_sprite_create(1,1);
-   }
-      
-   fread(&width,sizeof(width),1,f);
-   fread(&height,sizeof(height),1,f);   
-   
-   s = SLK_pal_sprite_create(width,height);
-   fread(s->data,sizeof(*s->data),width*height,f);
-   fclose(f);
-   
-   return s;
+   return backend_load_pal(path);
 }
 
 //Saves a sprite to a file
@@ -131,15 +105,7 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
 //layout.
 void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
 {
-   FILE *f = fopen(path,"wb");
-
-   if(!f)
-      return;
-      
-   fwrite(&s->width,sizeof(s->width),1,f);
-   fwrite(&s->height,sizeof(s->height),1,f);
-   fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
-   fclose(f);
+   backend_save_pal(s,path);
 }
 
 //Copies a specified part of the data of a sprite 

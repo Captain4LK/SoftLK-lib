@@ -826,6 +826,52 @@ void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
    stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(*s->data));
 }
+
+SLK_Pal_sprite *backend_load_pal(const char *path)
+{
+   FILE *f = fopen(path,"rb");
+   SLK_Pal_sprite *s = NULL;
+   int width, height;
+   char file_type[512];
+
+   if(f==NULL)
+   {
+      printf("Failed to open %s!\n",path);
+
+      return SLK_pal_sprite_create(1,1);
+   }
+
+   fread(file_type,sizeof(file_type[0]),8,f);
+   file_type[8] = '\0';
+   if(strcmp(file_type,"SLKIMAGE")!=0)
+   {
+      printf("%s does not seem to be a SLKIMAGE file\n",path);
+      return SLK_pal_sprite_create(1,1);
+   }
+      
+   fread(&width,sizeof(width),1,f);
+   fread(&height,sizeof(height),1,f);   
+   
+   s = SLK_pal_sprite_create(width,height);
+   fread(s->data,sizeof(*s->data),width*height,f);
+   fclose(f);
+   
+   return s;
+}
+
+void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
+{
+   FILE *f = fopen(path,"wb");
+
+   if(!f)
+      return;
+      
+   fprintf(f,"SLKIMAGE");
+   fwrite(&s->width,sizeof(s->width),1,f);
+   fwrite(&s->height,sizeof(s->height),1,f);
+   fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
+   fclose(f);
+}
 //-------------------------------------
 
 #undef MAX_CONTROLLERS 

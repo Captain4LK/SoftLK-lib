@@ -278,4 +278,14 @@ void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
 
 }
+
+SLK_Pal_sprite *backend_load_pal(const char *path)
+{
+   return NULL;
+}
+
+void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
+{
+
+}
 //-------------------------------------
