@@ -1,6 +1,6 @@
 {
    "mode": 1,
-   "divisions": 10000000,
+   "divisions": 10000000.0,
    "manual_potential": 1,
    "charge_max": 0.3,
    "charge_min": -0.3,

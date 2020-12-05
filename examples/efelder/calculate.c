@@ -1,26 +1,26 @@
 /* 
-	Copyright (C) 2020 by Captain4LK (Lukas Holzbeierlein)
+   Copyright (C) 2020 by Captain4LK (Lukas Holzbeierlein)
 
-	This program is free software: you can redistribute it and/or modify
-   	it under the terms of the GNU General Public License as published by
-   	the Free Software Foundation, either version 3 of the License, or
-   	the Free Software Foundation, either version 3 of the License, or
-   	(at your option) any later version.
+   This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
 
-   	This program is distributed in the hope that it will be useful,
-   	but WITHOUT ANY WARRANTY; without even the implied warranty of
-   	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   	GNU General Public License for more details.
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
 
-   	You should have received a copy of the GNU General Public License
-   	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+      You should have received a copy of the GNU General Public License
+      along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 //External includes
 #include <stdio.h>
 #include <stdlib.h>
-#include "cJSON.h"
 #include "../../external/UtilityLK/include/ULK_vector.h"
+#include "../../external/UtilityLK/include/ULK_json.h"
 //-------------------------------------
 
 //Internal includes
@@ -60,52 +60,33 @@ static void draw_shapes();
 
 void shapes_load_file(const char *path)
 {
-   char *buffer = NULL;
-   size_t file_size = 0;
-   FILE *f = fopen(path,"rb");
-
-   fseek(f,0,SEEK_END);
-   file_size = ftell(f);
-   fseek(f,0,SEEK_SET);
-
-   buffer = malloc(file_size+1);
-   fread(buffer,file_size,1,f);
-   buffer[file_size] = '\0';
-   fclose(f);
-
-   cJSON *json = NULL;
-   cJSON *circles = NULL;
-   cJSON *rectangles = NULL;
+   ULK_json5_root *json = NULL;
+   ULK_json5 *circles = NULL;
+   ULK_json5 *rectangles = NULL;
    int objects_count = 0;
    int circles_count = 0;
    int rectangles_count = 0;
 
-   if(buffer==NULL)
-   {
-      printf("Failed to load objects.json!\n");
-      return;
-   }
-
-   json = cJSON_Parse(buffer);
+   json = ULK_json_load(path);
    if(json==NULL)
       printf("Json file seems to be faulty!\n");
 
    //Load all shapes here and count them
-   circles = cJSON_GetObjectItem(json,"circles");
+   circles = ULK_json_get_object(&json->root,"circles");
    if(circles==NULL)
       printf("No circles specified!\n");
-   circles_count = cJSON_GetArraySize(circles);
+   circles_count = ULK_json_get_array_size(circles);
    printf("Found %d circles\n",circles_count);
    objects_count+=circles_count;
-   rectangles = cJSON_GetObjectItem(json,"rectangles");
+   rectangles = ULK_json_get_object(&json->root,"rectangles");
    if(rectangles==NULL)
       printf("No rectangles specified!\n");
-   rectangles_count = cJSON_GetArraySize(rectangles);
+   rectangles_count = ULK_json_get_array_size(rectangles);
    printf("Found %d rectangles\n",rectangles_count);
    for(int i = 0;i<rectangles_count;i++)
    {
-      cJSON *rectangle = cJSON_GetArrayItem(rectangles,i);
-      objects_count+=cJSON_GetObjectItem(rectangle,"divisions")->valueint;
+      ULK_json5 *rectangle = ULK_json_get_array_item(rectangles,i);
+      objects_count+=ULK_json_get_object(rectangle,"divisions")->integer;
    }
 
    //Allocate enough space for all shapes
@@ -116,33 +97,33 @@ void shapes_load_file(const char *path)
    objects_count = 0;
 
    //Set how the potential is supposed to be drawn
-   potential_mode = cJSON_GetObjectItem(json,"mode")->valueint;
-   divider_potential = cJSON_GetObjectItem(json,"divisions")->valuedouble;
-   manual_potential = cJSON_GetObjectItem(json,"manual_potential")->valueint;
+   potential_mode = ULK_json_get_object(&json->root,"mode")->integer;
+   divider_potential = ULK_json_get_object(&json->root,"divisions")->real;
+   manual_potential = ULK_json_get_object(&json->root,"manual_potential")->integer;
    if(manual_potential)
    {
-      charge_min = cJSON_GetObjectItem(json,"charge_min")->valuedouble;
-      charge_max = cJSON_GetObjectItem(json,"charge_max")->valuedouble;
+      charge_min = ULK_json_get_object(&json->root,"charge_min")->real;
+      charge_max = ULK_json_get_object(&json->root,"charge_max")->real;
    }
    
    //Load all circles
    for(int i = 0;i<circles_count;i++)
    {
-      cJSON *circle = cJSON_GetArrayItem(circles,i);
+      ULK_json5 *circle = ULK_json_get_array_item(circles,i);
 
-      shapes[objects_count].circle.x = cJSON_GetObjectItem(circle,"x")->valueint;
-      shapes[objects_count].circle.y = cJSON_GetObjectItem(circle,"y")->valueint;
-      shapes[objects_count].circle.color.r = cJSON_GetObjectItem(circle,"r")->valueint;
-      shapes[objects_count].circle.color.g = cJSON_GetObjectItem(circle,"g")->valueint;
-      shapes[objects_count].circle.color.b = cJSON_GetObjectItem(circle,"b")->valueint;
+      shapes[objects_count].circle.x = ULK_json_get_object(circle,"x")->integer;
+      shapes[objects_count].circle.y = ULK_json_get_object(circle,"y")->integer;
+      shapes[objects_count].circle.color.r = ULK_json_get_object(circle,"r")->integer;
+      shapes[objects_count].circle.color.g = ULK_json_get_object(circle,"g")->integer;
+      shapes[objects_count].circle.color.b = ULK_json_get_object(circle,"b")->integer;
       shapes[objects_count].circle.color.a = 255;
       shapes[objects_count].circle.color_inv.r = 255-shapes[objects_count].circle.color.r;
       shapes[objects_count].circle.color_inv.g = 255-shapes[objects_count].circle.color.g;
       shapes[objects_count].circle.color_inv.b = 255-shapes[objects_count].circle.color.b;
       shapes[objects_count].circle.color_inv.a = 255;
-      shapes[objects_count].circle.radius = cJSON_GetObjectItem(circle,"radius")->valueint;
-      shapes[objects_count].circle.charge = cJSON_GetObjectItem(circle,"charge")->valuedouble;
-      shapes[objects_count].circle.test_points = cJSON_GetObjectItem(circle,"test_points")->valueint;
+      shapes[objects_count].circle.radius = ULK_json_get_object(circle,"radius")->integer;
+      shapes[objects_count].circle.charge = ULK_json_get_object(circle,"charge")->real;
+      shapes[objects_count].circle.test_points = ULK_json_get_object(circle,"test_points")->integer;
       shapes[objects_count].type = 0;
       sprintf(shapes[objects_count].circle.charge_str,"%07fC",shapes[objects_count].circle.charge);
 
@@ -152,20 +133,20 @@ void shapes_load_file(const char *path)
    //Load all rectangles
    for(int i = 0;i<rectangles_count;i++)
    {
-      cJSON *rectangle = cJSON_GetArrayItem(rectangles,i);
+      ULK_json5 *rectangle = ULK_json_get_array_item(rectangles,i);
 
-      int x = cJSON_GetObjectItem(rectangle,"x")->valueint;
-      int y = cJSON_GetObjectItem(rectangle,"y")->valueint;
-      int width = cJSON_GetObjectItem(rectangle,"width")->valueint;
-      int height = cJSON_GetObjectItem(rectangle,"height")->valueint;
-      int divisions = cJSON_GetObjectItem(rectangle,"divisions")->valueint;
-      float charge = (cJSON_GetObjectItem(rectangle,"charge")->valuedouble)/(double)(divisions);
-      int test_points = cJSON_GetObjectItem(rectangle,"test_points")->valueint;
+      int x = ULK_json_get_object(rectangle,"x")->integer;
+      int y = ULK_json_get_object(rectangle,"y")->integer;
+      int width = ULK_json_get_object(rectangle,"width")->integer;
+      int height = ULK_json_get_object(rectangle,"height")->integer;
+      int divisions = ULK_json_get_object(rectangle,"divisions")->integer;
+      float charge = (ULK_json_get_object(rectangle,"charge")->real)/(double)(divisions);
+      int test_points = ULK_json_get_object(rectangle,"test_points")->integer;
       int radius = width>height?height:width;
       SLK_Color color;
-      color.r = cJSON_GetObjectItem(rectangle,"r")->valueint;
-      color.g = cJSON_GetObjectItem(rectangle,"g")->valueint;
-      color.b = cJSON_GetObjectItem(rectangle,"b")->valueint;
+      color.r = ULK_json_get_object(rectangle,"r")->integer;
+      color.g = ULK_json_get_object(rectangle,"g")->integer;
+      color.b = ULK_json_get_object(rectangle,"b")->integer;
       color.a = 255;
       rectangles_tmp[i].x = x;
       rectangles_tmp[i].y = y;
@@ -208,7 +189,7 @@ void shapes_load_file(const char *path)
       }
    }
 
-   cJSON_free(json);
+   ULK_json_free(json);
 }
 
 void calculate()
@@ -253,7 +234,9 @@ void calculate()
    //Calculate electrical potential
    printf("Calculating electric potential: \n");
    if(potential_mode==0)
+   {
       calculate_potential_0();
+   }
    else
    {
       calculate_potential_1();
@@ -491,7 +474,6 @@ static void calculate_potential_1()
    SLK_draw_rgb_string(0,120,2,buffer,SLK_color_create(255,255,255,255));
    sprintf(buffer,"%f",potential_max);
    SLK_draw_rgb_string(0,240,2,buffer,SLK_color_create(255,255,255,255));
-
    SLK_draw_rgb_set_target(NULL);
 
    int part = canvas_width/100;
