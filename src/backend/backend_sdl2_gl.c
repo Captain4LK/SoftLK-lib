@@ -26,6 +26,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../../include/SLK/SLK_functions.h"
 #include "../SLK_layer_i.h"
 #include "../backend.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "../../external/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION 
+#include "../../external/stb_image_write.h"
+//https://github.com/nothings/stb
 //-------------------------------------
 
 //#defines
@@ -792,6 +798,33 @@ static int get_gamepad_index(int which)
          return i;
 
    return -1;
+}
+
+SLK_RGB_sprite *backend_load_rgb(const char *path)
+{
+   unsigned char *data = NULL;
+   int width = 1;
+   int height = 1;
+   SLK_RGB_sprite *out;
+
+   data = stbi_load(path,&width,&height,NULL,4);
+   if(data==NULL)
+   {
+      printf("Failed to load %s\n",path);
+      return SLK_rgb_sprite_create(1,1);
+   }
+
+   out = SLK_rgb_sprite_create(width,height);
+   memcpy(out->data,data,width*height*sizeof(*out->data));
+
+   stbi_image_free(data);
+
+   return out;
+}
+
+void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
+{
+   stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(*s->data));
 }
 //-------------------------------------
 

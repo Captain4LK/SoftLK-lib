@@ -268,4 +268,14 @@ void backend_mouse_get_relative_pos(int *x, int *y)
 {
 
 }
+
+SLK_RGB_sprite *backend_load_rgb(const char *path)
+{
+   return NULL;
+}
+
+void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
+{
+
+}
 //-------------------------------------

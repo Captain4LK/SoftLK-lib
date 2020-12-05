@@ -22,12 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Internal includes
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "../external/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION 
-#include "../external/stb_image_write.h"
-//https://github.com/nothings/stb
+#include "backend.h"
 //-------------------------------------
 
 //#defines
@@ -94,24 +89,7 @@ void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c)
 //are supported by this function (png, jpg, etc.).
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
 {
-   unsigned char *data = NULL;
-   int width = 1;
-   int height = 1;
-   SLK_RGB_sprite *out;
-
-   data = stbi_load(path,&width,&height,NULL,4);
-   if(data==NULL)
-   {
-      printf("Failed to load %s\n",path);
-      return SLK_rgb_sprite_create(1,1);
-   }
-
-   out = SLK_rgb_sprite_create(width,height);
-   memcpy(out->data,data,width*height*sizeof(*out->data));
-
-   stbi_image_free(data);
-
-   return out;
+   return backend_load_rgb(path);
 }
 
 ///Saves a sprite to an image file.
@@ -119,7 +97,7 @@ SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
 //supported by this function (png etc.).
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s)
 {
-   stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(*s->data));
+   backend_save_rgb(s,path);
 }
 
 //Copies the data of a sprite to another one.
