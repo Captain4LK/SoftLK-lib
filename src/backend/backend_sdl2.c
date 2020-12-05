@@ -836,6 +836,46 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
    fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
    fclose(f);
 }
+
+SLK_Palette *backend_load_palette(const char *path)
+{
+   char buffer[512];
+   int colors = 0,i,found;
+   int r,g,b,a;
+
+   FILE *f = fopen(path,"r");
+   if(!f)
+   {
+      printf("Unable to load palette\n");
+      return NULL;
+   }
+
+   SLK_Palette *palette = malloc(sizeof(*palette));
+   memset(palette,0,sizeof(*palette));
+   for(i = 0;i<259&&fgets(buffer,512,f);i++)
+   {
+      if(i==2)
+      {
+         sscanf(buffer,"%d",&found);
+      }
+      else if(i>2&&buffer[0]!='\0')
+      {
+         if(sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a)!=4)
+         {
+            sscanf(buffer,"%d %d %d",&r,&g,&b);
+            a = 255;
+         }
+
+         palette->colors[colors].r = r;
+         palette->colors[colors].g = g;
+         palette->colors[colors].b = b;
+         palette->colors[colors].a = a;
+         colors++;
+      }
+   }
+
+   return palette;
+}
 //-------------------------------------
 
 #undef MAX_CONTROLLERS 

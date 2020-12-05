@@ -22,6 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Internal includes
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
+#include "backend.h"
 //-------------------------------------
 
 //#defines
@@ -39,47 +40,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Function implementations
 
 //Reads a palette from a .pal file.
-//Most pal files don't have an alpha
-//component added to them, you
-//need to add that yourself in the pal file.
 SLK_Palette *SLK_palette_load(const char *path)
 {
-   char buffer[512];
-   int colors = 0,i,found;
-   int r,g,b,a;
-
-   FILE *f = fopen(path,"r");
-   if(!f)
-   {
-      printf("Unable to load palette\n");
-      return NULL;
-   }
-
-   SLK_Palette *palette = malloc(sizeof(*palette));
-   memset(palette,0,sizeof(*palette));
-   for(i = 0;i<259&&fgets(buffer,512,f);i++)
-   {
-      if(i==2)
-      {
-         sscanf(buffer,"%d",&found);
-      }
-      else if(i>2&&buffer[0]!='\0')
-      {
-         if(sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a)!=4)
-         {
-            sscanf(buffer,"%d %d %d",&r,&g,&b);
-            a = 255;
-         }
-
-         palette->colors[colors].r = r;
-         palette->colors[colors].g = g;
-         palette->colors[colors].b = b;
-         palette->colors[colors].a = a;
-         colors++;
-      }
-   }
-
-   return palette;
+   return backend_load_palette(path);
 }
 
 //Sets the color of a palette at the

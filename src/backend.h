@@ -64,5 +64,6 @@ SLK_RGB_sprite *backend_load_rgb(const char *path);
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path);
 SLK_Pal_sprite *backend_load_pal(const char *path);
 void backend_save_pal(const SLK_Pal_sprite *s, const char *path);
+SLK_Palette *backend_load_palette(const char *path);
 
 #endif

@@ -288,4 +288,9 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
 {
 
 }
+
+SLK_Palette *backend_load_palette(const char *path)
+{
+   return NULL;
+}
 //-------------------------------------
