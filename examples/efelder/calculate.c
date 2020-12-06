@@ -67,7 +67,7 @@ void shapes_load_file(const char *path)
    int circles_count = 0;
    int rectangles_count = 0;
 
-   json = ULK_json_load(path);
+   json = ULK_json_parse_file(path);
    if(json==NULL)
       printf("Json file seems to be faulty!\n");
 
