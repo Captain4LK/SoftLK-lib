@@ -12,6 +12,6 @@ If you are on linux and have gcc installed you can just use the provided shell s
 
 
 ```
-gcc -O3 -o resize main.c -L../../lib/ -lSLK -lm -lSDL2 -lGL  -Wall #Compile to executable
-chmod +x ./resize #Only needed on unix(-like) systems
+gcc -O3 -o performance main.c -L../../lib/unix/ -lSLK -lm -lSDL2 -lGL  -Wall #Compile to executable
+chmod +x ./performance #Only needed on unix(-like) systems
 ```
