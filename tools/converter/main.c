@@ -128,6 +128,7 @@ static inline uint8_t closest_b(uint8_t c);
 static void palette_load(const char *path); 
 static int color_dist2(Pixel c0, Pixel c1);
 static Pixel find_closest(Pixel in);
+static uint8_t find_palette(Pixel in);
 //-------------------------------------
 
 //Function implementations
@@ -250,7 +251,10 @@ int main(int argc, char **argv)
          for(int p = 0;p<out->width*out->height;p++)
          {
             out->data[p].mask = image->data[p].a==0?255:0;
-            out->data[p].index = (image->data[p].r>>5)+(image->data[p].g>>5<<3)+(image->data[p].b>>6<<6);
+            if(palette==-1)
+               out->data[p].index = (image->data[p].r>>5)+(image->data[p].g>>5<<3)+(image->data[p].b>>6<<6);
+            else
+               out->data[p].index = find_palette(image->data[p]);
          }
 
          FILE *f = fopen(out_name,"w");
@@ -309,7 +313,7 @@ static void palette_load(const char *path)
 {
    char buffer[512];
    int colors = 0;
-   int r,g,b,a;
+   uint8_t r,g,b,a;
 
    FILE *f = fopen(path,"r");
    if(!f)
@@ -327,9 +331,9 @@ static void palette_load(const char *path)
       }
       else if(i>2&&buffer[0]!='\0')
       {
-         if(sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a)!=4)
+         if(sscanf(buffer,"%hhu %hhu %hhu %hhu",&r,&g,&b,&a)!=4)
          {
-            sscanf(buffer,"%d %d %d",&r,&g,&b);
+            sscanf(buffer,"%hhu %hhu %hhu",&r,&g,&b);
             a = 255;
          }
 
@@ -353,6 +357,9 @@ static int color_dist2(Pixel c0, Pixel c1)
 
 static Pixel find_closest(Pixel in)
 {
+   if(in.a==0)
+      return pal.colors[0];
+
    int min_dist = INT_MAX;
    int min_index = 0;
 
@@ -367,5 +374,16 @@ static Pixel find_closest(Pixel in)
    }
 
    return pal.colors[min_index];
+}
+
+static uint8_t find_palette(Pixel in)
+{
+   for(uint8_t i = 0;i<pal.used;i++)
+   {
+      if(pal.colors[i].r==in.r&&pal.colors[i].g==in.g&&pal.colors[i].b==in.b)
+         return i;
+   }
+
+   return 0;
 }
 //-------------------------------------

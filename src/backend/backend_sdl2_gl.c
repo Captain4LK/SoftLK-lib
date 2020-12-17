@@ -831,7 +831,7 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
 {
    FILE *f = fopen(path,"rb");
    SLK_Pal_sprite *s = NULL;
-   int width, height;
+   int32_t width, height;
    char file_type[512];
 
    if(f==NULL)
@@ -877,7 +877,7 @@ SLK_Palette *backend_load_palette(const char *path)
 {
    char buffer[512];
    int colors = 0,i,found;
-   int r,g,b,a;
+   uint8_t r,g,b,a;
 
    FILE *f = fopen(path,"r");
    if(!f)
@@ -896,9 +896,9 @@ SLK_Palette *backend_load_palette(const char *path)
       }
       else if(i>2&&buffer[0]!='\0')
       {
-         if(sscanf(buffer,"%d %d %d %d",&r,&g,&b,&a)!=4)
+         if(sscanf(buffer,"%hhu %hhu %hhu %hhu",&r,&g,&b,&a)!=4)
          {
-            sscanf(buffer,"%d %d %d",&r,&g,&b);
+            sscanf(buffer,"%hhu %hhu %hhu",&r,&g,&b);
             a = 255;
          }
 
