@@ -21,8 +21,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <limits.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../external/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../../external/stb_image_write.h"
+#define CUTE_PNG_IMPLEMENTATION
+#include "../../external/cute_png.h"
 //https://github.com/nothings/stb
 //-------------------------------------
 
@@ -238,7 +238,13 @@ int main(int argc, char **argv)
       if(save_format==0)
       {
          sprintf(out_name,"%s%d.png",output,i);
-         stbi_write_png(out_name,image->width,image->height,4,(void *)image->data,image->width*sizeof(Pixel));
+         cp_image_t img;
+         img.w = image->width;
+         img.h = image->height;
+         img.pix = (cp_pixel_t *)image->data;
+         FILE *f = fopen(out_name,"wb");
+         cp_save_png(f,&img);
+         fclose(f);
       }
       else //Save as SLKIMAGE file
       {

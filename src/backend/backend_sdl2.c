@@ -28,8 +28,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../external/stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION 
-#include "../../external/stb_image_write.h"
+#define CUTE_PNG_IMPLEMENTATION
+#include "../../external/cute_png.h"
 //https://github.com/nothings/stb
 //-------------------------------------
 
@@ -788,7 +788,20 @@ SLK_RGB_sprite *backend_load_rgb(const char *path)
 
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
-   stbi_write_png(path,s->width,s->height,4,(void *)s->data,s->width*sizeof(*s->data));
+   FILE *f = fopen(path,"wb");
+   if(!f)
+      printf("Error: Failed to open file\n");
+
+   backend_save_rgb_file(s,f);
+}
+
+void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
+{
+   cp_image_t img;
+   img.w = s->width;
+   img.h = s->height;
+   img.pix = (cp_pixel_t *)s->data;
+   cp_save_png(f,&img);
 }
 
 SLK_Pal_sprite *backend_load_pal(const char *path)
@@ -829,12 +842,18 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
 
    if(!f)
       return;
+
+   backend_save_pal_file(s,f);
       
+   fclose(f);
+}
+
+void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f)
+{
    fprintf(f,"SLKIMAGE");
    fwrite(&s->width,sizeof(s->width),1,f);
    fwrite(&s->height,sizeof(s->height),1,f);
    fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
-   fclose(f);
 }
 
 SLK_Palette *backend_load_palette(const char *path)

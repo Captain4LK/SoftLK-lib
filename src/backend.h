@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define _BACKEND_H_
 
+#include <stdio.h>
 #include "../include/SLK/SLK_types.h"
 
 //Every backend needs to implement all of these functions. You can however just keep the implementation empty.
@@ -62,8 +63,10 @@ void backend_mouse_get_pos(int *x, int *y);
 void backend_mouse_get_relative_pos(int *x, int *y);
 SLK_RGB_sprite *backend_load_rgb(const char *path);
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path);
+void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f);
 SLK_Pal_sprite *backend_load_pal(const char *path);
 void backend_save_pal(const SLK_Pal_sprite *s, const char *path);
+void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f);
 SLK_Palette *backend_load_palette(const char *path);
 
 #endif

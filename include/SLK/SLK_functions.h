@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define _SLK_FUNCTIONS_H_
 
+#include <stdio.h>
 #include "SLK_types.h"
 
 //Palette subsystem: SLK_palette.c
@@ -40,6 +41,7 @@ SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y);
 void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c);
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path);
 void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s);
+void SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s);
 void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src);
 void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, int x, int y, int ox, int oy, int width, int height);
 
@@ -78,6 +80,7 @@ SLK_Color SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, int x, int y);
 void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c);
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path);
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s);
+void SLK_rgb_sprite_save_file(FILE *f, const SLK_RGB_sprite *s);
 void SLK_rgb_sprite_copy(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src);
 void SLK_rgb_sprite_copy_partial(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src, int x, int y, int ox, int oy, int width, int height);
 

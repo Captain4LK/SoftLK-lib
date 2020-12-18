@@ -100,6 +100,14 @@ void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s)
    backend_save_rgb(s,path);
 }
 
+///Saves a sprite to an image file.
+//All formats that are supported by stb_image_write are
+//supported by this function (png etc.).
+void SLK_rgb_sprite_save_file(FILE *f, const SLK_RGB_sprite *s)
+{
+   backend_save_rgb_file(s,f);
+}
+
 //Copies the data of a sprite to another one.
 //Usefull for duplicating sprites.
 void SLK_rgb_sprite_copy(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src)

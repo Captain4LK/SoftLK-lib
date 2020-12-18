@@ -108,6 +108,14 @@ void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
    backend_save_pal(s,path);
 }
 
+//Saves a sprite to a file
+//with the above specified
+//layout.
+void SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s)
+{
+   backend_save_pal_file(s,f);
+}
+
 //Copies a specified part of the data of a sprite 
 //to another one.
 //Usefull for splitting a texture atlas in individual sprites.
