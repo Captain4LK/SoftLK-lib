@@ -769,7 +769,7 @@ SLK_RGB_sprite *backend_load_rgb(const char *path)
    if(img.pix==0)
    {
       printf("Failed to load %s\n",path);
-      return SLK_rgb_sprite_create(1,1);
+      return NULL;
    }
 
    out = SLK_rgb_sprite_create(img.w,img.h);
@@ -801,7 +801,7 @@ SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
    if(img.pix==0)
    {
       puts("Failed to load png from mem");
-      return SLK_rgb_sprite_create(1,1);
+      return NULL;
    }
 
    out = SLK_rgb_sprite_create(img.w,img.h);
@@ -836,7 +836,7 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
    if(f==NULL)
    {
       printf("Failed to load %s\n",path);
-      return SLK_pal_sprite_create(1,1);
+      return NULL;
    }
    SLK_Pal_sprite *out = backend_load_pal_file(f);
    fclose(f);
@@ -854,7 +854,7 @@ SLK_Pal_sprite *backend_load_pal_file(FILE *f)
    if(strcmp(file_type,"SLKIMAGE")!=0)
    {
       puts("File does not seem to be a SLKIMAGE file");
-      return SLK_pal_sprite_create(1,1);
+      return NULL;
    }
       
    fread(&width,sizeof(width),1,f);
@@ -876,7 +876,7 @@ SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
    if(strcmp(file_type,"SLKIMAGE")!=0)
    {
       puts("Membuffer does not seem to be a SLKIMAGE file");
-      return SLK_pal_sprite_create(1,1);
+      return NULL;
    }
    
    width = *((int32_t *)(data+8));
