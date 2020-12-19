@@ -274,6 +274,16 @@ SLK_RGB_sprite *backend_load_rgb(const char *path)
    return NULL;
 }
 
+SLK_RGB_sprite *backend_load_rgb_file(FILE *f)
+{
+   return NULL;
+}
+
+SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
+{
+   return NULL;
+}
+
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
 
@@ -285,6 +295,16 @@ void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
 }
 
 SLK_Pal_sprite *backend_load_pal(const char *path)
+{
+   return NULL;
+}
+
+SLK_Pal_sprite *backend_load_pal_file(FILE *f)
+{
+   return NULL;
+}
+
+SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
 {
    return NULL;
 }

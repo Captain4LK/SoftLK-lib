@@ -27,11 +27,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../SLK_layer_i.h"
 #include "../backend.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../../external/stb_image.h"
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
-//https://github.com/nothings/stb
+//https://github.com/RandyGaul/cute_headers
 //-------------------------------------
 
 //#defines
@@ -802,22 +800,49 @@ static int get_gamepad_index(int which)
 
 SLK_RGB_sprite *backend_load_rgb(const char *path)
 {
-   unsigned char *data = NULL;
-   int width = 1;
-   int height = 1;
-   SLK_RGB_sprite *out;
-
-   data = stbi_load(path,&width,&height,NULL,4);
-   if(data==NULL)
+   cp_image_t img = cp_load_png(path);
+   SLK_RGB_sprite *out = NULL;
+   if(img.pix==0)
    {
       printf("Failed to load %s\n",path);
       return SLK_rgb_sprite_create(1,1);
    }
 
-   out = SLK_rgb_sprite_create(width,height);
-   memcpy(out->data,data,width*height*sizeof(*out->data));
+   out = SLK_rgb_sprite_create(img.w,img.h);
+   memcpy(out->data,img.pix,img.w*img.h*sizeof(*out->data));
+   cp_free_png(&img);
 
-   stbi_image_free(data);
+   return out;
+}
+
+SLK_RGB_sprite *backend_load_rgb_file(FILE *f)
+{
+   int size = 0;
+   fseek(f,0,SEEK_END);
+   size = ftell(f);
+   fseek(f,0,SEEK_SET);
+   char *data = malloc(size+1);
+   fread(data,size,1,f);
+   data[size] = 0;
+   SLK_RGB_sprite *out = backend_load_rgb_mem(data,size);
+   free(data);
+
+   return out;
+}
+
+SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
+{
+   cp_image_t img = cp_load_png_mem(data,length);
+   SLK_RGB_sprite *out = NULL;
+   if(img.pix==0)
+   {
+      puts("Failed to load png from mem");
+      return SLK_rgb_sprite_create(1,1);
+   }
+
+   out = SLK_rgb_sprite_create(img.w,img.h);
+   memcpy(out->data,img.pix,img.w*img.h*sizeof(*out->data));
+   cp_free_png(&img);
 
    return out;
 }
@@ -843,22 +868,27 @@ void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
 SLK_Pal_sprite *backend_load_pal(const char *path)
 {
    FILE *f = fopen(path,"rb");
+   if(f==NULL)
+   {
+      printf("Failed to load %s\n",path);
+      return SLK_pal_sprite_create(1,1);
+   }
+   SLK_Pal_sprite *out = backend_load_pal_file(f);
+   fclose(f);
+   return out;
+}
+
+SLK_Pal_sprite *backend_load_pal_file(FILE *f)
+{
    SLK_Pal_sprite *s = NULL;
    int32_t width, height;
    char file_type[512];
-
-   if(f==NULL)
-   {
-      printf("Failed to open %s!\n",path);
-
-      return SLK_pal_sprite_create(1,1);
-   }
 
    fread(file_type,sizeof(file_type[0]),8,f);
    file_type[8] = '\0';
    if(strcmp(file_type,"SLKIMAGE")!=0)
    {
-      printf("%s does not seem to be a SLKIMAGE file\n",path);
+      puts("File does not seem to be a SLKIMAGE file");
       return SLK_pal_sprite_create(1,1);
    }
       
@@ -867,8 +897,28 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
    
    s = SLK_pal_sprite_create(width,height);
    fread(s->data,sizeof(*s->data),width*height,f);
-   fclose(f);
+
+   return s;
+}
+
+SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
+{
+   char file_type[512];
+   int32_t width;
+   int32_t height;
+   memcpy(file_type,data,sizeof(file_type[0])*8);
+   file_type[8] = '\0';
+   if(strcmp(file_type,"SLKIMAGE")!=0)
+   {
+      puts("Membuffer does not seem to be a SLKIMAGE file");
+      return SLK_pal_sprite_create(1,1);
+   }
    
+   width = *((int32_t *)(data+8));
+   height = *((int32_t *)(data+12));
+   SLK_Pal_sprite *s = SLK_pal_sprite_create(width,height);
+   memcpy(s->data,data+16,width*height*sizeof(*s->data));
+
    return s;
 }
 

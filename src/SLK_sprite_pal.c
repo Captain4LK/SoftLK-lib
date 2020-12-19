@@ -100,6 +100,26 @@ SLK_Pal_sprite *SLK_pal_sprite_load(const char *path)
    return backend_load_pal(path);
 }
 
+//Loads a sprite from a .slk file.
+//Current layout:
+//int width,
+//int height,
+//width*height*SLK_Paxel data
+SLK_Pal_sprite *SLK_pal_sprite_load_file(FILE *f)
+{
+   return backend_load_pal_file(f);
+}
+
+//Loads a sprite from a .slk file.
+//Current layout:
+//int width,
+//int height,
+//width*height*SLK_Paxel data
+SLK_Pal_sprite *SLK_pal_sprite_load_mem(const void *data, int length)
+{
+   return backend_load_pal_mem(data,length);
+}
+
 //Saves a sprite to a file
 //with the above specified
 //layout.

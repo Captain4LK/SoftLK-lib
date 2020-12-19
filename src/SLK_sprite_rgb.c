@@ -84,12 +84,22 @@ void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c)
       s->data[y*s->width+x] = c;
 }
 
-//Loads a sprite from an image file.
-//All formats that are supported by stb_image 
-//are supported by this function (png, jpg, etc.).
+//Loads a sprite from a png file.
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
 {
    return backend_load_rgb(path);
+}
+
+//Loads a sprite from a png file.
+SLK_RGB_sprite *SLK_rgb_sprite_load_file(FILE *f)
+{
+   return backend_load_rgb_file(f);
+}
+
+//Loads a sprite from a png file.
+SLK_RGB_sprite *SLK_rgb_sprite_load_mem(const void *data, int length)
+{
+   return backend_load_rgb_mem(data, length);
 }
 
 ///Saves a sprite to an image file.

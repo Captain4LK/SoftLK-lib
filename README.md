@@ -6,10 +6,10 @@ A library trying to make graphics in game development (simulations etc.) easy. I
 
 What it does:
 
-* Layers: Draw to multiple independent layers
-* RGB drawing: Draw in 32bit rgba colorspace
-* Pal drawing: Draw in palletized 8bit colorspace and change the palette on the fly, without needing to redraw
-* Image loading: Load and save sprites from and to multiple file formats
+* Layers: Draw to multiple independent layers.
+* RGB drawing: Draw in 32bit rgba colorspace.
+* Pal drawing: Draw in palletized 8bit colorspace and change the palette on the fly, without needing to redraw.
+* Image loading: Load and save sprites from and to png files .
 * Backends: Plattform specific code is seperate from general code, however only an SDL2 backend has been implemented yet.
 * Input: Gamepad, mouse and keyboard input.
 
@@ -76,7 +76,7 @@ SDL2_GL backend:
 Allways:
 
 * [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) (Public Domain)
-* [stb_image_write](https://github.com/nothings/stb/blob/master/stb_image_write.h) (Public Domain)
+* [cute_png](https://github.com/RandyGaul/cute_headers/blob/master/cute_png.h) (Public Domain)
 
 ## Gallery
 

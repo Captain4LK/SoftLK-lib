@@ -19,11 +19,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <string.h>
 #include <stdint.h>
 #include <limits.h>
-#define STB_IMAGE_IMPLEMENTATION
-#include "../../external/stb_image.h"
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
-//https://github.com/nothings/stb
+//https://github.com/RandyGaul/cute_headers
 //-------------------------------------
 
 //Internal includes
@@ -219,12 +217,13 @@ int main(int argc, char **argv)
    {
       printf("converting %s...\n",input[i]);
       Image_rgb *image = malloc(sizeof(Image_rgb));
-      unsigned char *data;
       
-      data = stbi_load(input[i],&image->width,&image->height,NULL,4);
+      cp_image_t img = cp_load_png(input[i]);
+      image->width = img.w;
+      image->height = img.h;
       image->data = malloc(sizeof(Pixel)*image->width*image->height);
-      memcpy(image->data,data,image->width*image->height*sizeof(Pixel));
-      stbi_image_free(data);
+      memcpy(image->data,img.pix,image->width*image->height*sizeof(Pixel));
+      cp_free_png(&img);
 
       for(int y = 0;y<image->height;y++)
       {

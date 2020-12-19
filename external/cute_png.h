@@ -677,7 +677,7 @@ static void cp_encode_literal(cp_save_png_data_t* s, uint32_t v)
 {
    // Encode a literal/length using the built-in tables.
    // Could do better with a custom table but whatever.
-        if (v < 144) cp_put_bitsr(s, 0x030 + v -   0, 8);
+   if (v < 144) cp_put_bitsr(s, 0x030 + v -   0, 8);
    else if (v < 256) cp_put_bitsr(s, 0x190 + v - 144, 9);
    else if (v < 280) cp_put_bitsr(s, 0x000 + v - 256, 7);
    else              cp_put_bitsr(s, 0x0c0 + v - 280, 8);

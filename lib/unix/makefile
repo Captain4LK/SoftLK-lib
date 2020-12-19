@@ -43,7 +43,7 @@ SLK_palette.o: ../../src/SLK_palette.c ../../include/SLK/SLK_types.h ../../inclu
 SLK_sprite_pal.o: ../../src/SLK_sprite_pal.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../external/stb_image.h ../../external/cute_png.h
+SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_timer.o: ../../src/SLK_timer.c ../../include/SLK/SLK_functions.h ../../src/backend.h
