@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
+#include "../../external/UtilityLK/include/ULK_slk.h"
 //-------------------------------------
 
 //Internal includes
@@ -845,44 +846,26 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
 
 SLK_Pal_sprite *backend_load_pal_file(FILE *f)
 {
-   SLK_Pal_sprite *s = NULL;
-   int32_t width, height;
-   char file_type[512];
-
-   fread(file_type,sizeof(file_type[0]),8,f);
-   file_type[8] = '\0';
-   if(strcmp(file_type,"SLKIMAGE")!=0)
-   {
-      puts("File does not seem to be a SLKIMAGE file");
-      return NULL;
-   }
-      
-   fread(&width,sizeof(width),1,f);
-   fread(&height,sizeof(height),1,f);   
-   
-   s = SLK_pal_sprite_create(width,height);
-   fread(s->data,sizeof(*s->data),width*height,f);
+   int size = 0;
+   char *data = NULL;
+   fseek(f,SEEK_END,0);
+   size = ftell(f);
+   fseek(f,SEEK_SET,0);
+   data = malloc(size+1);
+   fread(data,size,1,f);
+   data[size] = 0;
+   SLK_Pal_sprite *s = backend_load_pal_mem(data,size);
+   free(data);
 
    return s;
 }
 
 SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
 {
-   char file_type[512];
-   int32_t width;
-   int32_t height;
-   memcpy(file_type,data,sizeof(file_type[0])*8);
-   file_type[8] = '\0';
-   if(strcmp(file_type,"SLKIMAGE")!=0)
-   {
-      puts("Membuffer does not seem to be a SLKIMAGE file");
-      return NULL;
-   }
-   
-   width = *((int32_t *)(data+8));
-   height = *((int32_t *)(data+12));
-   SLK_Pal_sprite *s = SLK_pal_sprite_create(width,height);
-   memcpy(s->data,data+16,width*height*sizeof(*s->data));
+   ULK_slk_image *img = ULK_slk_image_load_mem_buffer(data,length);
+   SLK_Pal_sprite *s = SLK_pal_sprite_create(img->width,img->height);
+   memcpy(s->data,img->data,sizeof(*s->data)*s->width*s->height);
+   ULK_slk_image_free(img);
 
    return s;
 }
@@ -901,10 +884,11 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
 
 void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f)
 {
-   fprintf(f,"SLKIMAGE");
-   fwrite(&s->width,sizeof(s->width),1,f);
-   fwrite(&s->height,sizeof(s->height),1,f);
-   fwrite(s->data,sizeof(*s->data),s->width*s->height,f);
+   ULK_slk_image img;
+   img.width = s->width;
+   img.height = s->height;
+   img.data = (ULK_slk_paxel *)s->data;
+   ULK_slk_image_write(&img,f,0);
 }
 
 SLK_Palette *backend_load_palette(const char *path)

@@ -19,6 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <string.h>
 #include <stdint.h>
 #include <limits.h>
+#include "../../external/UtilityLK/include/ULK_slk.h"
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
@@ -144,8 +145,8 @@ int main(int argc, char **argv)
          switch(argv[i][1])
          {
          case 'h':
-            printf("SoftLK-converter\nCopyright (C) 2020 Captain4LK (Lukas Holzbeierlein)\nUsage: slk_converter [OPTION]...\nConverts PNGs (and other image formats) to the file format used by SoftLK-lib\n\t-h\t\tshow this text\n" \
-               "\t-i [FILES]\tspecifies the input files\n\t-o [DIR]\tspecifies the output directory\n\t-f [FORMAT]\timage format to output, either png or slk\n\t-d [LEVEL]\tdithering level, NONE,SOME,NORMAL\n\t-p [PATH]\tpalette to use, rgb332 by default\n");
+            printf("SoftLK-converter\nCopyright (C) 2020 Captain4LK (Lukas Holzbeierlein)\nUsage: slk_converter [OPTION]...\nConverts PNGs to the file format used by SoftLK-lib\n\t-h\t\tshow this text\n" \
+               "\t-i [FILES]\tspecifies the input files\n\t-o [DIR]\tspecifies the output directory\n\t-f [FORMAT]\timage format to output, either png or slk[1-4]\n\t-d [LEVEL]\tdithering level, NONE,SOME,NORMAL\n\t-p [PATH]\tpalette to use, rgb332 by default\n");
             exit(0);
             break;
          case 'i':
@@ -179,8 +180,14 @@ int main(int argc, char **argv)
             output = argv[i];
             break;
          case 3: //Set output format
-            if(strcmp(argv[i],"slk")==0)
+            if(strcmp(argv[i],"slk0")==0)
                save_format = 1;
+            else if(strcmp(argv[i],"slk1")==0)
+               save_format = 2;
+            else if(strcmp(argv[i],"slk2")==0)
+               save_format = 3;
+            else if(strcmp(argv[i],"slk3")==0)
+               save_format = 4;
             else if(strcmp(argv[i],"png")==0)
                save_format = 0;
             else
@@ -261,13 +268,15 @@ int main(int argc, char **argv)
             else
                out->data[p].index = find_palette(image->data[p]);
          }
+         ULK_slk_image m;
+         m.width = out->width;
+         m.height = out->height;
+         m.data = (ULK_slk_paxel *)out->data;
 
-         FILE *f = fopen(out_name,"w");
-         fprintf(f,"SLKIMAGE");
-         fwrite(&out->width,sizeof(int32_t),1,f);
-         fwrite(&out->height,sizeof(int32_t),1,f);
-         fwrite(out->data,sizeof(Paxel),out->width*out->height,f);
+         FILE *f = fopen(out_name,"wb");
+         ULK_slk_image_write(&m,f,save_format-1);
          fclose(f);
+
          free(out->data);
          free(out);
       }
