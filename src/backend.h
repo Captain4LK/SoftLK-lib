@@ -69,8 +69,8 @@ void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f);
 SLK_Pal_sprite *backend_load_pal(const char *path);
 SLK_Pal_sprite *backend_load_pal_file(FILE *f);
 SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length);
-void backend_save_pal(const SLK_Pal_sprite *s, const char *path);
-void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f);
+void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle);
+void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle);
 SLK_Palette *backend_load_palette(const char *path);
 
 #endif

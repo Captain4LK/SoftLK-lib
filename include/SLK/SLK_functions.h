@@ -42,8 +42,8 @@ void            SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Pa
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path);
 SLK_Pal_sprite *SLK_pal_sprite_load_file(FILE *f);
 SLK_Pal_sprite *SLK_pal_sprite_load_mem(const void *data, int length);
-void            SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s);
-void            SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s);
+void            SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s, int rle);
+void            SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s, int rle);
 void            SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src);
 void            SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src, int x, int y, int ox, int oy, int width, int height);
 

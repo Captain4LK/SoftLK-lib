@@ -905,25 +905,25 @@ SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
    return s;
 }
 
-void backend_save_pal(const SLK_Pal_sprite *s, const char *path)
+void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle)
 {
    FILE *f = fopen(path,"wb");
 
    if(!f)
       return;
 
-   backend_save_pal_file(s,f);
+   backend_save_pal_file(s,f,rle);
       
    fclose(f);
 }
 
-void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f)
+void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 {
    ULK_slk_image img;
    img.width = s->width;
    img.height = s->height;
    img.data = (ULK_slk_paxel *)s->data;
-   ULK_slk_image_write(&img,f,0);
+   ULK_slk_image_write(&img,f,rle);
 }
 
 SLK_Palette *backend_load_palette(const char *path)

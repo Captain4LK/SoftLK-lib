@@ -123,17 +123,27 @@ SLK_Pal_sprite *SLK_pal_sprite_load_mem(const void *data, int length)
 //Saves a sprite to a file
 //with the above specified
 //layout.
-void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s)
+//rle modes:
+//0: No RLE
+//1: RLE for indices
+//2: RLE for masks
+//3: RLE for all
+void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s, int rle)
 {
-   backend_save_pal(s,path);
+   backend_save_pal(s,path,rle);
 }
 
 //Saves a sprite to a file
 //with the above specified
 //layout.
-void SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s)
+//rle modes:
+//0: No RLE
+//1: RLE for indices
+//2: RLE for masks
+//3: RLE for all
+void SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s, int rle)
 {
-   backend_save_pal_file(s,f);
+   backend_save_pal_file(s,f,rle);
 }
 
 //Copies a specified part of the data of a sprite 
