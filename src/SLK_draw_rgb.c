@@ -266,9 +266,9 @@ void SLK_draw_rgb_sprite_partial(const SLK_RGB_sprite *s, int x, int y, int ox, 
    if(y<0)
       draw_start_y = -y;
    if(x+draw_end_x>target_rgb->width)
-      draw_end_x = s->width+(target_rgb->width-x-draw_end_x);
+      draw_end_x = width+(target_rgb->width-x-draw_end_x);
    if(y+draw_end_y>target_rgb->height)
-      draw_end_y = s->height+(target_rgb->height-y-draw_end_y);
+      draw_end_y = height+(target_rgb->height-y-draw_end_y);
     
    for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {

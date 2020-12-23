@@ -196,7 +196,6 @@ void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
 //when splitting the spritesheet into individual sprites.
 void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height)
 {
-
    int draw_start_y = 0;
    int draw_start_x = 0;
    int draw_end_x = width;
@@ -207,15 +206,15 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
    if(y<0)
       draw_start_y = -y;
    if(x+draw_end_x>target_pal->width)
-      draw_end_x = s->width+(target_pal->width-x-draw_end_x);
+      draw_end_x = width+(target_pal->width-x-draw_end_x);
    if(y+draw_end_y>target_pal->height)
-      draw_end_y = s->height+(target_pal->height-y-draw_end_y);
+      draw_end_y = height+(target_pal->height-y-draw_end_y);
     
    for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
       for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
-         SLK_Paxel p = s->data[(y1+oy)*s->width+x1+ox];
+         SLK_Paxel p = s->data[(oy+y1)*s->width+ox+x1];
          int index = (y1+y)*target_pal->width+x1+x;
          target_pal->data[index].index = (target_pal->data[index].index&p.mask)|p.index;
       }
