@@ -86,7 +86,7 @@ void shapes_load_file(const char *path)
    for(int i = 0;i<rectangles_count;i++)
    {
       ULK_json5 *rectangle = ULK_json_get_array_item(rectangles,i);
-      objects_count+=ULK_json_get_object(rectangle,"divisions")->integer;
+      objects_count+=ULK_json_get_object_integer(rectangle,"divisions",0);
    }
 
    //Allocate enough space for all shapes
@@ -97,13 +97,13 @@ void shapes_load_file(const char *path)
    objects_count = 0;
 
    //Set how the potential is supposed to be drawn
-   potential_mode = ULK_json_get_object(&json->root,"mode")->integer;
-   divider_potential = ULK_json_get_object(&json->root,"divisions")->real;
-   manual_potential = ULK_json_get_object(&json->root,"manual_potential")->integer;
+   potential_mode = ULK_json_get_object_integer(&json->root,"mode",1);
+   divider_potential = ULK_json_get_object_real(&json->root,"divisions",1000000.0f);
+   manual_potential = ULK_json_get_object_integer(&json->root,"manual_potential",0);
    if(manual_potential)
    {
-      charge_min = ULK_json_get_object(&json->root,"charge_min")->real;
-      charge_max = ULK_json_get_object(&json->root,"charge_max")->real;
+      charge_min = ULK_json_get_object_real(&json->root,"charge_min",0.0f);
+      charge_max = ULK_json_get_object_real(&json->root,"charge_max",0.0f);
    }
    
    //Load all circles
@@ -111,19 +111,19 @@ void shapes_load_file(const char *path)
    {
       ULK_json5 *circle = ULK_json_get_array_item(circles,i);
 
-      shapes[objects_count].circle.x = ULK_json_get_object(circle,"x")->integer;
-      shapes[objects_count].circle.y = ULK_json_get_object(circle,"y")->integer;
-      shapes[objects_count].circle.color.r = ULK_json_get_object(circle,"r")->integer;
-      shapes[objects_count].circle.color.g = ULK_json_get_object(circle,"g")->integer;
-      shapes[objects_count].circle.color.b = ULK_json_get_object(circle,"b")->integer;
+      shapes[objects_count].circle.x = ULK_json_get_object_integer(circle,"x",0);
+      shapes[objects_count].circle.y = ULK_json_get_object_integer(circle,"y",0);
+      shapes[objects_count].circle.color.r = ULK_json_get_object_integer(circle,"r",0);
+      shapes[objects_count].circle.color.g = ULK_json_get_object_integer(circle,"g",0);
+      shapes[objects_count].circle.color.b = ULK_json_get_object_integer(circle,"b",0);
       shapes[objects_count].circle.color.a = 255;
       shapes[objects_count].circle.color_inv.r = 255-shapes[objects_count].circle.color.r;
       shapes[objects_count].circle.color_inv.g = 255-shapes[objects_count].circle.color.g;
       shapes[objects_count].circle.color_inv.b = 255-shapes[objects_count].circle.color.b;
       shapes[objects_count].circle.color_inv.a = 255;
-      shapes[objects_count].circle.radius = ULK_json_get_object(circle,"radius")->integer;
-      shapes[objects_count].circle.charge = ULK_json_get_object(circle,"charge")->real;
-      shapes[objects_count].circle.test_points = ULK_json_get_object(circle,"test_points")->integer;
+      shapes[objects_count].circle.radius = ULK_json_get_object_integer(circle,"radius",0);
+      shapes[objects_count].circle.charge = ULK_json_get_object_real(circle,"charge",0.0f);
+      shapes[objects_count].circle.test_points = ULK_json_get_object_integer(circle,"test_points",5);
       shapes[objects_count].type = 0;
       sprintf(shapes[objects_count].circle.charge_str,"%07fC",shapes[objects_count].circle.charge);
 
@@ -135,18 +135,18 @@ void shapes_load_file(const char *path)
    {
       ULK_json5 *rectangle = ULK_json_get_array_item(rectangles,i);
 
-      int x = ULK_json_get_object(rectangle,"x")->integer;
-      int y = ULK_json_get_object(rectangle,"y")->integer;
-      int width = ULK_json_get_object(rectangle,"width")->integer;
-      int height = ULK_json_get_object(rectangle,"height")->integer;
-      int divisions = ULK_json_get_object(rectangle,"divisions")->integer;
-      float charge = (ULK_json_get_object(rectangle,"charge")->real)/(double)(divisions);
-      int test_points = ULK_json_get_object(rectangle,"test_points")->integer;
+      int x = ULK_json_get_object_integer(rectangle,"x",0);
+      int y = ULK_json_get_object_integer(rectangle,"y",0);
+      int width = ULK_json_get_object_integer(rectangle,"width",0);
+      int height = ULK_json_get_object_integer(rectangle,"height",0);
+      int divisions = ULK_json_get_object_integer(rectangle,"divisions",1);
+      float charge = (ULK_json_get_object_real(rectangle,"charge",0.0f))/(double)(divisions);
+      int test_points = ULK_json_get_object_integer(rectangle,"test_points",5);
       int radius = width>height?height:width;
       SLK_Color color;
-      color.r = ULK_json_get_object(rectangle,"r")->integer;
-      color.g = ULK_json_get_object(rectangle,"g")->integer;
-      color.b = ULK_json_get_object(rectangle,"b")->integer;
+      color.r = ULK_json_get_object_integer(rectangle,"r",0);
+      color.g = ULK_json_get_object_integer(rectangle,"g",0);
+      color.b = ULK_json_get_object_integer(rectangle,"b",0);
       color.a = 255;
       rectangles_tmp[i].x = x;
       rectangles_tmp[i].y = y;

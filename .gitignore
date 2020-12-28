@@ -5,7 +5,14 @@
 
 examples/3d/3d_demo
 examples/efelder/efelder
+examples/efelder/*.png
 examples/performance/performance
 examples/resize/resize
 examples/template/template
 tools/converter/slk_converter
+tools/converter/*.png
+tools/converter/*.slk
+tools/converter/*.pal
+tools/image_updater/slk_img_updater
+tools/image_updater/*.png
+tools/image_updater/*.slk
