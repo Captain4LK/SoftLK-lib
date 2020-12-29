@@ -65,7 +65,6 @@ static SLK_RGB_sprite *gui_01;
 static int frame = 0;
 static char time_stat[48];
 static int render_mode = 0;
-static int fullscreen = 0;
 static double ftime = 0.1f;
 //-------------------------------------
 
@@ -138,7 +137,7 @@ int main(int argc, char *argv[])
    while(world.used<10)
       add_entity();
       
-#ifdef __EMSCRIPTEN__
+#ifdef EMSCRIPTEN
    SLK_core_set_main_loop(&main_loop);
 #else
    //Main loop
@@ -222,11 +221,11 @@ static void main_loop()
       SLK_draw_rgb_sprite(gui_01,206,2);
       SLK_draw_rgb_string(214,10,1,"rgb renderer",SLK_color_create(255,255,255,255));
    }
-   if(SLK_key_pressed(SLK_KEY_F))
+   /*if(SLK_key_pressed(SLK_KEY_F))
    {
       fullscreen = !fullscreen;
       SLK_core_set_fullscreen(fullscreen);
-   }
+   }*/
    //-------------------------------------
    
    //Update gui

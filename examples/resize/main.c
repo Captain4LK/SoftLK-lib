@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
    SLK_layer_set_size(0,logo->width,logo->height); //To be future proof we won't use a fixed size, but rather change the size to the actual size of the image.
    SLK_draw_pal_sprite(logo,0,0); //Draw the sprite to the current layer.
    SLK_pal_sprite_destroy(logo); //Destroy the image again since it's not used anymore.
-   //Pal layer don't (yet) have a set_changed flag, so we don't need to set it here.
+   //Pal layers don't (yet) have a set_changed flag, so we don't need to set it here.
 
    //Main loop.
    while(SLK_core_running())

@@ -19,8 +19,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-//Use libpng for image loading since a port exists (on emscripten)
-#include <png.h>
 #include "../../external/UtilityLK/include/ULK_slk.h"
 //-------------------------------------
 
@@ -117,7 +115,8 @@ void backend_set_fullscreen(int fullscreen)
 //(should) center the viewport.
 void backend_update_viewport()
 {
-   SDL_GetWindowSize(sdl_window,&window_width,&window_height);
+   SDL_GetRendererOutputSize(renderer,&window_width,&window_height);
+   //SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
    if(dynamic)
    {
@@ -962,5 +961,3 @@ void backend_set_main_loop(void (*callback)(void))
    emscripten_set_main_loop(callback,0,1);
 }
 //-------------------------------------
-
-#undef MAX_CONTROLLERS 
