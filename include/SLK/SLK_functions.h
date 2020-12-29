@@ -172,6 +172,5 @@ int             SLK_core_get_width();
 int             SLK_core_get_height();
 int             SLK_core_running();
 void            SLK_core_quit();
-void            SLK_core_set_main_loop(void  (*callback)(void));
 
 #endif //_SLK_FUNCTIONS_H_
