@@ -121,12 +121,4 @@ void SLK_render_update()
 {
    backend_render_update();
 }
-
-//Sets the main loop callback function
-//Only use on emscripten backend,
-//will not do anything on other backends!
-void SLK_core_set_main_loop(void  (*callback)(void))
-{
-   backend_set_main_loop(callback);
-}
 //-------------------------------------

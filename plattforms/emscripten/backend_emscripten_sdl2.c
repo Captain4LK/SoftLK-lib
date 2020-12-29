@@ -955,9 +955,4 @@ SLK_Palette *backend_load_palette(const char *path)
 
    return palette;
 }
-
-void backend_set_main_loop(void (*callback)(void))
-{
-   emscripten_set_main_loop(callback,0,1);
-}
 //-------------------------------------

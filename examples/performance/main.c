@@ -137,15 +137,11 @@ int main(int argc, char *argv[])
    while(world.used<10)
       add_entity();
       
-#ifdef EMSCRIPTEN
-   SLK_core_set_main_loop(&main_loop);
-#else
    //Main loop
    while(SLK_core_running())
    {
       main_loop();
    }
-#endif
 
    return 0;
 }
