@@ -66,6 +66,7 @@ static int frame = 0;
 static char time_stat[48];
 static int render_mode = 0;
 static int fullscreen = 0;
+static double ftime = 0.1f;
 //-------------------------------------
 
 //Function prototypes
@@ -73,6 +74,7 @@ static void add_entity();
 static void load_pal_sprites();
 static void load_rgb_sprites();
 static int sort(const void *e0, const void *e1);
+static void main_loop();
 //-------------------------------------
 
 //Function implementations
@@ -133,99 +135,107 @@ int main(int argc, char *argv[])
    world.space = 100;
    world.used = 0;
    world.entities= malloc(sizeof(Entity)*world.space);
-   double time = 0.1f;
    while(world.used<10)
       add_entity();
       
+#ifdef __EMSCRIPTEN__
+   SLK_core_set_main_loop(&main_loop);
+#else
    //Main loop
    while(SLK_core_running())
    {
-      SLK_update();
-      frame++;
-
-      if(render_mode==0)
-      {
-         SLK_layer_set_current(1);
-         SLK_draw_pal_clear();
-      }
-      else if(render_mode==1)
-      {
-         SLK_layer_set_current(2);
-         SLK_draw_rgb_clear();
-         SLK_draw_rgb_set_changed(1);
-      }
-      
-      //Sprite animation, drawing and benchmark
-      int next_frame = frame%4==0;
-      clock_t start = clock();
-      for(int i = 0;i<world.used;i++)
-      {
-         if(next_frame)
-         {
-            world.entities[i].frame++;
-            if(world.entities[i].frame>3)
-               world.entities[i].frame = 0;
-         }
-
-         if(render_mode==0)
-            SLK_draw_pal_sprite_flip(dino_sprites[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
-         else if(render_mode==1)
-            SLK_draw_rgb_sprite_flip(dino_sprites_rgb[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
-      }
-      time+=((double)(clock()-start)/CLOCKS_PER_SEC);
-      if(next_frame)
-         sprintf(time_stat,"%08lf %04d",time/((double)frame),world.used);
-      //-------------------------------------
- 
-      //Input
-      if((SLK_key_down(SLK_KEY_SPACE)||SLK_gamepad_down(0,SLK_PAD_A))&&world.used<9999)
-         add_entity();
-
-      if(SLK_key_pressed(SLK_KEY_P)||SLK_gamepad_pressed(0,SLK_PAD_LEFTSHOULDER))
-      {
-         render_mode = 0;
-         time = 0.0f;
-         frame = 0;
-
-         SLK_layer_activate(2,0);
-         SLK_layer_activate(1,1);
-
-         SLK_layer_set_current(0);
-         SLK_draw_rgb_set_changed(1);
-         SLK_draw_rgb_sprite(gui_01,206,2);
-         SLK_draw_rgb_string(214,10,1,"pal renderer",SLK_color_create(255,255,255,255));
-      }
-      else if(SLK_key_pressed(SLK_KEY_R)||SLK_gamepad_pressed(0,SLK_PAD_RIGHTSHOULDER))
-      {
-         render_mode = 1;
-         time = 0.0f;
-         frame = 0;
-
-         SLK_layer_activate(2,1);
-         SLK_layer_activate(1,0);
-
-         SLK_layer_set_current(0);
-         SLK_draw_rgb_set_changed(1);
-         SLK_draw_rgb_sprite(gui_01,206,2);
-         SLK_draw_rgb_string(214,10,1,"rgb renderer",SLK_color_create(255,255,255,255));
-      }
-      if(SLK_key_pressed(SLK_KEY_F))
-      {
-         fullscreen = !fullscreen;
-         SLK_core_set_fullscreen(fullscreen);
-      }
-      //-------------------------------------
-      
-      //Update gui
-      SLK_layer_set_current(0);
-      SLK_draw_rgb_set_changed(1);
-      SLK_draw_rgb_sprite(gui_00,2,2);
-      SLK_draw_rgb_string(10,10,1,time_stat,SLK_color_create(255,255,255,255));
-
-      SLK_render_update();
+      main_loop();
    }
+#endif
 
    return 0;
+}
+
+static void main_loop()
+{
+   SLK_update();
+   frame++;
+
+   if(render_mode==0)
+   {
+      SLK_layer_set_current(1);
+      SLK_draw_pal_clear();
+   }
+   else if(render_mode==1)
+   {
+      SLK_layer_set_current(2);
+      SLK_draw_rgb_clear();
+      SLK_draw_rgb_set_changed(1);
+   }
+   
+   //Sprite animation, drawing and benchmark
+   int next_frame = frame%4==0;
+   clock_t start = clock();
+   for(int i = 0;i<world.used;i++)
+   {
+      if(next_frame)
+      {
+         world.entities[i].frame++;
+         if(world.entities[i].frame>3)
+            world.entities[i].frame = 0;
+      }
+
+      if(render_mode==0)
+         SLK_draw_pal_sprite_flip(dino_sprites[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
+      else if(render_mode==1)
+         SLK_draw_rgb_sprite_flip(dino_sprites_rgb[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
+   }
+   ftime+=((double)(clock()-start)/CLOCKS_PER_SEC);
+   if(next_frame)
+      sprintf(time_stat,"%08lf %04d",ftime/((double)frame),world.used);
+   //-------------------------------------
+
+   //Input
+   if((SLK_key_down(SLK_KEY_SPACE)||SLK_gamepad_down(0,SLK_PAD_A))&&world.used<9999)
+      add_entity();
+
+   if(SLK_key_pressed(SLK_KEY_P)||SLK_gamepad_pressed(0,SLK_PAD_LEFTSHOULDER))
+   {
+      render_mode = 0;
+      ftime = 0.0f;
+      frame = 0;
+
+      SLK_layer_activate(2,0);
+      SLK_layer_activate(1,1);
+
+      SLK_layer_set_current(0);
+      SLK_draw_rgb_set_changed(1);
+      SLK_draw_rgb_sprite(gui_01,206,2);
+      SLK_draw_rgb_string(214,10,1,"pal renderer",SLK_color_create(255,255,255,255));
+   }
+   else if(SLK_key_pressed(SLK_KEY_R)||SLK_gamepad_pressed(0,SLK_PAD_RIGHTSHOULDER))
+   {
+      render_mode = 1;
+      ftime = 0.0f;
+      frame = 0;
+
+      SLK_layer_activate(2,1);
+      SLK_layer_activate(1,0);
+
+      SLK_layer_set_current(0);
+      SLK_draw_rgb_set_changed(1);
+      SLK_draw_rgb_sprite(gui_01,206,2);
+      SLK_draw_rgb_string(214,10,1,"rgb renderer",SLK_color_create(255,255,255,255));
+   }
+   if(SLK_key_pressed(SLK_KEY_F))
+   {
+      fullscreen = !fullscreen;
+      SLK_core_set_fullscreen(fullscreen);
+   }
+   //-------------------------------------
+   
+   //Update gui
+   SLK_layer_set_current(0);
+   SLK_draw_rgb_set_changed(1);
+   SLK_draw_rgb_sprite(gui_00,2,2);
+   SLK_draw_rgb_string(10,10,1,time_stat,SLK_color_create(255,255,255,255));
+
+   SLK_render_update();
 }
 
 static void add_entity()

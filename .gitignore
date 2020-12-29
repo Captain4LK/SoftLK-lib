@@ -2,6 +2,10 @@
 *.exe
 *.o
 *.a
+*.js
+*.html
+*.wasm
+*.data
 
 examples/3d/3d_demo
 examples/efelder/efelder

@@ -42,14 +42,16 @@ For more information, please refer to <http://unlicense.org/>
 //-------------------------------------
 
 //Function prototypes
+static void main_loop();
 //-------------------------------------
 
 //Function implementations
 
 int main(int argc, char *argv[])
 {
+   printf("Test\n");
    SLK_setup(320,240,2,"SoftLK template",0,SLK_WINDOW_MAX,1); 
-   SLK_timer_set_fps(60);
+   SLK_timer_set_fps(30);
 
    SLK_layer_create(0,SLK_LAYER_RGB);
    SLK_layer_activate(0,1);
@@ -67,14 +69,32 @@ int main(int argc, char *argv[])
    SLK_draw_rgb_clear();
    SLK_draw_rgb_set_changed(1);
 
+   main_loop();
+
+#ifdef __EMSCRIPTEN__
+   SLK_core_set_main_loop(&main_loop);
+#else
    //Main loop.
    while(SLK_core_running())
    {
-      SLK_update();
-
-      SLK_render_update();
+      main_loop();
    }
+#endif
 
    return 0;
+}
+
+static void main_loop()
+{
+   SLK_update();
+
+   if(SLK_key_pressed(SLK_KEY_D))
+      puts("D pressed");
+   SLK_layer_set_current(0);
+   SLK_draw_rgb_set_clear_color(SLK_color_create(128,128,128,255)); 
+   SLK_draw_rgb_clear();
+   SLK_draw_rgb_set_changed(1);
+
+   SLK_render_update();
 }
 //-------------------------------------

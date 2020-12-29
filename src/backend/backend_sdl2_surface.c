@@ -18,7 +18,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
 #include "../../external/UtilityLK/include/ULK_slk.h"
 //-------------------------------------
 
@@ -51,7 +50,8 @@ typedef struct
 
 //Variables
 static SDL_Window *sdl_window;
-static SDL_GLContext sdl_gl_context;
+static SDL_Surface *surface_window;
+static SDL_Rect surface_base_rect;
 static int screen_width;
 static int screen_height;
 static int pixel_scale;
@@ -66,7 +66,7 @@ static int frametime;
 static int framedelay;
 static int framestart;
 static float delta;
-static GLuint *layer_textures;
+static SDL_Surface **layer_surfaces;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
 static uint8_t gamepad_map[16];
@@ -114,11 +114,10 @@ void backend_update_viewport()
       view_y = (window_height-view_height)/2;
    }
 
-   glViewport(view_x,view_y,view_width,view_height);
-
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   glOrtho(0,screen_width,screen_height,0,1.0,-1.0);
+   surface_base_rect.x = view_x;
+   surface_base_rect.y = view_y;
+   surface_base_rect.w = view_width;
+   surface_base_rect.h = view_height;
 }
 
 //Handles window and input events.
@@ -208,21 +207,25 @@ void backend_handle_events()
          }
          break;
       case SDL_WINDOWEVENT:
-         if(event.window.event==SDL_WINDOWEVENT_RESIZED&&dynamic)
+         if(event.window.event==SDL_WINDOWEVENT_RESIZED)
          {
-            int new_width = event.window.data1/pixel_scale+1;
-            int new_height = event.window.data2/pixel_scale+1;
-            screen_width = new_width;
-            screen_height = new_height;
-
-            for(int l = 0;l<layer_count;l++)
+            if(dynamic)
             {
-               if(layers[l].dynamic)
-                  SLK_layer_set_size(l,new_width,new_height);
-            }
+               int new_width = event.window.data1/pixel_scale+1;
+               int new_height = event.window.data2/pixel_scale+1;
+               screen_width = new_width;
+               screen_height = new_height;
 
+               for(int l = 0;l<layer_count;l++)
+               {
+                  if(layers[l].dynamic)
+                     SLK_layer_set_size(l,new_width,new_height);
+               }
+            }
+            surface_window = SDL_GetWindowSurface(sdl_window);
          }
          backend_update_viewport();
+         SDL_SetClipRect(surface_window,&surface_base_rect);
          break;
       }
    }
@@ -285,60 +288,28 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    if(pixel_scale<=0)
       pixel_scale = 1;
 
-   SDL_GL_LoadLibrary(NULL);
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION,1); 
-   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION,1);
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,1);
-
    if(resizable)
-      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_OPENGL|SDL_WINDOW_RESIZABLE);
+      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_RESIZABLE);
    else
-      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_OPENGL);
+      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,0);
 
    if(!sdl_window)
    {
       printf("FATAL ERROR: failed to create window\n");
       exit(-1);
    }
-    
-   sdl_gl_context = SDL_GL_CreateContext(sdl_window);
-   if(!sdl_gl_context)
-   {
-      printf("FATAL ERROR: failed to create opengl context\n");
-      exit(-1);
-   }
-   SDL_GL_SetSwapInterval(0);
 
-   printf("OpenGL loaded\n");
-   printf("Vendor:   %s\n",glGetString(GL_VENDOR));
-   printf("Renderer: %s\n",glGetString(GL_RENDERER));
-   printf("Version:  %s\n",glGetString(GL_VERSION));
-
-   glEnable(GL_TEXTURE_2D);
-   glViewport(0,0,screen_width,screen_height);
-   glClearColor(0.0f,0.0f,0.0f,0.0f);
-   glClear(GL_COLOR_BUFFER_BIT);
-
-   glEnable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
-
-   layer_textures = malloc(sizeof(*layer_textures)*layer_num);
-   memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
+   surface_window = SDL_GetWindowSurface(sdl_window);
+   backend_update_viewport();
+   SDL_SetClipRect(surface_window,&surface_base_rect);
+   layer_surfaces = malloc(sizeof(*layer_surfaces)*layer_num);
+   memset(layer_surfaces,0,sizeof(*layer_surfaces)*layer_num);
 }
 
 //Clears the window and redraws the scene.
 //Drawing is performed from back to front, layer 0 is always drawn last.
 void backend_render_update()
 {
-   glClear(GL_COLOR_BUFFER_BIT);
-   //glViewport(view_x,view_y,view_width,view_height);
-
    for(int l = layer_count-1;l>=0;l--)
    {
       layers[l].resized = 0;
@@ -349,64 +320,69 @@ void backend_render_update()
          {
          case SLK_LAYER_PAL:
          {
-            float width = (float)layers[l].type_0.target->width*layers[l].scale;
-            float height = (float)layers[l].type_0.target->height*layers[l].scale;
-            float x = (float)layers[l].x;
-            float y = (float)layers[l].y;
+            float width = (float)layers[l].type_0.target->width*layers[l].scale*pixel_scale;
+            float height = (float)layers[l].type_0.target->height*layers[l].scale*pixel_scale;
+            float x = (float)layers[l].x*pixel_scale;
+            float y = (float)layers[l].y*pixel_scale;
+            SDL_Rect dst_rect;
+            dst_rect.x = x;
+            dst_rect.y = y;
+            dst_rect.w = width;
+            dst_rect.h = height;
 
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
                layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
 
-            glBindTexture(GL_TEXTURE_2D,layer_textures[l]);
-            glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,layers[l].type_0.render->width,layers[l].type_0.render->height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_0.render->data);
+            if(layer_surfaces[l]->w!=layers[l].type_0.target->width||layer_surfaces[l]->h!=layers[l].type_0.target->height)
+            {
+               SDL_FreeSurface(layer_surfaces[l]);
+               layer_surfaces[l] = SDL_CreateRGBSurface(0,layers[l].type_0.render->width,layers[l].type_0.render->height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+            }
+            SDL_LockSurface(layer_surfaces[l]);   
+            memcpy(layer_surfaces[l]->pixels,layers[l].type_0.render->data,sizeof(*layers[l].type_0.render->data)*layers[l].type_0.render->width*layers[l].type_0.render->height);
+            SDL_UnlockSurface(layer_surfaces[l]);   
 
-            glBegin(GL_QUADS);
-               glColor4ub(layers[l].tint.r,layers[l].tint.g,layers[l].tint.b,layers[l].tint.a);
-               glTexCoord2i(0,0);
-               glVertex3f(x,y,0.0f);
-               glTexCoord2i(0,1);
-               glVertex3f(x,y+height,0.0f);
-               glTexCoord2f(1,1);
-               glVertex3f(width+x,y+height,0.0f);
-               glTexCoord2f(1,0);
-               glVertex3f(width+x,y,0.0f);
-            glEnd();
+            SDL_SetSurfaceColorMod(layer_surfaces[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
+            SDL_SetSurfaceAlphaMod(layer_surfaces[l],layers[l].tint.a);
+            SDL_BlitScaled(layer_surfaces[l],NULL,surface_window,&dst_rect);
 
             break;
          }
          case SLK_LAYER_RGB:
          {
-            float width = (float)layers[l].type_1.target->width*layers[l].scale;
-            float height = (float)layers[l].type_1.target->height*layers[l].scale;
-            float x = (float)layers[l].x;
-            float y = (float)layers[l].y;
+            int width = (float)layers[l].type_1.target->width*layers[l].scale*pixel_scale;
+            int height = (float)layers[l].type_1.target->height*layers[l].scale*pixel_scale;
+            int x = (float)layers[l].x*pixel_scale;
+            int y = (float)layers[l].y*pixel_scale;
+            SDL_Rect dst_rect;
+            dst_rect.x = x;
+            dst_rect.y = y;
+            dst_rect.w = width;
+            dst_rect.h = height;
 
-            glBindTexture(GL_TEXTURE_2D,layer_textures[l]);
             if(layers[l].type_1.target->changed)
             {
-               glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,layers[l].type_1.target->width,layers[l].type_1.target->height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_1.target->data);
+               if(layer_surfaces[l]->w!=layers[l].type_1.target->width||layer_surfaces[l]->h!=layers[l].type_1.target->height)
+               {
+                  SDL_FreeSurface(layer_surfaces[l]);
+                  layer_surfaces[l] = SDL_CreateRGBSurface(0,layers[l].type_1.target->width,layers[l].type_1.target->height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+               }
+               SDL_LockSurface(layer_surfaces[l]);   
+               memcpy(layer_surfaces[l]->pixels,layers[l].type_1.target->data,sizeof(*layers[l].type_1.target->data)*layers[l].type_1.target->width*layers[l].type_1.target->height);
+               SDL_UnlockSurface(layer_surfaces[l]);   
                layers[l].type_1.target->changed = 0;
             }
-
-            glBegin(GL_QUADS);
-               glColor4ub(layers[l].tint.r,layers[l].tint.g,layers[l].tint.b,layers[l].tint.a);
-               glTexCoord2i(0,0);
-               glVertex3f(x,y,0.0f);
-               glTexCoord2i(0,1);
-               glVertex3f(x,y+height,0.0f);
-               glTexCoord2f(1,1);
-               glVertex3f(width+x,y+height,0.0f);
-               glTexCoord2f(1,0);
-               glVertex3f(width+x,y,0.0f);
-            glEnd();
+            SDL_SetSurfaceColorMod(layer_surfaces[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
+            SDL_SetSurfaceAlphaMod(layer_surfaces[l],layers[l].tint.a);
+            SDL_BlitScaled(layer_surfaces[l],NULL,surface_window,&dst_rect);
 
             break;
          }
          }
       }
    }
-
-   SDL_GL_SwapWindow(sdl_window);
+   
+   SDL_UpdateWindowSurface(sdl_window);
 }
 
 void backend_create_layer(unsigned index, int type)
@@ -417,22 +393,10 @@ void backend_create_layer(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
-      glGenTextures(1,&layer_textures[index]);
-      glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
-                   0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
+      layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
       break;
    case SLK_LAYER_RGB:
-      glGenTextures(1,&layer_textures[index]);
-      glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-      glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-      glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
-                   0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_1.target->data);
+      layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
       break;
    }
 }
