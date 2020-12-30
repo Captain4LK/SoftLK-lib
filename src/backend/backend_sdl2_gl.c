@@ -44,8 +44,8 @@ typedef struct
    SDL_Haptic *haptic;
    SDL_JoystickID id;
    int connected;
-   uint8_t new_button_state[16];
-   uint8_t old_button_state[16];
+   uint8_t new_button_state[SLK_PAD_MAX];
+   uint8_t old_button_state[SLK_PAD_MAX];
 }Gamepad;
 //-------------------------------------
 
@@ -69,11 +69,11 @@ static float delta;
 static GLuint *layer_textures;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
-static uint8_t gamepad_map[SDL_CONTROLLER_BUTTON_MAX+1];
-static uint8_t new_key_state[256];
-static uint8_t old_key_state[256];
-static uint8_t new_mouse_state[6];
-static uint8_t old_mouse_state[6];
+static uint8_t gamepad_map[SDL_CONTROLLER_BUTTON_MAX];
+static uint8_t new_key_state[SLK_KEY_MAX];
+static uint8_t old_key_state[SLK_KEY_MAX];
+static uint8_t new_mouse_state[SLK_BUTTON_MAX];
+static uint8_t old_mouse_state[SLK_BUTTON_MAX];
 static Gamepad gamepads[MAX_CONTROLLERS];
 static int mouse_x_rel;
 static int mouse_y_rel;

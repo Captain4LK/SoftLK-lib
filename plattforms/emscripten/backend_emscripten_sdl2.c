@@ -44,8 +44,8 @@ typedef struct
    SDL_Haptic *haptic;
    SDL_JoystickID id;
    int connected;
-   uint8_t new_button_state[16];
-   uint8_t old_button_state[16];
+   uint8_t new_button_state[SLK_PAD_MAX];
+   uint8_t old_button_state[SLK_PAD_MAX];
 }Gamepad;
 //-------------------------------------
 
@@ -69,11 +69,11 @@ static int framestart;
 static float delta;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
-static uint8_t gamepad_map[16];
-static uint8_t new_key_state[256];
-static uint8_t old_key_state[256];
-static uint8_t new_mouse_state[6];
-static uint8_t old_mouse_state[6];
+static uint8_t gamepad_map[SDL_CONTROLLER_BUTTON_MAX];
+static uint8_t new_key_state[SLK_KEY_MAX];
+static uint8_t old_key_state[SLK_KEY_MAX];
+static uint8_t new_mouse_state[SLK_BUTTON_MAX];
+static uint8_t old_mouse_state[SLK_BUTTON_MAX];
 static Gamepad gamepads[MAX_CONTROLLERS];
 static int mouse_x_rel;
 static int mouse_y_rel;
@@ -547,7 +547,6 @@ void backend_input_init()
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = SLK_PAD_DOWN;
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = SLK_PAD_LEFT;
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = SLK_PAD_RIGHT;
-   gamepad_map[SDL_CONTROLLER_BUTTON_MAX] = SLK_PAD_MAX;
 
    //Clear key states, just in case,
    //should already be empty since known at compile time

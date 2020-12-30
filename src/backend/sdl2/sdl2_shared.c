@@ -234,7 +234,6 @@ void backend_input_init()
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = SLK_PAD_DOWN;
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = SLK_PAD_LEFT;
    gamepad_map[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = SLK_PAD_RIGHT;
-   gamepad_map[SDL_CONTROLLER_BUTTON_MAX] = SLK_PAD_MAX;
 
    //Clear key states, just in case,
    //should already be empty since known at compile time
