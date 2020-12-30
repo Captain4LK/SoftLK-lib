@@ -68,7 +68,7 @@ static int framestart;
 static float delta;
 static uint8_t key_map[SDL_NUM_SCANCODES];
 static uint8_t mouse_map[6];
-static uint8_t gamepad_map[16];
+static uint8_t gamepad_map[SDL_CONTROLLER_BUTTON_MAX+1];
 static uint8_t new_key_state[256];
 static uint8_t old_key_state[256];
 static uint8_t new_mouse_state[6];

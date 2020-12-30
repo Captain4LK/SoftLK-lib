@@ -1,17 +1,22 @@
-CC = i686-w64-mingw32-gcc 
+CC = x86_64-w64-mingw32-gcc 
 CFLAGS=-lmingw32 -Wall
-DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o
+DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o ULK_slk.o
 
 .PHONY: backend_sdl2_gl
+.PHONY: backend_sdl2
+.PHONY: backend_sdl2_surface
 .PHONY: SLK_3d_fixed
-
-backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
-	ar crs libSLK.a $^
 
 backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
 	ar crs libSLK.a $^
 
-SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d_fixed.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
+backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
+	ar crs libSLK.a $^
+
+backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
+	ar crs libSLK.a $^
+
+SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d.o SLK_3d_rgb.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
 	ar crs libSLK3d_fixed.a $^
 
 SLK_core.o: ../../src/SLK_core.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../src/backend.h ../../src/SLK_layer_i.h
@@ -38,7 +43,7 @@ SLK_palette.o: ../../src/SLK_palette.c ../../include/SLK/SLK_types.h ../../inclu
 SLK_sprite_pal.o: ../../src/SLK_sprite_pal.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../external/stb_image.h ../../external/stb_image_write.h
+SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_timer.o: ../../src/SLK_timer.c ../../include/SLK/SLK_functions.h ../../src/backend.h
@@ -50,11 +55,17 @@ SLK_sheet_rgb.o: ../../src/SLK_sheet_rgb.c ../../include/SLK/SLK_functions.h ../
 SLK_sheet_pal.o: ../../src/SLK_sheet_pal.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-backend_sdl2_gl.o: ../../src/backend/backend_sdl2_gl.c ../../src/backend.h
-	$(CC) -O3 -c $< -lmingw32 -lSDL2 -lopengl32 -Wall
+ULK_slk.o: ../../external/UtilityLK/src/ULK_slk.c ../../external/UtilityLK/include/ULK_slk.h
+	$(CC) -O3 -c $< $(CFLAGS) 
 
-backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h
-	$(CC) -O3 -c $< -lmingw32 -lSDL2 -Wall
+backend_sdl2_gl.o: ../../src/backend/backend_sdl2_gl.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
+	$(CC) -O3 -c $< -lm -lSDL2 -lGL -Wall
+
+backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
+	$(CC) -O3 -c $< -lm -lSDL2 -Wall
+
+backend_sdl2_surface.o: ../../src/backend/backend_sdl2_surface.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
+	$(CC) -O3 -c $< -lm -lSDL2 -Wall
 
 ULK_vector.o: ../../external/UtilityLK/src/ULK_vector.c ../../external/UtilityLK/include/ULK_vector.h
 	$(CC) -O3 -c $< $(CFLAGS) 
@@ -65,7 +76,10 @@ ULK_matrix.o: ../../external/UtilityLK/src/ULK_matrix.c ../../external/UtilityLK
 ULK_3d.o: ../../external/UtilityLK/src/ULK_3d.c ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
-SLK_3d_fixed.o: ../../extensions/3d_renderer/SLK_3d_fixed.c ../../include/SLK/SLK_3d.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+SLK_3d.o: ../../extensions/3d_renderer/SLK_3d.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_3d_rgb.o: ../../extensions/3d_renderer/SLK_3d_rgb.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 kixor_list.o: ../../extensions/3d_renderer/kixor/kixor_list.c

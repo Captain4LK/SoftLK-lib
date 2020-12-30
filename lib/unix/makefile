@@ -4,6 +4,7 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 
 .PHONY: backend_sdl2_gl
 .PHONY: backend_sdl2
+.PHONY: backend_sdl2_surface
 .PHONY: SLK_3d_fixed
 .PHONY: install
 
@@ -16,7 +17,7 @@ backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
 	ar crs libSLK.a $^
 
-install: backend_sdl2_gl SLK_3d_fixed
+install: backend_sdl2 SLK_3d_fixed
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
 
