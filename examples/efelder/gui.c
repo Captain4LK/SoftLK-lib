@@ -164,6 +164,8 @@ void gui_init()
    SLK_rgb_sprite_copy_partial(button_2_pressed,sheet,0,0,273,184,44,44);
    SLK_rgb_sprite_copy_partial(button_4_pressed,sheet,0,0,273,280,44,44);
    SLK_rgb_sprite_destroy(sheet);
+   SLK_draw_rgb_load_font("../../data/fonts/cursive2.png");
+   key_potential = SLK_rgb_sprite_create(256,256);
 
    //Setup layers
    int width_l,height_l;
@@ -185,10 +187,9 @@ void gui_init()
    SLK_draw_rgb_clear();
    SLK_draw_rgb_set_changed(1);
 
-   //Draw text once
+   //Draw help text once
    int text_start = scroll_y/12;
    int text_start_pos = (text_start*12)-scroll_y;
-
    memset(gui_help_text->data,0,sizeof(SLK_Color)*gui_help_text->height*gui_help_text->width); 
    SLK_draw_rgb_set_target(gui_help_text);
    for(int i = text_start;i<text_start+22;i++)

@@ -46,15 +46,15 @@ For more information, please refer to <http://unlicense.org/>
 //-------------------------------------
 
 //Function prototypes
-void draw_shapes();
 //-------------------------------------
 
 //Function implementations
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
    if(argc<2)
       return -1;
+
    settings_init_default();
    shapes_load_file(argv[1]);
 
@@ -82,9 +82,6 @@ int main(int argc, char *argv[])
    SLK_layer_activate(5,1);
    SLK_layer_set_dynamic(5,1);
 
-   SLK_draw_rgb_load_font("../../data/fonts/cursive2.png");
-   key_potential = SLK_rgb_sprite_create(256,256);
-
    gui_init();
 
    calculate();
@@ -100,6 +97,4 @@ int main(int argc, char *argv[])
 
    return 0;
 }
-
-
 //-------------------------------------

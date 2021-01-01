@@ -257,10 +257,7 @@ void calculate()
 
 static void calculate_circle(int shape)
 {
-   int i;
-   int o;
-
-   for(i = 0;i<shapes[shape].circle.test_points;i++)
+   for(int i = 0;i<shapes[shape].circle.test_points;i++)
    {
       ULK_vector_2d origin;
       ULK_vector_2d point;
@@ -286,7 +283,7 @@ static void calculate_circle(int shape)
          
          ULK_vector_2d_zero(force_result);
 
-         for(o = 0;o<shapes_count;o++)
+         for(int o = 0;o<shapes_count;o++)
          {
             ULK_vector_2d center;
 
@@ -326,7 +323,6 @@ static void calculate_circle(int shape)
          }
          ULK_vector_2d_add(pos,pos,force_result);
          SLK_draw_rgb_color((int)pos[0],(int)pos[1],shapes[shape].circle.color);
-
       }
    }
 
