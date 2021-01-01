@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020, Lukas Holzbeierlein (Captain4LK) 
+Copyright (c) 2020-2021, Lukas Holzbeierlein (Captain4LK) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -478,7 +478,3 @@ void SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel)
    }
 }
 //-------------------------------------
-
-#undef SWAP
-#undef SIGNUM
-#undef INBOUNDS

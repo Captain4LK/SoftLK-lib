@@ -92,9 +92,7 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
    m->texture_rgb = malloc(sizeof(SLK_RGB_sprite *)*data.material_count);
 
    for(int i = 0;i<data.material_count;i++)
-   {
       m->texture_rgb[i] = rgb_loader(data.material_list[i]->texture_filename);
-   }
 
    SLK_3d_mesh_polygon *cur = m->polygons;
    cur->next = NULL;
@@ -122,6 +120,7 @@ SLK_3d_mesh *SLK_3d_load_obj(char *path)
             v->pos[1] = data.vertex_list[index_vert]->e[1];
             v->pos[2] = data.vertex_list[index_vert]->e[2];
          }
+
          if(index_tex<0)
          {
             v->u = 0.0f;

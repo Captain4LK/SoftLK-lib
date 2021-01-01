@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020, Lukas Holzbeierlein (Captain4LK) 
+Copyright (c) 2020-2021, Lukas Holzbeierlein (Captain4LK) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -111,7 +111,7 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
    running = 1;
    SLK_core_set_fullscreen(fullscreen);
 
-   //Setup keymaps, or whatever you favourite backend does here.
+   //Setup keymaps, or whatever your favourite backend does here.
    backend_input_init();
 }
 

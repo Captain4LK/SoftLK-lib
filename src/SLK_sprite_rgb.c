@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2020, Lukas Holzbeierlein (Captain4LK) 
+Copyright (c) 2020-2021, Lukas Holzbeierlein (Captain4LK) 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -102,17 +102,13 @@ SLK_RGB_sprite *SLK_rgb_sprite_load_mem(const void *data, int length)
    return backend_load_rgb_mem(data, length);
 }
 
-///Saves a sprite to an image file.
-//All formats that are supported by stb_image_write are
-//supported by this function (png etc.).
+///Writes a sprite to a png file.
 void SLK_rgb_sprite_save(const char *path, const SLK_RGB_sprite *s)
 {
    backend_save_rgb(s,path);
 }
 
-///Saves a sprite to an image file.
-//All formats that are supported by stb_image_write are
-//supported by this function (png etc.).
+///Writes a sprite to a png file.
 void SLK_rgb_sprite_save_file(FILE *f, const SLK_RGB_sprite *s)
 {
    backend_save_rgb_file(s,f);

@@ -102,8 +102,12 @@ static int v_end[Y_RES];
 static int z_start[Y_RES];
 static int z_end[Y_RES];
 
+#if WRITE_Z_BUFFER || !USE_SPAN_BUFFER
+
 //Not needed when using span buffering
 static int z_buffer[X_RES*Y_RES];
+
+#endif
 
 #if INTERLACING
 

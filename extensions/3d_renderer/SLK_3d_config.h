@@ -68,7 +68,7 @@ For more information, please refer to <http://unlicense.org/>
 
 //Use spawn buffering,
 //buffers polygons first, all of them
-//get draw after SLK_3d_dispatch() function call
+//get drawn after SLK_3d_dispatch() function call
 #define USE_SPAN_BUFFER 1
 
 #if USE_SPAN_BUFFER
