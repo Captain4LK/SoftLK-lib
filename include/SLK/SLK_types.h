@@ -43,6 +43,7 @@ typedef struct
 typedef struct
 {
     SLK_Color colors[256];
+    int used;
 }SLK_Palette;
 
 typedef struct

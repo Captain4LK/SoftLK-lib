@@ -509,6 +509,7 @@ SLK_Palette *backend_load_palette(const char *path)
       if(i==2)
       {
          sscanf(buffer,"%d",&found);
+         palette->used = found;
       }
       else if(i>2&&buffer[0]!='\0')
       {
