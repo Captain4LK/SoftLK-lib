@@ -57,6 +57,12 @@ int SLK_key_released(int key)
    return backend_key_released(key);
 }
 
+//Returns the requested keys state
+SLK_Button SLK_key_get_state(int key)
+{
+   return backend_key_get_state(key);
+}
+
 //Returns wether the button belonging to 
 //the SLK_button enum is held on the specified gamepad.
 int SLK_gamepad_down(int id, int key)
@@ -76,6 +82,12 @@ int SLK_gamepad_pressed(int id, int key)
 int SLK_gamepad_released(int id, int key)
 {
    return backend_gamepad_released(id,key);
+}
+
+//Returns the requested gamepad buttons state
+SLK_Button SLK_gamepad_get_state(int id, int key)
+{
+   return backend_gamepad_get_state(id,key);
 }
 
 //Returns how many gamepads are currently plugged in.
@@ -106,6 +118,12 @@ int SLK_mouse_pressed(int key)
 int SLK_mouse_released(int key)
 {
    return backend_mouse_released(key);
+}
+
+//Returns the requested buttons state
+SLK_Button SLK_mouse_get_state(int key)
+{
+   return backend_mouse_get_state(key);
 }
 
 //Returns the amount the mouse wheel has been scrolled.

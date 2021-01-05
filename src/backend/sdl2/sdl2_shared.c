@@ -299,6 +299,16 @@ int backend_key_released(int key)
    return !new_key_state[key]&&old_key_state[key];
 }
 
+SLK_Button backend_key_get_state(int key)
+{
+   SLK_Button out;
+   out.pressed = new_key_state[key]&&!old_key_state[key];
+   out.released = !new_key_state[key]&&old_key_state[key];
+   out.held = new_key_state[key];
+
+   return out;
+}
+
 int backend_mouse_down(int key)
 {
    return new_mouse_state[key];
@@ -312,6 +322,16 @@ int backend_mouse_pressed(int key)
 int backend_mouse_released(int key)
 {
    return !new_mouse_state[key]&&old_mouse_state[key];
+}
+
+SLK_Button backend_mouse_get_state(int key)
+{
+   SLK_Button out;
+   out.pressed = new_mouse_state[key]&&!old_mouse_state[key];
+   out.held = new_mouse_state[key];
+   out.released = !new_mouse_state[key]&&old_mouse_state[key];
+
+   return out;
 }
 
 int backend_mouse_wheel_get_scroll()
@@ -332,6 +352,16 @@ int backend_gamepad_pressed(int index, int key)
 int backend_gamepad_released(int index, int key)
 {
    return !gamepads[index].new_button_state[key]&&gamepads[index].old_button_state[key];
+}
+
+SLK_Button backend_gamepad_get_state(int index, int key)
+{
+   SLK_Button out;
+   out.pressed = gamepads[index].new_button_state[key]&&!gamepads[index].old_button_state[key];
+   out.held = gamepads[index].new_button_state[key];
+   out.released = !gamepads[index].new_button_state[key]&&gamepads[index].old_button_state[key];
+
+   return out;
 }
 
 int backend_get_gamepad_count()
