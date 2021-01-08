@@ -219,6 +219,11 @@ int backend_key_released(int key)
    return 0;
 }
 
+SLK_Button backend_key_get_state(int key)
+{
+   return (SLK_Button){0};
+}
+
 int backend_mouse_down(int key)
 {
    return 0;
@@ -232,6 +237,11 @@ int backend_mouse_pressed(int key)
 int backend_mouse_released(int key)
 {
    return 0;
+}
+
+SLK_Button backend_mouse_get_state(int key)
+{
+   return (SLK_Button){0};
 }
 
 int backend_mouse_wheel_get_scroll()
@@ -252,6 +262,11 @@ int backend_gamepad_pressed(int index, int key)
 int backend_gamepad_released(int index, int key)
 {
    return 0;
+}
+
+SLK_Button backend_gamepad_get_state(int index, int key)
+{
+   return (SLK_Button){0};
 }
 
 int backend_get_gamepad_count()
@@ -322,10 +337,5 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 SLK_Palette *backend_load_palette(const char *path)
 {
    return NULL;
-}
-
-void backend_set_main_loop(void (*callback)(void))
-{
-
 }
 //-------------------------------------
