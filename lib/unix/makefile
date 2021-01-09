@@ -6,6 +6,7 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 .PHONY: backend_sdl2
 .PHONY: backend_sdl2_surface
 .PHONY: SLK_3d_fixed
+.PHONY: SLK_gui
 .PHONY: install
 
 backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
@@ -17,12 +18,15 @@ backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
 	ar crs libSLK.a $^
 
-install: backend_sdl2 SLK_3d_fixed
+install: backend_sdl2 SLK_3d_fixed SLK_gui
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
 
 SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d.o SLK_3d_rgb.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
 	ar crs "libSLK3d_fixed.a" $^
+
+SLK_gui: SLK_gui.o SLK_gui_window.o SLK_gui_element.o
+	ar crs "libSLK_gui.a" $^
 
 SLK_core.o: ../../src/SLK_core.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../src/backend.h ../../src/SLK_layer_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
@@ -94,6 +98,15 @@ kixor_obj_parser.o: ../../extensions/3d_renderer/kixor/kixor_obj_parser.c
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 kixor_string_extra.o: ../../extensions/3d_renderer/kixor/kixor_string_extra.c
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_gui.o: ../../extensions/gui/SLK_gui.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_gui_window.o: ../../extensions/gui/SLK_gui_window.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_gui_element.o: ../../extensions/gui/SLK_gui_element.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 clean:
