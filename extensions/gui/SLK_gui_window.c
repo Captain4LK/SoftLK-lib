@@ -116,6 +116,19 @@ void SLK_gui_window_draw(const SLK_gui_window *w)
       case SLK_GUI_ELEMENT_LABEL:
          SLK_draw_rgb_string(e->label.pos.x+e->label.text_x+w->pos.x,e->label.pos.y+w->pos.y,1,e->label.text,color_5);
          break;
+      case SLK_GUI_ELEMENT_ICON:
+         if(e->icon.state.held)
+            SLK_draw_rgb_sprite_partial(e->icon.sprite,e->icon.pos.x+w->pos.x,e->icon.pos.y+w->pos.y,e->icon.frames[1].x,e->icon.frames[1].y,e->icon.frames[1].w,e->icon.frames[1].h);
+         else
+            SLK_draw_rgb_sprite_partial(e->icon.sprite,e->icon.pos.x+w->pos.x,e->icon.pos.y+w->pos.y,e->icon.frames[0].x,e->icon.frames[0].y,e->icon.frames[0].w,e->icon.frames[0].h);
+         break;
+      case SLK_GUI_ELEMENT_SLIDER:
+            SLK_draw_rgb_fill_rectangle(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,e->slider.pos.w,e->slider.pos.h,color_4);
+            if(e->slider.pos.w>e->slider.pos.h)
+               SLK_draw_rgb_vertical_line(((e->slider.value-e->slider.min)/e->slider.max)*e->slider.pos.w,e->slider.pos.y+w->pos.y,e->slider.pos.y+e->slider.pos.h+w->pos.y,color_3);
+            else
+               SLK_draw_rgb_horizontal_line(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,((e->slider.value-e->slider.min)/e->slider.max)*e->slider.pos.h,color_3);
+         break;
       }
       e = e->next;
    }
@@ -167,7 +180,14 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
       }
       else if(e->type==SLK_GUI_ELEMENT_ICON)
       {
-
+         int status = 0;
+         if(button_left.held||button_right.held)
+            status = INSIDE(cursor_x,cursor_y,w->pos.x+e->icon.pos.x,w->pos.y+e->icon.pos.y,e->icon.pos.w,e->icon.pos.h);
+         else
+            status = 0;
+         e->icon.state.pressed = !e->icon.state.held&&status;
+         e->icon.state.released = e->icon.state.held&&!status;
+         e->icon.state.held = status;
       }
 
       e = e->next;

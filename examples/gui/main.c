@@ -70,15 +70,16 @@ int main(int argc, char *argv[])
    SLK_gui_set_font(font);
    SLK_gui_set_font_color(SLK_color_create(0,0,0,255));
    SLK_gui_element *button_test = SLK_gui_button_create(6,32,64,14,"Test");
-   SLK_gui_element *button_plus = SLK_gui_button_create(12,64,14,14,"+");
-   SLK_gui_element *button_minus = SLK_gui_button_create(12,204,14,14,"-");
+   SLK_gui_element *button_minus = SLK_gui_button_create(13,204,14,14,"-");
    SLK_gui_element *label_test = SLK_gui_label_create(70,32,248,200,"I'd just like to interject for a moment.  What you're\nreferring to as Linux,"\
 "is in\nfact, GNU/Linux, or as I've\nrecently taken to calling it, GNU plus Linux."\
 "Linux is not an operating system unto itself, but rather another free\ncomponent"\
 " of a fully\nfunctioning GNU system made\nuseful by the GNU corelibs,\nshell"\
 "utilities and vital\nsystem components comprising a full OS as defined by POSIX.");
+   SLK_RGB_sprite *icons = SLK_rgb_sprite_load("assets/buttons.png");
+   SLK_gui_element *icon_plus = SLK_gui_icon_create(12,64,16,16,icons,(SLK_gui_rectangle){0,0,16,16},(SLK_gui_rectangle){16,0,16,16});
    SLK_gui_window_add_element(window,button_test);
-   SLK_gui_window_add_element(window,button_plus);
+   SLK_gui_window_add_element(window,icon_plus);
    SLK_gui_window_add_element(window,button_minus);
    SLK_gui_window_add_element(window,label_test);
 

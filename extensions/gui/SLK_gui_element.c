@@ -74,4 +74,39 @@ void SLK_gui_label_set_text(SLK_gui_element *element, const char *label)
 
    element->label.text_x = 2+clip_text(element->label.text,label,255,(SLK_gui_rectangle){.x = 2,.y = 2,.w = element->label.pos.w-4,.h = element->label.pos.h-4});
 }
+
+SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame_up, SLK_gui_rectangle frame_down)
+{
+   SLK_gui_element *e = malloc(sizeof(*e));
+   e->next = NULL;
+   e->type = SLK_GUI_ELEMENT_ICON;
+   e->icon.sprite = sprite;
+   e->icon.pos.x = x;
+   e->icon.pos.y = y;
+   e->icon.pos.w = width;
+   e->icon.pos.h = height;
+   e->icon.frames[0] = frame_up;
+   e->icon.frames[1] = frame_down;
+   e->icon.state.held = 0;
+   e->icon.state.pressed = 0;
+   e->icon.state.released = 0;
+
+   return e;
+}
+
+SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int min, int max)
+{
+   SLK_gui_element *e = malloc(sizeof(*e));
+   e->next = NULL;
+   e->type = SLK_GUI_ELEMENT_SLIDER;
+   e->slider.pos.x = x;
+   e->slider.pos.y = y;
+   e->slider.pos.w = width;
+   e->slider.pos.h = height;
+   e->slider.min = min;
+   e->slider.max = max;
+   e->slider.value = min;
+   
+   return e;
+}
 //-------------------------------------
