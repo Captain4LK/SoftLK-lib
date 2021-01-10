@@ -25,6 +25,12 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 //#defines
 #define INSIDE(x,y,rx,ry,rw,rh) \
    ((x)>(rx)&&(x)<(rx)+(rw)&&(y)>(ry)&&(y)<(ry)+(rh))
+
+#define MIN(a,b) \
+   ((a)<(b)?(a):(b))
+
+#define MAX(a,b) \
+   ((a)>(b)?(a):(b))
 //-------------------------------------
 
 //Typedefs
@@ -50,6 +56,7 @@ SLK_gui_window *SLK_gui_window_create(int x, int y, int width, int height)
    w->title[0] = '\0';
    w->moveable = 0;
    w->elements = NULL;
+   w->slider_locked = 0;
 
    return w;
 }
@@ -124,10 +131,11 @@ void SLK_gui_window_draw(const SLK_gui_window *w)
          break;
       case SLK_GUI_ELEMENT_SLIDER:
             SLK_draw_rgb_fill_rectangle(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,e->slider.pos.w,e->slider.pos.h,color_4);
+            float t = ((float)(e->slider.value-e->slider.min)/(float)e->slider.max);
             if(e->slider.pos.w>e->slider.pos.h)
-               SLK_draw_rgb_vertical_line(((e->slider.value-e->slider.min)/e->slider.max)*e->slider.pos.w,e->slider.pos.y+w->pos.y,e->slider.pos.y+e->slider.pos.h+w->pos.y,color_3);
+               SLK_draw_rgb_vertical_line(w->pos.x+e->slider.pos.x+t*(e->slider.pos.w),e->slider.pos.y+w->pos.y+1,e->slider.pos.y+e->slider.pos.h+w->pos.y-1,color_1);
             else
-               SLK_draw_rgb_horizontal_line(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,((e->slider.value-e->slider.min)/e->slider.max)*e->slider.pos.h,color_3);
+               SLK_draw_rgb_horizontal_line(e->slider.pos.x+w->pos.x+1,e->slider.pos.x+e->slider.pos.w+w->pos.x-1,w->pos.y+e->slider.pos.y+e->slider.pos.h-1-t*(e->slider.pos.h-1),color_1); 
          break;
       }
       e = e->next;
@@ -188,6 +196,35 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
          e->icon.state.pressed = !e->icon.state.held&&status;
          e->icon.state.released = e->icon.state.held&&!status;
          e->icon.state.held = status;
+      }
+      else if(e->type==SLK_GUI_ELEMENT_SLIDER)
+      {
+         if(INSIDE(cursor_x,cursor_y,w->pos.x+e->slider.pos.x,w->pos.y+e->slider.pos.y,e->slider.pos.w,e->slider.pos.h)&&button_left.held&&!w->slider_locked)
+         {
+            e->slider.selected = 1;
+            w->slider_locked = 1;
+         }
+         else if(!button_left.held)
+         {
+            e->slider.selected = 0;
+            w->slider_locked = 0;
+         }
+
+         if(e->slider.selected)
+         {
+            if(e->slider.pos.w>e->slider.pos.h)
+            {
+               float t = ((float)(cursor_x-w->pos.x-e->slider.pos.x)/(float)e->slider.pos.w);
+               e->slider.value = e->slider.min+t*(e->slider.max-e->slider.min);
+               e->slider.value = MAX(e->slider.min,MIN(e->slider.max,e->slider.value));
+            }
+            else
+            {
+               float t = ((float)(cursor_y-w->pos.y-e->slider.pos.y)/(float)e->slider.pos.h);
+               e->slider.value = e->slider.max-(e->slider.min+t*(e->slider.max-e->slider.min));
+               e->slider.value = MAX(e->slider.min,MIN(e->slider.max,e->slider.value));
+            }
+         }
       }
 
       e = e->next;

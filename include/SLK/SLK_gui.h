@@ -59,6 +59,7 @@ typedef struct
    int value; //Supposed to be accessed by user
    int min;
    int max;
+   int selected;
 }SLK_gui_slider;
 
 typedef struct SLK_gui_element
@@ -81,6 +82,7 @@ typedef struct
    SLK_gui_rectangle pos;
    SLK_gui_rectangle posm;
    int moveable;
+   int slider_locked;
    char title[256];
    char title_x;
 

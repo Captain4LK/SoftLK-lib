@@ -78,10 +78,14 @@ int main(int argc, char *argv[])
 "utilities and vital\nsystem components comprising a full OS as defined by POSIX.");
    SLK_RGB_sprite *icons = SLK_rgb_sprite_load("assets/buttons.png");
    SLK_gui_element *icon_plus = SLK_gui_icon_create(12,64,16,16,icons,(SLK_gui_rectangle){0,0,16,16},(SLK_gui_rectangle){16,0,16,16});
+   SLK_gui_element *slider = SLK_gui_slider_create(12,80,16,124,0,256);
+   SLK_gui_element *slider_1 = SLK_gui_slider_create(28,204,124,14,0,256);
    SLK_gui_window_add_element(window,button_test);
    SLK_gui_window_add_element(window,icon_plus);
    SLK_gui_window_add_element(window,button_minus);
    SLK_gui_window_add_element(window,label_test);
+   SLK_gui_window_add_element(window,slider);
+   SLK_gui_window_add_element(window,slider_1);
 
    //Main loop.
    while(SLK_core_running())
@@ -90,6 +94,10 @@ int main(int argc, char *argv[])
       int mx,my;
       SLK_mouse_get_layer_pos(0,&mx,&my);
       SLK_gui_window_update_input(window,SLK_mouse_get_state(SLK_BUTTON_LEFT),SLK_mouse_get_state(SLK_BUTTON_RIGHT),mx,my);
+      if(icon_plus->icon.state.pressed)
+         slider->slider.value++;
+      if(button_minus->button.state.pressed)
+         slider->slider.value--;
 
       SLK_layer_set_current(0);
       SLK_draw_rgb_set_changed(1);

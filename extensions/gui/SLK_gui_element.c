@@ -106,6 +106,7 @@ SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int 
    e->slider.min = min;
    e->slider.max = max;
    e->slider.value = min;
+   e->slider.selected = 0;
    
    return e;
 }
