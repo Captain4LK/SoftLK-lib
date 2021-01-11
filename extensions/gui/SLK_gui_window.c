@@ -56,7 +56,7 @@ SLK_gui_window *SLK_gui_window_create(int x, int y, int width, int height)
    w->title[0] = '\0';
    w->moveable = 0;
    w->elements = NULL;
-   w->slider_locked = 0;
+   w->locked = 0;
 
    return w;
 }
@@ -133,7 +133,7 @@ void SLK_gui_window_draw(const SLK_gui_window *w)
             SLK_draw_rgb_fill_rectangle(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,e->slider.pos.w,e->slider.pos.h,color_4);
             float t = ((float)(e->slider.value-e->slider.min)/(float)e->slider.max);
             if(e->slider.pos.w>e->slider.pos.h)
-               SLK_draw_rgb_vertical_line(w->pos.x+e->slider.pos.x+t*(e->slider.pos.w),e->slider.pos.y+w->pos.y+1,e->slider.pos.y+e->slider.pos.h+w->pos.y-1,color_1);
+               SLK_draw_rgb_vertical_line(w->pos.x+e->slider.pos.x+t*(e->slider.pos.w-1),e->slider.pos.y+w->pos.y+1,e->slider.pos.y+e->slider.pos.h+w->pos.y-1,color_1);
             else
                SLK_draw_rgb_horizontal_line(e->slider.pos.x+w->pos.x+1,e->slider.pos.x+e->slider.pos.w+w->pos.x-1,w->pos.y+e->slider.pos.y+e->slider.pos.h-1-t*(e->slider.pos.h-1),color_1); 
          break;
@@ -175,39 +175,59 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
    SLK_gui_element *e = w->elements;
    while(e)
    {
-      if(e->type==SLK_GUI_ELEMENT_BUTTON)
+      if(e->type==SLK_GUI_ELEMENT_BUTTON&&(!w->locked||e->button.selected))
       {
          int status = 0;
          if(button_left.held||button_right.held)
-            status = INSIDE(cursor_x,cursor_y,w->pos.x+e->button.pos.x,w->pos.y+e->button.pos.y,e->button.pos.w,e->button.pos.h);
+         {
+            if((status = INSIDE(cursor_x,cursor_y,w->pos.x+e->button.pos.x,w->pos.y+e->button.pos.y,e->button.pos.w,e->button.pos.h)))
+            {
+               w->locked = 1;
+               e->button.selected = 1;
+            }
+         }
          else
+         {
+            e->button.selected = 0;
+            w->locked = 0;
             status = 0;
+         }
          e->button.state.pressed = !e->button.state.held&&status;
          e->button.state.released = e->button.state.held&&!status;
          e->button.state.held = status;
       }
-      else if(e->type==SLK_GUI_ELEMENT_ICON)
+      else if(e->type==SLK_GUI_ELEMENT_ICON&&(!w->locked||e->icon.selected))
       {
          int status = 0;
          if(button_left.held||button_right.held)
-            status = INSIDE(cursor_x,cursor_y,w->pos.x+e->icon.pos.x,w->pos.y+e->icon.pos.y,e->icon.pos.w,e->icon.pos.h);
+         {
+            if((status = INSIDE(cursor_x,cursor_y,w->pos.x+e->icon.pos.x,w->pos.y+e->icon.pos.y,e->icon.pos.w,e->icon.pos.h)))
+            {
+               w->locked = 1;
+               e->icon.selected = 1;
+            }
+         }
          else
+         {
+            e->icon.selected = 0;
+            w->locked = 0;
             status = 0;
+         }
          e->icon.state.pressed = !e->icon.state.held&&status;
          e->icon.state.released = e->icon.state.held&&!status;
          e->icon.state.held = status;
       }
       else if(e->type==SLK_GUI_ELEMENT_SLIDER)
       {
-         if(INSIDE(cursor_x,cursor_y,w->pos.x+e->slider.pos.x,w->pos.y+e->slider.pos.y,e->slider.pos.w,e->slider.pos.h)&&button_left.held&&!w->slider_locked)
+         if(!w->locked&&INSIDE(cursor_x,cursor_y,w->pos.x+e->slider.pos.x,w->pos.y+e->slider.pos.y,e->slider.pos.w,e->slider.pos.h)&&button_left.held)
          {
             e->slider.selected = 1;
-            w->slider_locked = 1;
+            w->locked = 1;
          }
          else if(!button_left.held)
          {
             e->slider.selected = 0;
-            w->slider_locked = 0;
+            w->locked = 0;
          }
 
          if(e->slider.selected)
@@ -216,7 +236,7 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
             {
                float t = ((float)(cursor_x-w->pos.x-e->slider.pos.x)/(float)e->slider.pos.w);
                e->slider.value = e->slider.min+t*(e->slider.max-e->slider.min);
-               e->slider.value = MAX(e->slider.min,MIN(e->slider.max,e->slider.value));
+               e->slider.value = MAX(e->slider.min,MIN(e->slider.value,e->slider.max));
             }
             else
             {

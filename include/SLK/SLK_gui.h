@@ -36,6 +36,7 @@ typedef struct
    SLK_Button state;
    char text[256];
    char text_x;
+   int selected;
 }SLK_gui_button;
 
 typedef struct
@@ -51,6 +52,7 @@ typedef struct
    SLK_gui_rectangle frames[2];
    SLK_RGB_sprite *sprite;
    SLK_Button state;
+   int selected;
 }SLK_gui_icon;
 
 typedef struct
@@ -82,7 +84,7 @@ typedef struct
    SLK_gui_rectangle pos;
    SLK_gui_rectangle posm;
    int moveable;
-   int slider_locked;
+   int locked;
    char title[256];
    char title_x;
 

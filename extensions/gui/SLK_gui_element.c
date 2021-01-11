@@ -49,6 +49,7 @@ SLK_gui_element *SLK_gui_button_create(int x, int y, int width, int height, cons
    e->button.state.pressed = 0;
    e->button.state.released = 0;
    e->button.text_x = 2+clip_text(e->button.text,label,255,(SLK_gui_rectangle){.x = 2,.y = 2,.w = width-4,.h = height-4});
+   e->button.selected = 0;
 
    return e;
 }
@@ -90,6 +91,7 @@ SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RG
    e->icon.state.held = 0;
    e->icon.state.pressed = 0;
    e->icon.state.released = 0;
+   e->icon.selected = 0;
 
    return e;
 }
