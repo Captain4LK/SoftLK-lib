@@ -112,4 +112,85 @@ SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int 
    
    return e;
 }
+
+SLK_gui_element *SLK_gui_image_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame)
+{
+   SLK_gui_element *e = malloc(sizeof(*e));
+   e->next = NULL;
+   e->type = SLK_GUI_ELEMENT_IMAGE;
+   e->image.sprite = SLK_rgb_sprite_create(width,height);
+   e->image.pos.x = x;
+   e->image.pos.y = y;
+   e->image.pos.w = width;
+   e->image.pos.h = height;
+
+   //Sample image
+   SLK_RGB_sprite *old = SLK_draw_rgb_get_target();
+   SLK_draw_rgb_set_target(e->image.sprite);
+   SLK_draw_rgb_set_clear_color(color_0);
+   SLK_draw_rgb_clear();
+
+   int fwidth;
+   int fheight;
+   if(frame.w>frame.h)
+   {
+      fwidth = width;
+      fheight = ((float)frame.h/(float)frame.w)*height;
+   }
+   else
+   {
+      fheight = height;
+      fwidth = ((float)frame.w/(float)frame.h)*width;
+   }
+   int ix = (width-fwidth)/2;
+   int iy = (height-fheight)/2;
+
+   for(int sx = 0;sx<fwidth;sx++)
+   {
+      for(int sy = 0;sy<fheight;sy++)
+      {
+         SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
+         SLK_rgb_sprite_set_pixel(e->image.sprite,sx+ix,sy+iy,c);
+      }
+   }
+   SLK_draw_rgb_set_target(old);
+
+   return e;
+}
+
+void SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame)
+{
+   //Sample image
+   int width = element->image.pos.w;
+   int height = element->image.pos.h;
+   SLK_RGB_sprite *old = SLK_draw_rgb_get_target();
+   SLK_draw_rgb_set_target(element->image.sprite);
+   SLK_draw_rgb_set_clear_color(color_0);
+   SLK_draw_rgb_clear();
+
+   int fwidth;
+   int fheight;
+   if(frame.w>frame.h)
+   {
+      fwidth = width;
+      fheight = ((float)frame.h/(float)frame.w)*height;
+   }
+   else
+   {
+      fheight = height;
+      fwidth = ((float)frame.w/(float)frame.h)*width;
+   }
+   int ix = (width-fwidth)/2;
+   int iy = (height-fheight)/2;
+
+   for(int sx = 0;sx<fwidth;sx++)
+   {
+      for(int sy = 0;sy<fheight;sy++)
+      {
+         SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
+         SLK_rgb_sprite_set_pixel(element->image.sprite,sx+ix,sy+iy,c);
+      }
+   }
+   SLK_draw_rgb_set_target(old);
+}
 //-------------------------------------

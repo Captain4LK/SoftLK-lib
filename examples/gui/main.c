@@ -87,6 +87,13 @@ int main(int argc, char *argv[])
    SLK_gui_window_add_element(window,slider);
    SLK_gui_window_add_element(window,slider_1);
 
+   SLK_gui_window *window_1 = SLK_gui_window_create(100,100,260,272);
+   SLK_gui_window_set_title(window_1,"Image test");
+   SLK_gui_window_set_moveable(window_1,1);
+   SLK_RGB_sprite *img = SLK_rgb_sprite_load("../performance/assets/sprites.png");
+   SLK_gui_element *image = SLK_gui_image_create(2,14,256,256,img,(SLK_gui_rectangle){0,0,img->width,img->height});
+   SLK_gui_window_add_element(window_1,image);
+
    //Main loop.
    while(SLK_core_running())
    {
@@ -94,6 +101,7 @@ int main(int argc, char *argv[])
       int mx,my;
       SLK_mouse_get_layer_pos(0,&mx,&my);
       SLK_gui_window_update_input(window,SLK_mouse_get_state(SLK_BUTTON_LEFT),SLK_mouse_get_state(SLK_BUTTON_RIGHT),mx,my);
+      SLK_gui_window_update_input(window_1,SLK_mouse_get_state(SLK_BUTTON_LEFT),SLK_mouse_get_state(SLK_BUTTON_RIGHT),mx,my);
       if(icon_plus->icon.state.pressed)
          slider->slider.value++;
       if(button_minus->button.state.pressed)
@@ -101,8 +109,10 @@ int main(int argc, char *argv[])
 
       SLK_layer_set_current(0);
       SLK_draw_rgb_set_changed(1);
+      SLK_draw_rgb_set_clear_color(SLK_color_create(28,28,28,255)); 
       SLK_draw_rgb_clear();
       SLK_gui_window_draw(window);
+      SLK_gui_window_draw(window_1);
 
       SLK_render_update();
    }

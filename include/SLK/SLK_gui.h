@@ -28,6 +28,7 @@ enum SLK_gui_element_type
 {
    SLK_GUI_ELEMENT_BUTTON, SLK_GUI_ELEMENT_LABEL,
    SLK_GUI_ELEMENT_ICON, SLK_GUI_ELEMENT_SLIDER,
+   SLK_GUI_ELEMENT_IMAGE,
 };
 
 typedef struct
@@ -64,6 +65,12 @@ typedef struct
    int selected;
 }SLK_gui_slider;
 
+typedef struct
+{
+   SLK_gui_rectangle pos;
+   SLK_RGB_sprite *sprite;
+}SLK_gui_image;
+
 typedef struct SLK_gui_element
 {
    int type;
@@ -74,6 +81,7 @@ typedef struct SLK_gui_element
       SLK_gui_label label;
       SLK_gui_icon icon;
       SLK_gui_slider slider;
+      SLK_gui_image image;
    };
 
    struct SLK_gui_element *next;
@@ -100,10 +108,12 @@ void             SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button butto
 void             SLK_gui_window_add_element(SLK_gui_window *w, SLK_gui_element *e);
 
 SLK_gui_element *SLK_gui_button_create(int x, int y, int width, int height, const char *label);
+SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame_up, SLK_gui_rectangle frame_down);
 SLK_gui_element *SLK_gui_label_create(int x, int y, int width, int height, const char *label);
 void             SLK_gui_label_set_text(SLK_gui_element *element, const char *label);
-SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame_up, SLK_gui_rectangle frame_down);
 SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int min, int max);
+SLK_gui_element *SLK_gui_image_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame);
+void             SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame);
 
 void             SLK_gui_set_font(SLK_RGB_sprite *f);
 SLK_RGB_sprite  *SLK_gui_get_font();

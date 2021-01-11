@@ -40,6 +40,8 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 //-------------------------------------
 
 //Function prototypes
+static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements);
+static void gui_input(SLK_gui_window *w, SLK_gui_element *elements, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y);
 //-------------------------------------
 
 //Function implementations
@@ -63,14 +65,6 @@ SLK_gui_window *SLK_gui_window_create(int x, int y, int width, int height)
 
 void SLK_gui_window_destroy(SLK_gui_window *w)
 {
-   SLK_gui_element *e = w->elements;
-   while(e)
-   {
-      SLK_gui_element *next = e->next;
-      free(e);
-      e = next;
-   }
-
    free(w);
 }
 
@@ -97,7 +91,68 @@ void SLK_gui_window_draw(const SLK_gui_window *w)
    SLK_draw_rgb_string(w->pos.x+w->title_x,w->pos.y+3,1,w->title,color_5);
 
    //Draw elements
-   SLK_gui_element *e = w->elements;
+   gui_draw(w,w->elements);
+   
+   //Draw moving preview
+   if(w->moveable==2)
+      SLK_draw_rgb_rectangle(w->posm.x,w->posm.y,w->pos.w,w->pos.h,color_1);
+}
+
+void SLK_gui_window_set_moveable(SLK_gui_window *w, int move)
+{
+   w->moveable = move;
+}
+
+void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y)
+{
+   //Check if cursor is in window to begin with
+   //goto prevents another useless if indentation
+   if(!INSIDE(cursor_x,cursor_y,w->pos.x,w->pos.y,w->pos.w,w->pos.h))
+      goto OUTSIDE;
+
+   if(button_left.pressed)
+   {
+      //Title bar --> move window
+      if(w->moveable==1&&INSIDE(cursor_x,cursor_y,w->pos.x+2,w->pos.y,w->pos.w-2,12))
+      {
+         w->posm.w = cursor_x-w->pos.x;
+         w->posm.h = cursor_y-w->pos.y;
+         w->posm.x = w->pos.x+w->posm.w;
+         w->posm.y = w->pos.y+w->posm.h;
+         w->moveable = 2;
+      }
+   }
+
+   //Check all buttons
+   gui_input(w,w->elements,button_left,button_right,cursor_x,cursor_y);
+
+OUTSIDE:
+
+   if(w->moveable==2)
+   {
+      if(button_left.held)
+      {
+         w->posm.x = -w->posm.w+cursor_x;
+         w->posm.y = -w->posm.h+cursor_y;
+      }
+      else
+      {
+         w->moveable = 1;
+         w->pos.x = w->posm.x;
+         w->pos.y = w->posm.y;
+      }
+   }
+}
+
+void SLK_gui_window_add_element(SLK_gui_window *w, SLK_gui_element *e)
+{
+   e->next = w->elements;
+   w->elements = e;
+}
+
+static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements)
+{
+   SLK_gui_element *e = elements;
    while(e)
    {
       switch(e->type)
@@ -137,41 +192,16 @@ void SLK_gui_window_draw(const SLK_gui_window *w)
             else
                SLK_draw_rgb_horizontal_line(e->slider.pos.x+w->pos.x+1,e->slider.pos.x+e->slider.pos.w+w->pos.x-1,w->pos.y+e->slider.pos.y+e->slider.pos.h-1-t*(e->slider.pos.h-1),color_1); 
          break;
+      case SLK_GUI_ELEMENT_IMAGE:
+         SLK_draw_rgb_sprite(e->image.sprite,e->image.pos.x+w->pos.x,e->image.pos.y+w->pos.y);
+         break;
       }
       e = e->next;
    }
-
-   //Draw moving preview
-   if(w->moveable==2)
-      SLK_draw_rgb_rectangle(w->posm.x,w->posm.y,w->pos.w,w->pos.h,color_1);
 }
 
-void SLK_gui_window_set_moveable(SLK_gui_window *w, int move)
+static void gui_input(SLK_gui_window *w, SLK_gui_element *elements, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y)
 {
-   w->moveable = move;
-}
-
-void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y)
-{
-   //Check if cursor is in window to begin with
-   //goto prevents another useless if indentation
-   if(!INSIDE(cursor_x,cursor_y,w->pos.x,w->pos.y,w->pos.w,w->pos.h))
-      goto OUTSIDE;
-
-   if(button_left.pressed)
-   {
-      //Title bar --> move window
-      if(w->moveable==1&&INSIDE(cursor_x,cursor_y,w->pos.x+2,w->pos.y,w->pos.w-2,12))
-      {
-         w->posm.w = cursor_x-w->pos.x;
-         w->posm.h = cursor_y-w->pos.y;
-         w->posm.x = w->pos.x+w->posm.w;
-         w->posm.y = w->pos.y+w->posm.h;
-         w->moveable = 2;
-      }
-   }
-
-   //Check all buttons
    SLK_gui_element *e = w->elements;
    while(e)
    {
@@ -249,28 +279,5 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
 
       e = e->next;
    }
-
-OUTSIDE:
-
-   if(w->moveable==2)
-   {
-      if(button_left.held)
-      {
-         w->posm.x = -w->posm.w+cursor_x;
-         w->posm.y = -w->posm.h+cursor_y;
-      }
-      else
-      {
-         w->moveable = 1;
-         w->pos.x = w->posm.x;
-         w->pos.y = w->posm.y;
-      }
-   }
-}
-
-void SLK_gui_window_add_element(SLK_gui_window *w, SLK_gui_element *e)
-{
-   e->next = w->elements;
-   w->elements = e;
 }
 //-------------------------------------
