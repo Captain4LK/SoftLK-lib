@@ -40,6 +40,8 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 //-------------------------------------
 
 //Function prototypes
+
+//Enables the use of recursion for drawing tabs etc.
 static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements);
 static void gui_input(SLK_gui_window *w, SLK_gui_element *elements, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y);
 //-------------------------------------
@@ -195,6 +197,19 @@ static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements)
       case SLK_GUI_ELEMENT_IMAGE:
          SLK_draw_rgb_sprite(e->image.sprite,e->image.pos.x+w->pos.x,e->image.pos.y+w->pos.y);
          break;
+      case SLK_GUI_ELEMENT_TABBAR:
+            for(int i = 0;i<e->tabbar.tabs;i++)
+            {
+               int tab_width = e->tabbar.pos.w/e->tabbar.tabs;
+               if(i==e->tabbar.current_tab)
+                  SLK_draw_rgb_fill_rectangle(e->tabbar.pos.x+i*tab_width+w->pos.x,e->tabbar.pos.y+w->pos.y,tab_width,e->tabbar.pos.h,color_2);
+               else
+                  SLK_draw_rgb_fill_rectangle(e->tabbar.pos.x+i*tab_width+w->pos.x,e->tabbar.pos.y+w->pos.y,tab_width,e->tabbar.pos.h,color_3);
+               SLK_draw_rgb_string(e->tabbar.pos.x+w->pos.x+e->tabbar.tabs_text_x[i],e->tabbar.pos.y+w->pos.y+3,1,e->tabbar.tabs_text[i],color_5);
+            }
+            if(e->tabbar.elements[e->tabbar.current_tab]!=NULL)
+               gui_draw(w,e->tabbar.elements[e->tabbar.current_tab]);
+         break;
       }
       e = e->next;
    }
@@ -202,7 +217,7 @@ static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements)
 
 static void gui_input(SLK_gui_window *w, SLK_gui_element *elements, SLK_Button button_left, SLK_Button button_right, int cursor_x, int cursor_y)
 {
-   SLK_gui_element *e = w->elements;
+   SLK_gui_element *e = elements;
    while(e)
    {
       if(e->type==SLK_GUI_ELEMENT_BUTTON&&(!w->locked||e->button.selected))
@@ -275,6 +290,13 @@ static void gui_input(SLK_gui_window *w, SLK_gui_element *elements, SLK_Button b
                e->slider.value = MAX(e->slider.min,MIN(e->slider.max,e->slider.value));
             }
          }
+      }
+      else if(e->type==SLK_GUI_ELEMENT_TABBAR)
+      {
+         if(button_left.pressed&&INSIDE(cursor_x,cursor_y,w->pos.x+e->tabbar.pos.x,w->pos.y+e->tabbar.pos.y,e->tabbar.pos.w,e->tabbar.pos.h))
+            e->tabbar.current_tab = (cursor_x-w->pos.x-e->tabbar.pos.x)/(e->tabbar.pos.w/e->tabbar.tabs);
+         if(e->tabbar.elements[e->tabbar.current_tab]!=NULL)
+            gui_input(w,e->tabbar.elements[e->tabbar.current_tab],button_left,button_right,cursor_x,cursor_y);
       }
 
       e = e->next;

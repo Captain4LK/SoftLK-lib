@@ -123,37 +123,7 @@ SLK_gui_element *SLK_gui_image_create(int x, int y, int width, int height, SLK_R
    e->image.pos.y = y;
    e->image.pos.w = width;
    e->image.pos.h = height;
-
-   //Sample image
-   SLK_RGB_sprite *old = SLK_draw_rgb_get_target();
-   SLK_draw_rgb_set_target(e->image.sprite);
-   SLK_draw_rgb_set_clear_color(color_0);
-   SLK_draw_rgb_clear();
-
-   int fwidth;
-   int fheight;
-   if(frame.w>frame.h)
-   {
-      fwidth = width;
-      fheight = ((float)frame.h/(float)frame.w)*height;
-   }
-   else
-   {
-      fheight = height;
-      fwidth = ((float)frame.w/(float)frame.h)*width;
-   }
-   int ix = (width-fwidth)/2;
-   int iy = (height-fheight)/2;
-
-   for(int sx = 0;sx<fwidth;sx++)
-   {
-      for(int sy = 0;sy<fheight;sy++)
-      {
-         SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
-         SLK_rgb_sprite_set_pixel(e->image.sprite,sx+ix,sy+iy,c);
-      }
-   }
-   SLK_draw_rgb_set_target(old);
+   SLK_gui_image_update(e,sprite,frame);
 
    return e;
 }
@@ -168,29 +138,74 @@ void SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_
    SLK_draw_rgb_set_clear_color(color_0);
    SLK_draw_rgb_clear();
 
-   int fwidth;
-   int fheight;
-   if(frame.w>frame.h)
+   //Special case: Image fits perfectly
+   if(frame.w==width&&frame.h<=height)
    {
-      fwidth = width;
-      fheight = ((float)frame.h/(float)frame.w)*height;
+      int iy = (height-frame.h)/2; 
+      SLK_rgb_sprite_copy_partial(element->image.sprite,sprite,0,iy,frame.x,frame.y,frame.w,frame.h);
+   }
+   else if(frame.h==height&&frame.w<=width)
+   {
+      int ix = (width-frame.w)/2; 
+      SLK_rgb_sprite_copy_partial(element->image.sprite,sprite,ix,0,frame.x,frame.y,frame.w,frame.h);
    }
    else
    {
-      fheight = height;
-      fwidth = ((float)frame.w/(float)frame.h)*width;
-   }
-   int ix = (width-fwidth)/2;
-   int iy = (height-fheight)/2;
-
-   for(int sx = 0;sx<fwidth;sx++)
-   {
-      for(int sy = 0;sy<fheight;sy++)
+      int fwidth;
+      int fheight;
+      if(frame.w>frame.h)
       {
-         SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
-         SLK_rgb_sprite_set_pixel(element->image.sprite,sx+ix,sy+iy,c);
+         fwidth = width;
+         fheight = ((float)frame.h/(float)frame.w)*height;
+      }
+      else
+      {
+         fheight = height;
+         fwidth = ((float)frame.w/(float)frame.h)*width;
+      }
+      int ix = (width-fwidth)/2;
+      int iy = (height-fheight)/2;
+
+      for(int sx = 0;sx<fwidth;sx++)
+      {
+         for(int sy = 0;sy<fheight;sy++)
+         {
+            SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
+            SLK_rgb_sprite_set_pixel(element->image.sprite,sx+ix,sy+iy,c);
+         }
       }
    }
    SLK_draw_rgb_set_target(old);
+}
+
+SLK_gui_element *SLK_gui_tabbar_create(int x, int y, int width, int height, int tab_count, const char **tabs_text)
+{
+   int tab_width = width/tab_count;
+   SLK_gui_element *e = malloc(sizeof(*e));
+   e->next = NULL;
+   e->type = SLK_GUI_ELEMENT_TABBAR;
+   e->tabbar.elements = malloc(sizeof(*e->tabbar.elements)*tab_count);;
+   e->tabbar.pos.x = x;
+   e->tabbar.pos.y = y;
+   e->tabbar.pos.w = width;
+   e->tabbar.pos.h = height;
+   e->tabbar.current_tab = 0;
+   e->tabbar.tabs = tab_count;
+   e->tabbar.tabs_text = malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
+   e->tabbar.tabs_text_x = malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
+   for(int i = 0;i<tab_count;i++)
+   {
+      e->tabbar.elements[i] = NULL;
+      e->tabbar.tabs_text[i] = malloc(sizeof(**e->tabbar.tabs_text)*256);
+      e->tabbar.tabs_text_x[i] = clip_text(e->tabbar.tabs_text[i],tabs_text[i],256,(SLK_gui_rectangle){0,0,tab_width,height})+i*tab_width;
+   }
+
+   return e;
+}
+
+void SLK_gui_tabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *element_new)
+{
+   element_new->next = bar->tabbar.elements[tab];
+   bar->tabbar.elements[tab] = element_new;
 }
 //-------------------------------------
