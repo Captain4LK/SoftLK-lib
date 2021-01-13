@@ -443,15 +443,19 @@ SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
 
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
+   if(!path)
+      return;
    FILE *f = fopen(path,"wb");
-   if(!f)
-      printf("Error: Failed to open file\n");
 
    backend_save_rgb_file(s,f);
+
+   fclose(f);
 }
 
 void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
 {
+   if(!f)
+      return;
    cp_image_t img;
    img.w = s->width;
    img.h = s->height;

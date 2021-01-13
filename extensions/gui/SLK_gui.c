@@ -12,6 +12,7 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 
 //External includes
 #include <stdlib.h>
+#include <string.h>
 //-------------------------------------
 
 //Internal includes
@@ -105,9 +106,7 @@ int clip_text(char *dst, const char *src, int dst_size, SLK_gui_rectangle area)
       return 0;
 
    //Algin center (only applies to first line)
-   int text_x = 0;
-   while(dst[text_x]!='\0'&&dst[text_x]!='\n')
-      text_x++;
+   int text_x = strlen(dst);
 
    return (area.w-text_x*8)/2;
 }
