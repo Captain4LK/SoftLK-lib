@@ -66,6 +66,9 @@ int main(int argc, char *argv[])
    {
       "Tab 1",
       "Tab 2",
+      "Tab 3",
+      "Tab 4",
+      "Tab 5",
    };
    SLK_gui_window *window = SLK_gui_window_create(10,10,320,240);
    SLK_gui_window_set_title(window,"Window test");
@@ -95,13 +98,15 @@ int main(int argc, char *argv[])
    SLK_gui_window *window_1 = SLK_gui_window_create(100,100,260,286);
    SLK_gui_window_set_title(window_1,"Image test");
    SLK_gui_window_set_moveable(window_1,1);
-   SLK_gui_element *tabbar = SLK_gui_tabbar_create(2,14,256,14,2,tab_title);
+   SLK_gui_element *tabbar = SLK_gui_tabbar_create(2,14,256,14,3,tab_title);
    SLK_gui_window_add_element(window_1,tabbar);
    SLK_RGB_sprite *img = SLK_rgb_sprite_load("../performance/assets/sprites.png");
    SLK_gui_element *image = SLK_gui_image_create(2,28,256,256,img,(SLK_gui_rectangle){0,0,img->width,img->height});
    SLK_gui_tabbar_add_element(tabbar,0,image);
    SLK_gui_element *slider_2 = SLK_gui_slider_create(12,80,16,124,0,256);
    SLK_gui_tabbar_add_element(tabbar,1,slider_2);
+   SLK_gui_element *vtabbar = SLK_gui_vtabbar_create(2,28,64,5,tab_title);
+   SLK_gui_tabbar_add_element(tabbar,2,vtabbar);
 
    //Main loop.
    while(SLK_core_running())

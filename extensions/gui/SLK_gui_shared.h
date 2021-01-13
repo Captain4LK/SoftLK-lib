@@ -14,13 +14,13 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 
 #define _SLK_GUI_SHARED_H_
 
-extern SLK_RGB_sprite *font;
-extern SLK_Color color_0;
-extern SLK_Color color_1;
-extern SLK_Color color_2;
-extern SLK_Color color_3;
-extern SLK_Color color_4;
-extern SLK_Color color_5;
+extern SLK_RGB_sprite *slk_gui_font;
+extern SLK_Color slk_gui_color_0;
+extern SLK_Color slk_gui_color_1;
+extern SLK_Color slk_gui_color_2;
+extern SLK_Color slk_gui_color_3;
+extern SLK_Color slk_gui_color_4;
+extern SLK_Color slk_gui_color_5;
 
 int clip_text(char *dst, const char *src, int dst_size, SLK_gui_rectangle area);
 

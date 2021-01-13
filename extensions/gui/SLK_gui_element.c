@@ -135,7 +135,7 @@ void SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_
    int height = element->image.pos.h;
    SLK_RGB_sprite *old = SLK_draw_rgb_get_target();
    SLK_draw_rgb_set_target(element->image.sprite);
-   SLK_draw_rgb_set_clear_color(color_0);
+   SLK_draw_rgb_set_clear_color(slk_gui_color_0);
    SLK_draw_rgb_clear();
 
    //Special case: Image fits perfectly
@@ -207,5 +207,36 @@ void SLK_gui_tabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *
 {
    element_new->next = bar->tabbar.elements[tab];
    bar->tabbar.elements[tab] = element_new;
+}
+
+SLK_gui_element *SLK_gui_vtabbar_create(int x, int y, int width, int tab_count, const char **tabs_text)
+{
+   int tab_width = width;
+   SLK_gui_element *e = malloc(sizeof(*e));
+   e->next = NULL;
+   e->type = SLK_GUI_ELEMENT_VTABBAR;
+   e->tabbar.elements = malloc(sizeof(*e->tabbar.elements)*tab_count);;
+   e->tabbar.pos.x = x;
+   e->tabbar.pos.y = y;
+   e->tabbar.pos.w = width;
+   e->tabbar.pos.h = 14*tab_count;
+   e->tabbar.current_tab = 0;
+   e->tabbar.tabs = tab_count;
+   e->tabbar.tabs_text = malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
+   e->tabbar.tabs_text_x = malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
+   for(int i = 0;i<tab_count;i++)
+   {
+      e->tabbar.elements[i] = NULL;
+      e->tabbar.tabs_text[i] = malloc(sizeof(**e->tabbar.tabs_text)*256);
+      e->tabbar.tabs_text_x[i] = clip_text(e->tabbar.tabs_text[i],tabs_text[i],256,(SLK_gui_rectangle){0,0,tab_width,14});
+   }
+
+   return e;
+}
+
+void SLK_gui_vtabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *element_new)
+{
+   element_new->next = bar->tabbar.elements[tab];
+   bar->vtabbar.elements[tab] = element_new;
 }
 //-------------------------------------

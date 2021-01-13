@@ -31,6 +31,7 @@ enum SLK_gui_element_type
    SLK_GUI_ELEMENT_BUTTON, SLK_GUI_ELEMENT_LABEL,
    SLK_GUI_ELEMENT_ICON, SLK_GUI_ELEMENT_SLIDER,
    SLK_GUI_ELEMENT_IMAGE, SLK_GUI_ELEMENT_TABBAR,
+   SLK_GUI_ELEMENT_VTABBAR,
 };
 
 typedef struct
@@ -84,6 +85,17 @@ typedef struct
    SLK_gui_element **elements;
 }SLK_gui_tabbar;
 
+typedef struct
+{
+   SLK_gui_rectangle pos;
+   int current_tab;
+   int tabs;
+   char **tabs_text;
+   int *tabs_text_x;
+
+   SLK_gui_element **elements;
+}SLK_gui_vtabbar;
+
 typedef struct SLK_gui_element
 {
    int type;
@@ -96,6 +108,7 @@ typedef struct SLK_gui_element
       SLK_gui_slider slider;
       SLK_gui_image image;
       SLK_gui_tabbar tabbar;
+      SLK_gui_vtabbar vtabbar;
    };
 
    struct SLK_gui_element *next;
@@ -130,6 +143,8 @@ SLK_gui_element *SLK_gui_image_create(int x, int y, int width, int height, SLK_R
 void             SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame);
 SLK_gui_element *SLK_gui_tabbar_create(int x, int y, int width, int height, int tab_count, const char **tabs_text);
 void             SLK_gui_tabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *element_new);
+SLK_gui_element *SLK_gui_vtabbar_create(int x, int y, int width, int tab_count, const char **tabs_text);
+void             SLK_gui_vtabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *element_new);
 
 void             SLK_gui_set_font(SLK_RGB_sprite *f);
 SLK_RGB_sprite  *SLK_gui_get_font();

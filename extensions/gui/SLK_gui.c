@@ -28,13 +28,13 @@ The CC0 license text and ip waiver can be found in the LICENSE file.
 //-------------------------------------
 
 //Variables
-SLK_RGB_sprite *font = NULL;
-SLK_Color color_0;
-SLK_Color color_1;
-SLK_Color color_2;
-SLK_Color color_3;
-SLK_Color color_4;
-SLK_Color color_5;
+SLK_RGB_sprite *slk_gui_font = NULL;
+SLK_Color slk_gui_color_0;
+SLK_Color slk_gui_color_1;
+SLK_Color slk_gui_color_2;
+SLK_Color slk_gui_color_3;
+SLK_Color slk_gui_color_4;
+SLK_Color slk_gui_color_5;
 //-------------------------------------
 
 //Function prototypes
@@ -44,26 +44,26 @@ SLK_Color color_5;
 
 void SLK_gui_set_font(SLK_RGB_sprite *f)
 {
-   font = f;
+   slk_gui_font = f;
 }
 
 SLK_RGB_sprite *SLK_gui_get_font()
 {
-   return font;
+   return slk_gui_font;
 }
 
 void SLK_gui_set_colors(SLK_Color c0, SLK_Color c1, SLK_Color c2, SLK_Color c3, SLK_Color c4)
 {
-   color_0 = c0;
-   color_1 = c1;
-   color_2 = c2;
-   color_3 = c3;
-   color_4 = c4;
+   slk_gui_color_0 = c0;
+   slk_gui_color_1 = c1;
+   slk_gui_color_2 = c2;
+   slk_gui_color_3 = c3;
+   slk_gui_color_4 = c4;
 }
 
 void SLK_gui_set_font_color(SLK_Color color)
 {
-   color_5 = color;
+   slk_gui_color_5 = color;
 } 
 
 
