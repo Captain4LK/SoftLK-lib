@@ -106,7 +106,7 @@ int clip_text(char *dst, const char *src, int dst_size, SLK_gui_rectangle area)
       return 0;
 
    //Algin center (only applies to first line)
-   int text_x = strlen(dst);
+   int text_x = strlen(dst)-1;
 
    return (area.w-text_x*8)/2;
 }

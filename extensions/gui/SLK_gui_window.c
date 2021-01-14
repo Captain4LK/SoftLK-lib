@@ -126,7 +126,8 @@ void SLK_gui_window_update_input(SLK_gui_window *w, SLK_Button button_left, SLK_
    }
 
    //Check all buttons
-   gui_input(w,w->elements,button_left,button_right,cursor_x,cursor_y);
+   if(w->moveable!=2)
+      gui_input(w,w->elements,button_left,button_right,cursor_x,cursor_y);
 
 OUTSIDE:
 
