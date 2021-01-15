@@ -22,6 +22,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Palette subsystem: SLK_palette.c
 SLK_Palette    *SLK_palette_load(const char *path);
+void            SLK_palette_save(const char *path, const SLK_Palette *pal);
 void            SLK_palette_set_color(SLK_Palette *palette, int index, SLK_Color color);
 SLK_Color       SLK_palette_get_color(const SLK_Palette *palette, int index);
 

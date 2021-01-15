@@ -75,5 +75,6 @@ SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length);
 void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle);
 void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle);
 SLK_Palette *backend_load_palette(const char *path);
+void backend_save_palette(const char *path, const SLK_Palette *pal);
 
 #endif

@@ -45,6 +45,12 @@ SLK_Palette *SLK_palette_load(const char *path)
    return backend_load_palette(path);
 }
 
+//Writes a palette to a .pal file
+void SLK_palette_save(const char *path, const SLK_Palette *pal)
+{
+   backend_save_palette(path,pal);
+}
+
 //Sets the color of a palette at the
 //desired index.
 //Usefull for rapidly chaning certain colors of a sprite,

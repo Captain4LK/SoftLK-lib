@@ -338,4 +338,9 @@ SLK_Palette *backend_load_palette(const char *path)
 {
    return NULL;
 }
+
+void backend_save_palette(const char *path, const SLK_Palette *pal)
+{
+
+}
 //-------------------------------------

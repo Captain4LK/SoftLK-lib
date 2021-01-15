@@ -563,3 +563,19 @@ SLK_Palette *backend_load_palette(const char *path)
 
    return palette;
 }
+
+void backend_save_palette(const char *path, const SLK_Palette *pal)
+{
+   FILE *f = fopen(path,"w");
+   
+   fprintf(f,"JASC-PAL\n0100\n%d\n",pal->used);
+   for(int i = 0;i<pal->used;i++)
+   {
+      if(pal->colors[i].a!=255)
+         fprintf(f,"%d %d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b,pal->colors[i].a);
+      else
+         fprintf(f,"%d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b);
+   }
+
+   fclose(f);
+}
