@@ -525,16 +525,27 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 
 SLK_Palette *backend_load_palette(const char *path)
 {
+   FILE *f = fopen(path,"r");
+   SLK_Palette *palette = backend_load_palette_file(f);
+   fclose(f);
+   return palette;
+}
+
+void backend_save_palette(const char *path, const SLK_Palette *pal)
+{
+   FILE *f = fopen(path,"w");
+   backend_save_palette_file(f,pal);
+  fclose(f);
+}
+
+SLK_Palette *backend_load_palette_file(FILE *f)
+{
+   if(!f)
+      return NULL;
+
    char buffer[512];
    int colors = 0,i,found;
    int r,g,b,a;
-
-   FILE *f = fopen(path,"r");
-   if(!f)
-   {
-      printf("Unable to load palette\n");
-      return NULL;
-   }
 
    SLK_Palette *palette = malloc(sizeof(*palette));
    memset(palette,0,sizeof(*palette));
@@ -564,10 +575,10 @@ SLK_Palette *backend_load_palette(const char *path)
    return palette;
 }
 
-void backend_save_palette(const char *path, const SLK_Palette *pal)
+void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
 {
-   FILE *f = fopen(path,"w");
-   
+   if(!f)
+      return;
    fprintf(f,"JASC-PAL\n0100\n%d\n",pal->used);
    for(int i = 0;i<pal->used;i++)
    {
@@ -576,6 +587,4 @@ void backend_save_palette(const char *path, const SLK_Palette *pal)
       else
          fprintf(f,"%d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b);
    }
-
-   fclose(f);
 }

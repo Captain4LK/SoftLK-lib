@@ -45,10 +45,22 @@ SLK_Palette *SLK_palette_load(const char *path)
    return backend_load_palette(path);
 }
 
+//Reads a palette from a .pal file.
+SLK_Palette *SLK_palette_load_file(FILE *f)
+{
+   return backend_load_palette_file(f);
+}
+
 //Writes a palette to a .pal file
 void SLK_palette_save(const char *path, const SLK_Palette *pal)
 {
    backend_save_palette(path,pal);
+}
+
+//Writes a palette to a .pal file
+void SLK_palette_save_file(FILE *f, const SLK_Palette *pal)
+{
+   backend_save_palette_file(f,pal);
 }
 
 //Sets the color of a palette at the
