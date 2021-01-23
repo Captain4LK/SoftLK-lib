@@ -189,7 +189,7 @@ static void gui_draw(const SLK_gui_window *w, SLK_gui_element *elements)
          break;
       case SLK_GUI_ELEMENT_SLIDER:
             SLK_draw_rgb_fill_rectangle(e->slider.pos.x+w->pos.x,e->slider.pos.y+w->pos.y,e->slider.pos.w,e->slider.pos.h,slk_gui_color_4);
-            float t = ((float)(e->slider.value-e->slider.min)/(float)e->slider.max);
+            float t = ((float)(e->slider.value-e->slider.min)/(float)(e->slider.max-e->slider.min));
             if(e->slider.pos.w>e->slider.pos.h)
                SLK_draw_rgb_vertical_line(w->pos.x+e->slider.pos.x+t*(e->slider.pos.w-1),e->slider.pos.y+w->pos.y+1,e->slider.pos.y+e->slider.pos.h+w->pos.y-1,slk_gui_color_1);
             else

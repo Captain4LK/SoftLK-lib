@@ -148,14 +148,14 @@ int main(int argc, char *argv[])
          if(nop)
          {
             int balance = 1;
+            nop = 0;
             while(balance!=0) 
             {
                instr_ptr++;
-               if(instr[instr_ptr]==WHILE_START) balance+=1;
-               else if(instr[instr_ptr]==WHILE_END) balance-=1;
+               if(instr[instr_ptr]==WHILE_START) balance++;
+               else if(instr[instr_ptr]==WHILE_END) balance--;
             }
             instr_ptr++;
-            nop = 0;
          }
 
          switch(instr[instr_ptr])
