@@ -126,39 +126,33 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel pa
 {
    int x_dim = text_sprite_pal->width/16;
    int y_dim = text_sprite_pal->height/6;
-   int x_len = x_dim*16;
    int sx = 0;
    int sy = 0;
 
-	for(int i = 0;text[i];i++)
-	{
-		if(text[i]=='\n')
-		{
-			sx = 0; 
+   for(int i = 0;text[i];i++)
+   {
+      if(text[i]=='\n')
+      {
+         sx = 0; 
          sy+=y_dim*scale;
          continue;
-		}
+      }
+
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-
       for(int x_ = 0;x_<x_dim;x_++)
       {
          for(int y_ = 0;y_<y_dim;y_++)
          {
-            if(!text_sprite_pal->data[(y_+oy*y_dim)*x_len+x_+ox*x_dim].mask)
-            {
-               for(int o = 0;o<scale;o++)
-               {
-                  for(int m = 0;m<scale;m++)
-                  {
-                     SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
-                  }
-               }
-            }
+            if(text_sprite_pal->data[(y_+oy*y_dim)*text_sprite_pal->width+x_+ox*x_dim].mask)
+               continue;
+            for(int o = 0;o<scale;o++)
+               for(int m = 0;m<scale;m++)
+                  SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
          }
       }
-      sx += x_dim*scale;
-	}
+      sx+=x_dim*scale;
+   }
 }
 
 //Draws a sprite to the draw target.

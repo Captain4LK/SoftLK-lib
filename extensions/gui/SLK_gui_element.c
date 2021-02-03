@@ -55,8 +55,6 @@ LICENSE OPTION B: Public Domain - Unlicense
 //-------------------------------------
 
 //#defines
-//Enable if you prefer bilinear scaling for image elements
-#define BILINEAR 0
 //-------------------------------------
 
 //Typedefs
@@ -199,46 +197,19 @@ void SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_
       }
       int ix = (width-fwidth)/2;
       int iy = (height-fheight)/2;
+      float fw = (float)sprite->width/(float)fwidth;
+      float fh = (float)sprite->height/(float)fheight;
 
       for(int sx = 0;sx<fwidth;sx++)
       {
          for(int sy = 0;sy<fheight;sy++)
          {
-#if BILINEAR 
-
-            double px = ((double)sx/(double)fwidth)*(double)sprite->width;
-            double py = ((double)sy/(double)fheight)*(double)sprite->height;
-            double pix = ((double)sx/(double)fwidth);
-            double piy = ((double)sy/(double)fheight);
-
-            SLK_Color c;
-            SLK_Color c1,c2,c3,c4;
-            c1 = SLK_rgb_sprite_get_pixel(sprite,floor(px),floor(py));
-            c2 = SLK_rgb_sprite_get_pixel(sprite,ceil(px),floor(py));
-            c3 = SLK_rgb_sprite_get_pixel(sprite,floor(px),ceil(py));
-            c4 = SLK_rgb_sprite_get_pixel(sprite,ceil(px),ceil(py));
-            float c1t = ((1.0f-pix)*(float)c1.r+pix*(float)c2.r);
-            float c2t = ((1.0f-pix)*(float)c3.r+pix*(float)c4.r);
-            c.r = (int)((1.0f-piy)*c1t+piy*c2t);
-            c1t = ((1.0f-pix)*(float)c1.g+pix*(float)c2.g);
-            c2t = ((1.0f-pix)*(float)c3.g+pix*(float)c4.g);
-            c.g = (int)((1.0f-piy)*c1t+piy*c2t);
-            c1t = ((1.0f-pix)*(float)c1.b+pix*(float)c2.b);
-            c2t = ((1.0f-pix)*(float)c3.b+pix*(float)c4.b);
-            c.b = (int)((1.0f-piy)*c1t+piy*c2t);
-            c1t = ((1.0f-pix)*(float)c1.a+pix*(float)c2.a);
-            c2t = ((1.0f-pix)*(float)c3.a+pix*(float)c4.a);
-            c.a = (int)((1.0f-piy)*c1t+piy*c2t);
+            SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,fw*sx,fh*sy);
             SLK_rgb_sprite_set_pixel(element->image.sprite,sx+ix,sy+iy,c);
-#else
-
-            SLK_Color c = SLK_rgb_sprite_get_pixel(sprite,((float)sx/(float)fwidth)*sprite->width,((float)sy/(float)fheight)*sprite->height);
-            SLK_rgb_sprite_set_pixel(element->image.sprite,sx+ix,sy+iy,c);
-
-#endif
          }
       }
    }
+
    SLK_draw_rgb_set_target(old);
 }
 

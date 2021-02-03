@@ -138,7 +138,6 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 {
    int x_dim = text_sprite_rgb->width/16;
    int y_dim = text_sprite_rgb->height/6;
-   int x_len = x_dim*16;
    int sx = 0;
    int sy = 0;
 
@@ -146,30 +145,25 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
    {
       if(text[i]=='\n')
       {
-         sx = 0; 
+         sx = 0;
          sy+=y_dim*scale;
          continue;
       }
+
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-
       for(int x_ = 0;x_<x_dim;x_++)
       {
          for(int y_ = 0;y_<y_dim;y_++)
          {
-            if(text_sprite_rgb->data[(y_+oy*y_dim)*x_len+x_+ox*x_dim].a)
-            {
-               for(int o = 0;o<scale;o++)
-               {
-                  for(int m = 0;m<scale;m++)
-                  {
-                     SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
-                  }
-               }
-            }
+            if(!text_sprite_rgb->data[(y_+oy*y_dim)*text_sprite_rgb->width+x_+ox*x_dim].a)
+               continue;
+            for(int o = 0;o<scale;o++)
+               for(int m = 0;m<scale;m++)
+                  SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
          }
       }
-      sx += x_dim*scale;
+      sx+=x_dim*scale;
    }
 }
 
@@ -180,7 +174,6 @@ void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text)
 {
    int x_dim = text_sprite_rgb->width/16;
    int y_dim = text_sprite_rgb->height/6;
-   int x_len = x_dim*16;
    int sx = 0;
    int sy = 0;
 
@@ -192,27 +185,22 @@ void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text)
          sy+=y_dim*scale;
          continue;
       }
+
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-
       for(int x_ = 0;x_<x_dim;x_++)
       {
          for(int y_ = 0;y_<y_dim;y_++)
          {
-            SLK_Color color = text_sprite_rgb->data[(y_+oy*y_dim)*x_len+x_+ox*x_dim];
-            if(color.a)
-            {
-               for(int o = 0;o<scale;o++)
-               {
-                  for(int m = 0;m<scale;m++)
-                  {
-                     SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
-                  }
-               }
-            }
+            SLK_Color color = text_sprite_rgb->data[(y_+oy*y_dim)*text_sprite_rgb->width+x_+ox*x_dim];
+            if(!color.a)
+               continue;
+            for(int o = 0;o<scale;o++)
+               for(int m = 0;m<scale;m++)
+                  SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
          }
       }
-      sx += x_dim*scale;
+      sx+=x_dim*scale;
    }
 }
 

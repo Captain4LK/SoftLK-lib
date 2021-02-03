@@ -98,7 +98,6 @@ void SLK_gui_set_font_color(SLK_Color color)
    slk_gui_color_5 = color;
 } 
 
-
 //Internal
 int clip_text(char *dst, const char *src, int dst_size, SLK_gui_rectangle area)
 {
@@ -106,9 +105,9 @@ int clip_text(char *dst, const char *src, int dst_size, SLK_gui_rectangle area)
    int text_max_y = area.h/8;
    int c = 0;
    int ci = 0;
-
    int x = 0;
    int y = 0;
+
    while(y<text_max_y)
    {
       x = 0;
