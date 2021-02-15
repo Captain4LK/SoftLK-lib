@@ -5,7 +5,6 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 .PHONY: backend_sdl2_gl
 .PHONY: backend_sdl2
 .PHONY: backend_sdl2_surface
-.PHONY: SLK_3d_fixed
 .PHONY: SLK_gui
 .PHONY: install
 
@@ -21,9 +20,6 @@ backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
 install: backend_sdl2 SLK_3d_fixed SLK_gui
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
-
-SLK_3d_fixed: ULK_vector.o ULK_matrix.o ULK_3d.o SLK_3d.o SLK_3d_rgb.o kixor_list.o kixor_obj_parser.o kixor_string_extra.o
-	ar crs "libSLK3d_fixed.a" $^
 
 SLK_gui: SLK_gui.o SLK_gui_window.o SLK_gui_element.o
 	ar crs "libSLK_gui.a" $^
@@ -75,30 +71,6 @@ backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h ../../exter
 
 backend_sdl2_surface.o: ../../src/backend/backend_sdl2_surface.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
 	$(CC) -O3 -c $< -lm -lSDL2 -Wall
-
-ULK_vector.o: ../../external/UtilityLK/src/ULK_vector.c ../../external/UtilityLK/include/ULK_vector.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-ULK_matrix.o: ../../external/UtilityLK/src/ULK_matrix.c ../../external/UtilityLK/include/ULK_matrix.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-ULK_3d.o: ../../external/UtilityLK/src/ULK_3d.c ../../external/UtilityLK/include/ULK_3d.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_3d.o: ../../extensions/3d_renderer/SLK_3d.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_3d_rgb.o: ../../extensions/3d_renderer/SLK_3d_rgb.c ../../include/SLK/SLK_3d.h ../../extensions/3d_renderer/SLK_3d_config.h ../../external/UtilityLK/include/ULK_vector.h ../../external/UtilityLK/include/ULK_matrix.h ../../external/UtilityLK/include/ULK_3d.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-kixor_list.o: ../../extensions/3d_renderer/kixor/kixor_list.c
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-kixor_obj_parser.o: ../../extensions/3d_renderer/kixor/kixor_obj_parser.c
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-kixor_string_extra.o: ../../extensions/3d_renderer/kixor/kixor_string_extra.c
-	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_gui.o: ../../extensions/gui/SLK_gui.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
 	$(CC) -O3 -c $< $(CFLAGS) 

@@ -70,7 +70,7 @@ Feel free to open an issue if you have any questions or problems!
 
 Here is a list of all external libraries used by SoftLK:
 
-SDL2_GL backend:
+SDL2_GL/SDL2/SDL2_surface backend:
 
 * [SDL2](https://www.libsdl.org/) (zlib)
 
