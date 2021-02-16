@@ -152,14 +152,14 @@ void SLK_draw_rgb_string(int x, int y, int scale, const char *text, SLK_Color co
 
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-      for(int x_ = 0;x_<x_dim;x_++)
+      for(int y_ = 0;y_<y_dim;y_++)
       {
-         for(int y_ = 0;y_<y_dim;y_++)
+         for(int x_ = 0;x_<x_dim;x_++)
          {
             if(!text_sprite_rgb->data[(y_+oy*y_dim)*text_sprite_rgb->width+x_+ox*x_dim].a)
                continue;
-            for(int o = 0;o<scale;o++)
-               for(int m = 0;m<scale;m++)
+            for(int m = 0;m<scale;m++)
+               for(int o = 0;o<scale;o++)
                   SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
          }
       }
@@ -188,15 +188,15 @@ void SLK_draw_rgb_image_string(int x, int y, int scale, const char *text)
 
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-      for(int x_ = 0;x_<x_dim;x_++)
+      for(int y_ = 0;y_<y_dim;y_++)
       {
-         for(int y_ = 0;y_<y_dim;y_++)
+         for(int x_ = 0;x_<x_dim;x_++)
          {
             SLK_Color color = text_sprite_rgb->data[(y_+oy*y_dim)*text_sprite_rgb->width+x_+ox*x_dim];
             if(!color.a)
                continue;
-            for(int o = 0;o<scale;o++)
-               for(int m = 0;m<scale;m++)
+            for(int m = 0;m<scale;m++)
+               for(int o = 0;o<scale;o++)
                   SLK_draw_rgb_color(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,color);
          }
       }
@@ -448,14 +448,9 @@ void SLK_draw_rgb_fill_rectangle(int x, int y, int width, int height, SLK_Color 
    if(y+draw_end_y>target_rgb->height)
       draw_end_y = height+(target_rgb->height-y-draw_end_y);
     
-   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-   {
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-      {
-         int index = (y1+y)*target_rgb->width+x1+x;
-         target_rgb->data[index] = color;
-      }
-   }
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+         target_rgb->data[(y1+y)*target_rgb->width+x1+x] = color;
 }
 
 //Draws the outline of a colored circle.

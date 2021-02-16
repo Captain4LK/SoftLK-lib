@@ -140,14 +140,14 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel pa
 
       int ox = (text[i]-32)&15;
       int oy = (text[i]-32)/16;
-      for(int x_ = 0;x_<x_dim;x_++)
+      for(int y_ = 0;y_<y_dim;y_++)
       {
-         for(int y_ = 0;y_<y_dim;y_++)
+         for(int x_ = 0;x_<x_dim;x_++)
          {
             if(text_sprite_pal->data[(y_+oy*y_dim)*text_sprite_pal->width+x_+ox*x_dim].mask)
                continue;
-            for(int o = 0;o<scale;o++)
-               for(int m = 0;m<scale;m++)
+            for(int m = 0;m<scale;m++)
+               for(int o = 0;o<scale;o++)
                   SLK_draw_pal_paxel(x+sx+(x_*scale)+o,y+sy+(y_*scale)+m,paxel);
          }
       }
@@ -394,9 +394,9 @@ void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, SLK_Paxel 
    if(y+draw_end_y>target_pal->height)
       draw_end_y = height+(target_pal->height-y-draw_end_y);
     
-   for(int x1 = draw_start_x;x1<draw_end_x;x1++)
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
    {
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
          int index = (y1+y)*target_pal->width+x1+x;
          target_pal->data[index].index = (target_pal->data[index].index&paxel.mask)|paxel.index;
