@@ -25,6 +25,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org/>
 */
 
+/*
+cbrain (brainfuck extension) interpreter with graphical capabilities. 
+*/
+
 //External includes
 #include <stdio.h>
 #include <stdint.h>
@@ -35,19 +39,23 @@ For more information, please refer to <http://unlicense.org/>
 //-------------------------------------
 
 //#defines
+//2^24
 #define MEM_SIZE 16777216
+//How many instructions to run betwixt each frame
 #define INSTR_PER_FRAME 4096
 //-------------------------------------
 
 //Typedefs
-enum Instruction
+typedef enum 
 {
    INSTR_NONE = 0,
    PTR_PLUS = 1, PTR_MINUS = 2,
    VAL_PLUS = 3, VAL_MINUS = 4,
    GET_VAL = 5, PUT_VAL = 6,
    WHILE_START = 7, WHILE_END = 8,
-};
+   PROC_START = 9, PROC_END = 10,
+   PROC_CALL = 11,
+}Instruction;
 
 typedef struct Stack
 {
@@ -59,14 +67,19 @@ typedef struct Stack
 //Variables
 static uint8_t mem[MEM_SIZE] = {0};
 static uint8_t *ptr = mem;
-static int instr_used = 0;
-static int instr_space = 512;
-static uint8_t *instr = NULL;
 static int instr_ptr = 0; //Not a real pointer
 static Stack *stack = NULL;;
 static Stack *stack_reserve = NULL;
 static int nop = 0;
 static SLK_Pal_sprite *frame;
+
+//"Pointers" to all procedures
+static int proc_table[256];
+
+//Resizing buffer for instructions
+static int instr_used = 0;
+static int instr_space = 512;
+static Instruction *instr = NULL;
 //-------------------------------------
 
 //Function prototypes
@@ -125,6 +138,10 @@ int main(int argc, char *argv[])
    FILE *in = fopen(path,"r");
    preprocess(in);
    fclose(in);
+
+   //Initialized memory
+   for(int i = 0;i<256;i++)
+      proc_table[i] = -1;
       
    SLK_setup(width,height,1,"SoftLK template",0,SLK_WINDOW_MAX,0); 
    SLK_timer_set_fps(30);
@@ -160,6 +177,7 @@ int main(int argc, char *argv[])
 
          switch(instr[instr_ptr])
          {
+         case INSTR_NONE: instr_ptr++; break;
          case PTR_PLUS: ++ptr; instr_ptr++; break;
          case PTR_MINUS: --ptr; instr_ptr++; break;
          case VAL_PLUS: ++*ptr; instr_ptr++; break;
@@ -167,6 +185,7 @@ int main(int argc, char *argv[])
          case GET_VAL: *ptr = getchar();instr_ptr++; break;
          case PUT_VAL: putchar(*ptr); instr_ptr++; break;
          case WHILE_END: instr_ptr = stack_pull(); break;
+         case PROC_END: instr_ptr = stack_pull(); break;
          case WHILE_START:
             stack_push(instr_ptr);
             instr_ptr++;
@@ -175,6 +194,23 @@ int main(int argc, char *argv[])
                instr_ptr = stack_pull();
                nop = 1;
             }
+            break;
+         case PROC_START:
+            proc_table[*ptr] = instr_ptr+1;
+            {
+               int balance = 1;
+               while(balance!=0) 
+               {
+                  instr_ptr++;
+                  if(instr[instr_ptr]==PROC_START) balance++;
+                  else if(instr[instr_ptr]==PROC_END) balance--;
+               }
+               instr_ptr++;
+            }
+            break;
+         case PROC_CALL: 
+            stack_push(instr_ptr+1);
+            instr_ptr = proc_table[*ptr];
             break;
          }
       }
@@ -188,6 +224,10 @@ int main(int argc, char *argv[])
       SLK_render_update();
    }
 
+   for(int i = 0;i<256;i++)
+      if(proc_table[i]!=-1)
+         printf("procedure %d: %d\n",i,proc_table[i]);
+
    return 0;
 }
 
@@ -197,7 +237,7 @@ static void preprocess(FILE *in)
    while(!feof(in))
    {
       char c = fgetc(in);
-      uint8_t next = 0;
+      Instruction next = 0;
       switch(c)
       {
       case '>': next = PTR_PLUS; break;
@@ -208,6 +248,9 @@ static void preprocess(FILE *in)
       case '.': next = PUT_VAL; break;
       case '[': next = WHILE_START; break;
       case ']': next = WHILE_END; break;
+      case '(': next = PROC_START; break;
+      case ')': next = PROC_END; break;
+      case ':': next = PROC_CALL; break;
       }
 
       if(next!=0)

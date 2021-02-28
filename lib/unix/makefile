@@ -17,7 +17,7 @@ backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
 	ar crs libSLK.a $^
 
-install: backend_sdl2 SLK_3d_fixed SLK_gui
+install: backend_sdl2 SLK_gui
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
 
