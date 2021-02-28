@@ -26,11 +26,12 @@ For more information, please refer to <http://unlicense.org/>
 */
 
 /*
-cbrain (brainfuck extension) interpreter with graphical capabilities. 
+pbrain (brainfuck extension) interpreter with graphical capabilities. 
 */
 
 //External includes
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include "../../include/SLK/SLK.h"
 //-------------------------------------
@@ -41,7 +42,7 @@ cbrain (brainfuck extension) interpreter with graphical capabilities.
 //#defines
 //2^24
 #define MEM_SIZE 16777216
-//How many instructions to run betwixt each frame
+//How many instructions to run betwixt each screen update
 #define INSTR_PER_FRAME 4096
 //-------------------------------------
 
@@ -67,16 +68,15 @@ typedef struct Stack
 //Variables
 static uint8_t mem[MEM_SIZE] = {0};
 static uint8_t *ptr = mem;
-static int instr_ptr = 0; //Not a real pointer
-static Stack *stack = NULL;;
+
+static Stack *stack = NULL;
 static Stack *stack_reserve = NULL;
-static int nop = 0;
-static SLK_Pal_sprite *frame;
 
 //"Pointers" to all procedures
 static int proc_table[256];
 
 //Resizing buffer for instructions
+static unsigned instr_ptr = 0; //Index to instr
 static int instr_used = 0;
 static int instr_space = 512;
 static Instruction *instr = NULL;
@@ -92,11 +92,10 @@ static inline int stack_pull();
 
 int main(int argc, char *argv[])
 {
-   int state = 0;
-   int width = 320;
-   int height = 240;
-   char *path = NULL;
-   char *path_pal = NULL;
+   int width = 64;
+   int height = 64;
+   const char *path = NULL;
+   const char *path_pal = NULL;
    for(int i = 1;i<argc;i++)
    {
       if(argv[i][0]=='-')
@@ -104,54 +103,39 @@ int main(int argc, char *argv[])
          switch(argv[i][1])
          {
          case 'h': puts("SoftLK-lib brainfuck example\nAvailible commandline options:\n\t-h\t\tprint this text\n\t-f [PATH]\tspecify the file to execute\n\t-x [SIZE]\tset the viewport width\n\t-y [SIZE\tset the viewport height\n\t-p [PATH]\tset the palette"); break;
-         case 'f': state = 1; break;
-         case 'x': state = 2; break;
-         case 'y': state = 3; break;
-         case 'p': state = 4; break;
+         case 'f': path = argv[++i]; break;
+         case 'x': width = atoi(argv[++i]); break;
+         case 'y': height = atoi(argv[++i]); break;
+         case 'p': path_pal = argv[++i]; break;
          }
       }
-      else
-      {
-         switch(state)
-         {
-         case 1: //File path
-            path = argv[i];
-            break;
-         case 2: //Viewport width:
-            width = atoi(argv[i]);
-            break;
-         case 3: //Viewport height:
-            height = atoi(argv[i]);
-            break;
-         case 4: //Palette
-            path_pal = argv[i];
-            break;
-         }
-      }
-   }
-   if(path==NULL)
-   {
-      puts("Error: no input file specified, try ./brainfuck -h for help");
-      exit(-1);
    }
 
+   //Parse input file
+   //Removes all invalid characters
+   if(path==NULL)
+   {
+      puts("No input file specified, try ./brainfuck -h for help");
+      return 0;
+   }
    FILE *in = fopen(path,"r");
    preprocess(in);
    fclose(in);
 
-   //Initialized memory
+   //Initialize memory
    for(int i = 0;i<256;i++)
       proc_table[i] = -1;
       
-   SLK_setup(width,height,1,"SoftLK template",0,SLK_WINDOW_MAX,0); 
+   //Setup SoftLK-lib
+   //Create window and one layer for drawing
+   //Load palette and create sprite for drawing to
+   SLK_setup(width,height,1,"SoftLK brainfuck",0,SLK_WINDOW_MAX,0); 
    SLK_timer_set_fps(30);
-
    SLK_layer_create(0,SLK_LAYER_PAL);
    SLK_layer_activate(0,1);
    SLK_layer_set_current(0);
    SLK_layer_set_dynamic(0,0);
-   
-   frame = SLK_pal_sprite_create(width,height);
+   SLK_Pal_sprite *frame = SLK_pal_sprite_create(width,height);
    if(path_pal!=NULL)
       SLK_layer_set_palette(0,SLK_palette_load(path_pal));
 
@@ -162,19 +146,6 @@ int main(int argc, char *argv[])
 
       for(int i = 0;i<INSTR_PER_FRAME&&instr_ptr<instr_used;i++)
       {
-         if(nop)
-         {
-            int balance = 1;
-            nop = 0;
-            while(balance!=0) 
-            {
-               instr_ptr++;
-               if(instr[instr_ptr]==WHILE_START) balance++;
-               else if(instr[instr_ptr]==WHILE_END) balance--;
-            }
-            instr_ptr++;
-         }
-
          switch(instr[instr_ptr])
          {
          case INSTR_NONE: instr_ptr++; break;
@@ -185,6 +156,7 @@ int main(int argc, char *argv[])
          case GET_VAL: *ptr = getchar();instr_ptr++; break;
          case PUT_VAL: putchar(*ptr); instr_ptr++; break;
          case WHILE_END: instr_ptr = stack_pull(); break;
+         case PROC_CALL: stack_push(instr_ptr+1); instr_ptr = proc_table[*ptr]; break;
          case PROC_END: instr_ptr = stack_pull(); break;
          case WHILE_START:
             stack_push(instr_ptr);
@@ -192,14 +164,21 @@ int main(int argc, char *argv[])
             if(!(*ptr))
             {
                instr_ptr = stack_pull();
-               nop = 1;
+               int balance = 1;
+               while(balance) 
+               {
+                  instr_ptr++;
+                  if(instr[instr_ptr]==WHILE_START) balance++;
+                  else if(instr[instr_ptr]==WHILE_END) balance--;
+               }
+               instr_ptr++;
             }
             break;
          case PROC_START:
             proc_table[*ptr] = instr_ptr+1;
             {
                int balance = 1;
-               while(balance!=0) 
+               while(balance) 
                {
                   instr_ptr++;
                   if(instr[instr_ptr]==PROC_START) balance++;
@@ -207,10 +186,6 @@ int main(int argc, char *argv[])
                }
                instr_ptr++;
             }
-            break;
-         case PROC_CALL: 
-            stack_push(instr_ptr+1);
-            instr_ptr = proc_table[*ptr];
             break;
          }
       }
@@ -223,10 +198,6 @@ int main(int argc, char *argv[])
          
       SLK_render_update();
    }
-
-   for(int i = 0;i<256;i++)
-      if(proc_table[i]!=-1)
-         printf("procedure %d: %d\n",i,proc_table[i]);
 
    return 0;
 }
@@ -253,10 +224,9 @@ static void preprocess(FILE *in)
       case ':': next = PROC_CALL; break;
       }
 
-      if(next!=0)
+      if(next)
       {
-         instr[instr_used] = next; 
-         instr_used++;
+         instr[instr_used++] = next; 
          if(instr_used>=instr_space)
          {
             instr_space+=512;
@@ -266,6 +236,8 @@ static void preprocess(FILE *in)
    }
 }
 
+//Only allocates memory if nothing is 
+//stored on the stack reserve.
 static inline void stack_push(int iptr)
 {
    if(stack_reserve==NULL)
@@ -285,6 +257,9 @@ static inline void stack_push(int iptr)
    stack = s;
 }
 
+//Instead of freeing unused memory, it gets
+//stored on a second stack and used for the next push 
+//instead of allocating new memory.
 static inline int stack_pull()
 {
    Stack *s = stack;
