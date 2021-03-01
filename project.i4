@@ -1,0 +1,72 @@
+[lib libSLK]
+   target_dir "./lib/unix/"
+
+   "src/SLK_color.c"
+   "src/SLK_core.c"
+   "src/SLK_draw_pal.c"
+   "src/SLK_draw_rgb.c"
+   "src/SLK_input.c"
+   "src/SLK_layer.c"
+   "src/SLK_palette.c"
+   "src/SLK_sheet_pal.c"
+   "src/SLK_sheet_rgb.c"
+   "src/SLK_sprite_pal.c"
+   "src/SLK_sprite_rgb.c"
+   "src/SLK_timer.c"
+   "src/backend/backend_sdl2.c"
+   "external/UtilityLK/src/ULK_slk.c"
+
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
+[lib libSLK_gui]
+   target_dir "./lib/unix/"
+
+   "extensions/gui/SLK_gui.c"
+   "extensions/gui/SLK_gui_element.c"
+   "extensions/gui/SLK_gui_window.c"
+
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
+[executable performance]
+   target_dir "./examples/performance"
+
+   "examples/performance/main.c"
+
+   use libSLK
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
+[executable gui]
+   target_dir "./examples/gui"
+
+   "examples/gui/main.c"
+
+   use libSLK
+   use libSLK_gui
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
+[executable brainfuck]
+   target_dir "./examples/brainfuck"
+
+   "examples/brainfuck/main.c"
+
+   use libSLK
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
+[executable efelder]
+   target_dir "./examples/efelder"
+
+   "examples/efelder/main.c"
+   "examples/efelder/gui.c"
+   "examples/efelder/calculate.c"
+   "examples/efelder/settings.c"
+   "external/UtilityLK/src/ULK_vector.c"
+   "external/UtilityLK/src/ULK_json.c"
+
+   use libSLK
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
