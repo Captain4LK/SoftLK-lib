@@ -10,13 +10,13 @@ What it does:
 * RGB drawing: Draw in 32bit rgba colorspace.
 * Pal drawing: Draw in palletized 8bit colorspace and change the palette on the fly, without needing to redraw.
 * Image loading: Load and save sprites from and to png files .
-* Backends: Plattform specific code is seperate from general code, however only an SDL2 backend has been implemented yet.
+* Backends: Platform specific code is separate from general code, however only an SDL2 backend has been implemented yet.
 * Input: Gamepad, mouse and keyboard input.
 
 What it doesn't:
 
 * Sound: You need to bring your own audio library (eg. SDL_mixer)
-* Asset managment: It can load multiple image formats, but managing what should or should'nt be loaded is up to you.
+* Asset management: It can load multiple image formats, but managing what should or shouldn't be loaded is up to you.
 * typical engine stuff in general: SoftLK tries to be integrable into many different kinds of projects by not restricting the programmer too much.
 
 ## License
@@ -34,14 +34,20 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 3. Clone this repository: `` git clone --recursive https://codeberg.org/Captain4LK/SoftLK-lib.git``
 4. Compile SoftLK: 
 	
-	You can either use the provided makefile (on freebsd use gmake):
+	* You can either use the provided makefile (on freebsd use gmake):
 
 	```
 	cd SoftLK-lib/lib/[YOUR OS]/
-	make backend_sdl2_gl
+	make backend_sdl2
 	```
 
-	Or compile it yourself:
+   Additionally it is recommended to install SoftLK-lib globally (currently only supported on Unix/Linux):
+
+   ``
+   sudo make install
+   ``
+
+	* Or compile it yourself:
 	
 	```	
 	cd SoftLK-lib/lib/[YOUR OS]/
@@ -51,16 +57,23 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 
 5.  If everything went right you are now ready to start using SoftLK. Now you can either look at some of the examples, look at the [Getting started](https://codeberg.org/Captain4LK/SoftLK-lib/wiki/Getting-started) wikipage or figure things out yourself by looking at the source. 
 
+### Dependencies/programs needed (Linux/Unix)
+
+* gcc
+* GNU make
+* git
+* SDL2 (development version)
+
 
 ## Plattforms
 
-SoftLK has been tested and is working on the following plattforms/os:
+SoftLK has been tested and is working on the following platforms/os:
 
 * Void GNU/Linux libcmusl, amd64
 * Devuan GNU/Linux, amd64
 * Raspberry Pi OS, aarch64
 
-SoftLK should work on any plattform that has a C compiler, SDL2 and OpenGL 2.1, the plattforms listed here are just the ones I frequently test SoftLK on.
+SoftLK should work on any platform that has a C compiler, SDL2 and OpenGL 2.1, the platforms listed here are just the ones I frequently test SoftLK on.
 
 ## Questions?
 
@@ -74,7 +87,7 @@ SDL2_GL/SDL2/SDL2_surface backend:
 
 * [SDL2](https://www.libsdl.org/) (zlib)
 
-Allways:
+Always:
 
 * [cute_png](https://github.com/RandyGaul/cute_headers/blob/master/cute_png.h) (Public Domain)
 
