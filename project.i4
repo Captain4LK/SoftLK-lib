@@ -29,6 +29,15 @@
    linux add_to_executable "-lm"
    add_to_executable "-lSDL2"
 
+[executable resize]
+   target_dir "./examples/resize"
+
+   "examples/resize/main.c"
+
+   use libSLK
+   linux add_to_executable "-lm"
+   add_to_executable "-lSDL2"
+
 [executable performance]
    target_dir "./examples/performance"
 
