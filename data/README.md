@@ -46,17 +46,14 @@ Not all fonts listed here are actively used in the examples, but they can be fou
 
 |File name|License|Source/Author|
 |---|---|---|
-|assets/about.png [GUI]|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[Buch](https://opengameart.org/content/unfinished-user-interfaces)|
-|assets/about.png [FONT]|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[Buch](https://opengameart.org/content/three-little-bitmap-fonts)|
+|assets/gui.png [GUI]|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[Buch](https://opengameart.org/content/unfinished-user-interfaces)|
+|assets/gui.png [FONT]|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[Buch](https://opengameart.org/content/three-little-bitmap-fonts)|
 
-### 3D
+### Gui
 
 |File name|License|Source/Author|
 |---|---|---|
-|assets/level.mtl|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://opengameart.org/content/simple-afps-level)|
-|assets/level.obj|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://opengameart.org/content/simple-afps-level)|
-|assets/wall_texture0.png|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://opengameart.org/content/simple-afps-level)|
-|assets/wall_texture4.png|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://opengameart.org/content/simple-afps-level)|
-|assets/wall_texture12.png|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://opengameart.org/content/simple-afps-level)|
+|assets/sprites.png|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[0x72](https://0x72.itch.io/pixeldudesmaker)|
+|assets/buttons.png|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[domsson](https://opengameart.org/content/simple-pixel-gui-programmer-art)|
 
 -----
