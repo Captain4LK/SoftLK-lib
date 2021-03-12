@@ -5,7 +5,6 @@ DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o
 .PHONY: backend_sdl2_gl
 .PHONY: backend_sdl2
 .PHONY: backend_sdl2_surface
-.PHONY: SLK_gui
 .PHONY: install
 
 backend_sdl2: $(DEPENDENCIES) backend_sdl2.o
@@ -17,12 +16,9 @@ backend_sdl2_gl: $(DEPENDENCIES) backend_sdl2_gl.o
 backend_sdl2_surface: $(DEPENDENCIES) backend_sdl2_surface.o
 	ar crs libSLK.a $^
 
-install: backend_sdl2 SLK_gui
+install: backend_sdl2
 	cp *.a /usr/local/lib 
 	cp ../../include/SLK/ /usr/local/include -r
-
-SLK_gui: SLK_gui.o SLK_gui_window.o SLK_gui_element.o
-	ar crs "libSLK_gui.a" $^
 
 SLK_core.o: ../../src/SLK_core.c ../../include/SLK/SLK_types.h ../../include/SLK/SLK_functions.h ../../src/backend.h ../../src/SLK_layer_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
@@ -71,15 +67,6 @@ backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h ../../exter
 
 backend_sdl2_surface.o: ../../src/backend/backend_sdl2_surface.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
 	$(CC) -O3 -c $< -lm -lSDL2 -Wall
-
-SLK_gui.o: ../../extensions/gui/SLK_gui.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_gui_window.o: ../../extensions/gui/SLK_gui_window.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_gui_element.o: ../../extensions/gui/SLK_gui_element.c ../../extensions/gui/SLK_gui_shared.h ../../include/SLK/SLK_gui.h
-	$(CC) -O3 -c $< $(CFLAGS) 
 
 clean:
 	rm -f *.o *.a

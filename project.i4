@@ -19,16 +19,6 @@
    linux add_to_executable "-lm"
    add_to_executable "-lSDL2"
 
-[lib libSLK_gui]
-   target_dir "./lib/unix/"
-
-   "extensions/gui/SLK_gui.c"
-   "extensions/gui/SLK_gui_element.c"
-   "extensions/gui/SLK_gui_window.c"
-
-   linux add_to_executable "-lm"
-   add_to_executable "-lSDL2"
-
 [executable resize]
    target_dir "./examples/resize"
 
@@ -53,7 +43,6 @@
    "examples/gui/main.c"
 
    use libSLK
-   use libSLK_gui
    linux add_to_executable "-lm"
    add_to_executable "-lSDL2"
 

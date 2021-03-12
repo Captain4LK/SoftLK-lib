@@ -27,7 +27,9 @@ For more information, please refer to <http://unlicense.org/>
 
 //External includes
 #include "../../include/SLK/SLK.h"
-#include "../../include/SLK/SLK_gui.h"
+
+#define SLK_GUI_IMPLEMENTATION
+#include "../../extensions/SLK_gui.h"
 //-------------------------------------
 
 //Internal includes
