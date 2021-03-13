@@ -15,6 +15,9 @@ Not all fonts listed here are actively used in the examples, but they can be fou
 |cursive1.png|![cursive1](fonts/cursive1.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |cursive2.png|![cursive2](fonts/cursive2.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
 |5x8mono.png|![5x8mono](fonts/5x8mono.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[usr_share](https://opengameart.org/content/new-original-grafx2-font-collection)|
+|drummy_ascii_font.png|![drummy_ascii_font](fonts/drummy_ascii_font.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://drummyfish.itch.io/big-asset-pack-by-drummyfish)|
+|drummy_ascii_font2.png|![drummy_ascii_font2](fonts/drummy_ascii_font2.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://drummyfish.itch.io/big-asset-pack-by-drummyfish)|
+|drummy_ascii_font3.png|![drummy_ascii_font3](fonts/drummy_ascii_font3.png)|[CC0/public domain](https://creativecommons.org/publicdomain/zero/1.0/)|[drummyfish](https://drummyfish.itch.io/big-asset-pack-by-drummyfish)|
 
 ### Image fonts
 
