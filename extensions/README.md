@@ -1,6 +1,6 @@
 # Extensions
 
-I want to keep SoftLK-lib itself as small as possible. Thus, any advanced functionality will be developed as a separate, optional extension. Those extensions are build as a separate library file and can be linked as such.
+I want to keep SoftLK-lib itself as small as possible. Thus, any advanced functionality will be developed as a separate, optional extension. These extensions are distributed as single header files.
 
 Currently there is one extension for SoftLK-lib.
 
@@ -17,3 +17,5 @@ You can either look at the wiki or try to figure things out yourself by looking 
 ## SoftLK_gui
 
 A basic Gui framework.
+
+## SoftLK_data

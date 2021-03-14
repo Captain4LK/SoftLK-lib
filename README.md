@@ -65,7 +65,7 @@ SoftLK is free Software (as in freedom) and is released under the 3-clause BSD l
 * SDL2 (development version)
 
 
-## Plattforms
+## Platforms
 
 SoftLK has been tested and is working on the following platforms/os:
 

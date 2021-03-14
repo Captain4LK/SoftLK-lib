@@ -7,11 +7,17 @@
 *.wasm
 *.data
 
-examples/3d/3d_demo
 examples/efelder/efelder
+examples/efelder/efelder_opt
 examples/efelder/*.png
 examples/performance/performance
+examples/performance/performance_opt
 examples/resize/resize
+examples/resize/resize_opt
+examples/brainfuck/brainfuck
+examples/brainfuck/brainfuck_opt
+examples/gui/gui
+examples/gui/gui_opt
 examples/template/template
 tools/converter/slk_converter
 tools/converter/*.png
