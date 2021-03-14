@@ -99,7 +99,7 @@ typedef struct
    int held;
 }SLK_Button;
 
-enum SLK_key
+typedef enum 
 {
    SLK_KEY_NONE,
    SLK_KEY_A,SLK_KEY_B,SLK_KEY_C,SLK_KEY_D,SLK_KEY_E,SLK_KEY_F,SLK_KEY_G,
@@ -117,26 +117,26 @@ enum SLK_key
    SLK_KEY_NP0,SLK_KEY_NP1,SLK_KEY_NP2,SLK_KEY_NP3,SLK_KEY_NP4,SLK_KEY_NP5,SLK_KEY_NP6,SLK_KEY_NP7,SLK_KEY_NP8,SLK_KEY_NP9,
    SLK_KEY_NP_MUL,SLK_KEY_NP_DIV,SLK_KEY_NP_ADD,SLK_KEY_NP_SUB,SLK_KEY_NP_DECIMAL,
    SLK_KEY_MAX,
-};
+}SLK_key;
 
-enum SLK_gamepad_button
+typedef enum 
 {
    SLK_PAD_A, SLK_PAD_B, SLK_PAD_X, SLK_PAD_Y, SLK_PAD_BACK, SLK_PAD_GUIDE,
    SLK_PAD_START, SLK_PAD_LEFTSTICK, SLK_PAD_RIGHTSTICK, SLK_PAD_LEFTSHOULDER,
    SLK_PAD_RIGHTSHOULDER, SLK_PAD_UP, SLK_PAD_DOWN, SLK_PAD_LEFT, SLK_PAD_RIGHT,
    SLK_PAD_MAX,
-};
+}SLK_gamepad_button;
 
-enum SLK_mouse_button
+typedef enum 
 {
    SLK_BUTTON_LEFT,SLK_BUTTON_RIGHT,SLK_BUTTON_MIDDLE,SLK_BUTTON_X1,SLK_BUTTON_X2,
    SLK_BUTTON_MAX,
-};
+}SLK_mouse_button;
 
-enum SLK_layer
+typedef enum 
 {
    SLK_LAYER_PAL,SLK_LAYER_RGB,
-};
+}SLK_layer;
 
 enum SLK_mask
 {
@@ -144,12 +144,13 @@ enum SLK_mask
   SLK_TRANSPARENT = 255,
 };
 
-enum SLK_flip
+typedef enum 
 {
    SLK_FLIP_NONE = 0,
    SLK_FLIP_VERTICAL = 1,
    SLK_FLIP_HORIZONTAL = 2,
-};
+   SLK_FLIP_VERTHOR = SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL,
+}SLK_flip;
 
 enum SLK_window
 {

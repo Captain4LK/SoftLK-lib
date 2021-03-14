@@ -69,7 +69,7 @@ SLK_Layer *current_layer;
 //These types are currently availible:
 //SLK_LAYER_RGB,
 //SLK_LAYER_PAL
-void SLK_layer_create(unsigned index, int type)
+void SLK_layer_create(unsigned index, SLK_layer type)
 {
    if(index>=layer_count)
       return;

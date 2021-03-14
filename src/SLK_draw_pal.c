@@ -219,7 +219,7 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
 //For vertical flipping pass SLK_FLIP_VERTICAL,
 //for horizontal flipping pass SLK_FLIP_HORIZONTAL
 //(Note: The values can be or'd together).
-void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
+void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip flip)
 {
    int draw_start_y = 0;
    int draw_start_x = 0;
@@ -270,7 +270,7 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip)
          }
       }
       break;
-   case (SLK_FLIP_VERTICAL|SLK_FLIP_HORIZONTAL):
+   case SLK_FLIP_VERTHOR:
       for(int y1 = draw_start_y;y1<draw_end_y;y1++)
       {
          for(int x1 = draw_start_x;x1<draw_end_x;x1++)

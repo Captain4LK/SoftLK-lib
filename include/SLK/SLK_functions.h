@@ -61,7 +61,7 @@ void            SLK_draw_pal_paxel(int x, int y, SLK_Paxel paxel);
 void            SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel paxel);
 void            SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y);
 void            SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height);
-void            SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, int flip);
+void            SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip flip);
 void            SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel);
 void            SLK_draw_pal_vertical_line(int x, int y0, int y1, SLK_Paxel paxel);
 void            SLK_draw_pal_horizontal_line(int x0, int x1, int y, SLK_Paxel paxel);
@@ -97,7 +97,7 @@ void            SLK_draw_rgb_string(int x, int y, int scale, const char *text, S
 void            SLK_draw_rgb_image_string(int x, int y, int scale, const char *text);
 void            SLK_draw_rgb_sprite(const SLK_RGB_sprite *s, int x, int y);
 void            SLK_draw_rgb_sprite_partial(const SLK_RGB_sprite *s, int x, int y, int ox, int oy, int width, int height);
-void            SLK_draw_rgb_sprite_flip(const SLK_RGB_sprite *s, int x, int y, int flip);
+void            SLK_draw_rgb_sprite_flip(const SLK_RGB_sprite *s, int x, int y, SLK_flip flip);
 void            SLK_draw_rgb_line(int x0, int y0, int x1, int y1, SLK_Color color);
 void            SLK_draw_rgb_vertical_line(int x, int y0, int y1, SLK_Color color);
 void            SLK_draw_rgb_horizontal_line(int x0, int x1, int y, SLK_Color color);
@@ -114,19 +114,19 @@ SLK_Color       SLK_color_create_hsl(float h, float s, float l, float a);
 SLK_Paxel       SLK_color_create_paxel(uint8_t index, uint8_t mask);
 
 //Input subsystem: SLK_input.c 
-int             SLK_key_down(int key);
-int             SLK_key_pressed(int key);
-int             SLK_key_released(int key);
-SLK_Button      SLK_key_get_state(int key);
-int             SLK_gamepad_down(int id, int key);
-int             SLK_gamepad_pressed(int id, int key);
-int             SLK_gamepad_released(int id, int key);
-SLK_Button      SLK_gamepad_get_state(int id, int key);
+int             SLK_key_down(SLK_key key);
+int             SLK_key_pressed(SLK_key key);
+int             SLK_key_released(SLK_key key);
+SLK_Button      SLK_key_get_state(SLK_key key);
+int             SLK_gamepad_down(int id, SLK_gamepad_button key);
+int             SLK_gamepad_pressed(int id, SLK_gamepad_button key);
+int             SLK_gamepad_released(int id, SLK_gamepad_button key);
+SLK_Button      SLK_gamepad_get_state(int id, SLK_gamepad_button key);
 int             SLK_gamepad_count();
-int             SLK_mouse_down(int key);
-int             SLK_mouse_pressed(int key);
-int             SLK_mouse_released(int key);
-SLK_Button      SLK_mouse_get_state(int key);
+int             SLK_mouse_down(SLK_mouse_button key);
+int             SLK_mouse_pressed(SLK_mouse_button key);
+int             SLK_mouse_released(SLK_mouse_button key);
+SLK_Button      SLK_mouse_get_state(SLK_mouse_button key);
 int             SLK_mouse_wheel_get_scroll();
 void            SLK_mouse_get_pos(int *x, int *y);
 void            SLK_mouse_get_relative_pos(int *x, int *y);
@@ -138,7 +138,7 @@ void            SLK_text_input_start(char *text);
 void            SLK_text_input_stop();
 
 //Layer subsystem: SLK_layer.c
-void            SLK_layer_create(unsigned index, int type);
+void            SLK_layer_create(unsigned index, SLK_layer type);
 void            SLK_layer_activate(unsigned index, int active);
 void            SLK_layer_set_palette(unsigned index, SLK_Palette *pal);
 void            SLK_layer_set_tint(unsigned index, SLK_Color tint);
