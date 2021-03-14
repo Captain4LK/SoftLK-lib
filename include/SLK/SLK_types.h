@@ -64,18 +64,6 @@ typedef struct
 
 typedef struct
 {
-   int size;
-   SLK_RGB_sprite **sheet;
-}SLK_RGB_sheet;
-
-typedef struct
-{
-   int size;
-   SLK_Pal_sprite **sheet;
-}SLK_Pal_sheet;
-
-typedef struct
-{
    SLK_Pal_sprite *target;
    SLK_RGB_sprite *render;
    SLK_Palette *palette;

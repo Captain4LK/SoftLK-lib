@@ -17,5 +17,3 @@ You can either look at the wiki or try to figure things out yourself by looking 
 ## SoftLK_gui
 
 A basic Gui framework.
-
-## SoftLK_data
