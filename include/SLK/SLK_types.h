@@ -36,12 +36,6 @@ typedef struct
 
 typedef struct
 {
-   uint8_t index;
-   uint8_t mask;
-}SLK_Paxel;
-
-typedef struct
-{
     SLK_Color colors[256];
     int used;
 }SLK_Palette;
@@ -59,7 +53,7 @@ typedef struct
    int width;
    int height;
    int changed;
-   SLK_Paxel *data;
+   uint8_t *data;
 }SLK_Pal_sprite;
 
 typedef struct

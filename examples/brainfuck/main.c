@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
 
       SLK_layer_set_current(0);
       for(int i = 0;i<width*height;i++)
-         frame->data[i].index = mem[i];
+         frame->data[i] = mem[i];
       SLK_draw_pal_sprite(frame,0,0);
          
       SLK_render_update();

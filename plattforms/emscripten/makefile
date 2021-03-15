@@ -1,6 +1,6 @@
 CC = emcc
 CFLAGS=-lm -Wall -c -s ASYNCIFY
-DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_sheet_rgb.o SLK_sheet_pal.o ULK_slk.o
+DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o ULK_slk.o
 
 .PHONY: backend_emscripten
 .PHONY: install
@@ -36,12 +36,6 @@ SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c ../../include/SLK/SLK_types.h ../..
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_timer.o: ../../src/SLK_timer.c ../../include/SLK/SLK_functions.h ../../src/backend.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_sheet_rgb.o: ../../src/SLK_sheet_rgb.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h
-	$(CC) -O3 -c $< $(CFLAGS) 
-
-SLK_sheet_pal.o: ../../src/SLK_sheet_pal.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 ULK_slk.o: ../../external/UtilityLK/src/ULK_slk.c ../../external/UtilityLK/include/ULK_slk.h

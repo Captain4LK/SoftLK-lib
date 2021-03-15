@@ -195,17 +195,4 @@ SLK_Color SLK_color_create_hsl(float h, float s, float l, float a)
 
    return c;
 }
-
-//Creates a SLK_Paxel struct from 2 unsigned 8bit ints.
-//index is the index of the currently used palette.
-//mask is wether the paxel is supposed to be drawn:
-//SLK_OPAQUE for drawing, SLK_TRANSPARENT for skipping.
-SLK_Paxel SLK_color_create_paxel(uint8_t index, uint8_t mask)
-{
-   SLK_Paxel p;
-   p.index = index;
-   p.mask = mask;
-   
-   return p;
-}
 //-------------------------------------

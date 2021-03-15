@@ -519,7 +519,7 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
    ULK_slk_image img;
    img.width = s->width;
    img.height = s->height;
-   img.data = (ULK_slk_paxel *)s->data;
+   img.data = (uint8_t *)s->data;
    ULK_slk_image_write(&img,f,rle);
 }
 

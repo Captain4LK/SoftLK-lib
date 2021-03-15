@@ -40,8 +40,8 @@ void            SLK_render_update();
 //Pal sprite subsystem: SLK_sprite_pal.c
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
 void            SLK_pal_sprite_destroy(SLK_Pal_sprite *s);
-SLK_Paxel       SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y);
-void            SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c);
+uint8_t         SLK_pal_sprite_get_index(const SLK_Pal_sprite *s, int x, int y);
+void            SLK_pal_sprite_set_index(SLK_Pal_sprite *s, int x, int y, uint8_t c);
 SLK_Pal_sprite *SLK_pal_sprite_load(const char *path);
 SLK_Pal_sprite *SLK_pal_sprite_load_file(FILE *f);
 SLK_Pal_sprite *SLK_pal_sprite_load_mem(const void *data, int length);
@@ -53,22 +53,22 @@ void            SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_s
 //Draw pal subsystem: SLK_draw_pal.c
 void            SLK_draw_pal_set_target(SLK_Pal_sprite *s);
 SLK_Pal_sprite *SLK_draw_pal_get_target();
-void            SLK_draw_pal_set_clear_paxel(SLK_Paxel paxel);
+void            SLK_draw_pal_set_clear_index(uint8_t index);
 void            SLK_draw_pal_load_font(const char *path);
 void            SLK_draw_pal_set_font_sprite(SLK_Pal_sprite *font);
 void            SLK_draw_pal_clear();
-void            SLK_draw_pal_paxel(int x, int y, SLK_Paxel paxel);
-void            SLK_draw_pal_string(int x, int y, int scale, const char *text, SLK_Paxel paxel);
+void            SLK_draw_pal_index(int x, int y, uint8_t index);
+void            SLK_draw_pal_string(int x, int y, int scale, const char *text, uint8_t index);
 void            SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y);
 void            SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height);
 void            SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip flip);
-void            SLK_draw_pal_line(int x0, int y0, int x1, int y1, SLK_Paxel paxel);
-void            SLK_draw_pal_vertical_line(int x, int y0, int y1, SLK_Paxel paxel);
-void            SLK_draw_pal_horizontal_line(int x0, int x1, int y, SLK_Paxel paxel);
-void            SLK_draw_pal_rectangle(int x, int y, int width, int height, SLK_Paxel paxel);
-void            SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, SLK_Paxel paxel);
-void            SLK_draw_pal_circle(int x, int y, int radius, SLK_Paxel paxel);
-void            SLK_draw_pal_fill_circle(int x, int y, int radius, SLK_Paxel paxel);
+void            SLK_draw_pal_line(int x0, int y0, int x1, int y1, uint8_t index);
+void            SLK_draw_pal_vertical_line(int x, int y0, int y1, uint8_t index);
+void            SLK_draw_pal_horizontal_line(int x0, int x1, int y, uint8_t index);
+void            SLK_draw_pal_rectangle(int x, int y, int width, int height, uint8_t index);
+void            SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, uint8_t index);
+void            SLK_draw_pal_circle(int x, int y, int radius, uint8_t index);
+void            SLK_draw_pal_fill_circle(int x, int y, int radius, uint8_t index);
 
 //RGB sprite subsystem: SLK_sprite_rgb.c
 SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height);
@@ -111,7 +111,6 @@ SLK_Color       SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 SLK_Color       SLK_color_create_float(float r, float g, float b, float a);
 SLK_Color       SLK_color_create_hsv(float h, float s, float v, float a);
 SLK_Color       SLK_color_create_hsl(float h, float s, float l, float a);
-SLK_Paxel       SLK_color_create_paxel(uint8_t index, uint8_t mask);
 
 //Input subsystem: SLK_input.c 
 int             SLK_key_down(SLK_key key);

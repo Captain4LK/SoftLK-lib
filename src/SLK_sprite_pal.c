@@ -72,19 +72,19 @@ void SLK_pal_sprite_destroy(SLK_Pal_sprite *s)
 //location.
 //The paxel layout may change in
 //the future.
-SLK_Paxel SLK_pal_sprite_get_paxel(const SLK_Pal_sprite *s, int x, int y)
+uint8_t SLK_pal_sprite_get_index(const SLK_Pal_sprite *s, int x, int y)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       return s->data[y*s->width+x];
    else
-      return SLK_color_create_paxel(0,0);
+      return 0;
 }
 
 //Sets the paxel at the specified
 //position.
 //Again, the paxel layout may change
 //in the future.
-void SLK_pal_sprite_set_paxel(SLK_Pal_sprite *s, int x, int y, SLK_Paxel c)
+void SLK_pal_sprite_set_index(SLK_Pal_sprite *s, int x, int y, uint8_t c)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
       s->data[y*s->width+x] = c;
@@ -143,8 +143,8 @@ void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src,
    {
       for(int ty = 0; ty < height; ty++)
       {
-         SLK_Paxel c = SLK_pal_sprite_get_paxel(src, tx + ox, ty + oy);
-         SLK_pal_sprite_set_paxel(dst,x + tx, y +ty, c);
+         uint8_t c = SLK_pal_sprite_get_index(src, tx + ox, ty + oy);
+         SLK_pal_sprite_set_index(dst,x + tx, y +ty, c);
       }
    }
 }
@@ -155,6 +155,6 @@ void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src)
 {
    for(int x = 0;x<src->width;x++)
       for(int y = 0;y<src->height;y++)
-         SLK_pal_sprite_set_paxel(dst,x,y,SLK_pal_sprite_get_paxel(src,x,y));
+         SLK_pal_sprite_set_index(dst,x,y,SLK_pal_sprite_get_index(src,x,y));
 }
 //-------------------------------------

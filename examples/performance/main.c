@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
    SLK_layer_activate(1,1);
    SLK_layer_set_tint(1,SLK_color_create(255,255,255,128));
    SLK_layer_set_current(1);
-   SLK_draw_pal_set_clear_paxel(SLK_color_create_paxel(0,SLK_TRANSPARENT));
+   SLK_draw_pal_set_clear_index(0);
    SLK_draw_pal_clear();
 
    //Layer 2 --> rgb sprite drawing
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
    world.space = 100;
    world.used = 0;
    world.entities= malloc(sizeof(Entity)*world.space);
-   while(world.used<10)
+   while(world.used<1000)
       add_entity();
       
    //Main loop
@@ -176,7 +176,7 @@ static void main_loop()
       }
 
       if(render_mode==0)
-         SLK_draw_pal_sprite_flip(dino_sprites[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
+         SLK_draw_pal_sprite(dino_sprites[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y);//,world.entities[i].flip);
       else if(render_mode==1)
          SLK_draw_rgb_sprite_flip(dino_sprites_rgb[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
    }

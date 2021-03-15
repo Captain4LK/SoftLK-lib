@@ -339,7 +339,7 @@ void backend_render_update()
             dst_rect.h = height;
 
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
-               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
+               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
 
             int w, h;
             SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);

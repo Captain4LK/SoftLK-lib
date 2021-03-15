@@ -625,7 +625,7 @@ void backend_render_update()
             dst_rect.h = height;
 
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
-               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
+               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
 
             int w, h;
             SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);
@@ -945,7 +945,7 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
    ULK_slk_image img;
    img.width = s->width;
    img.height = s->height;
-   img.data = (ULK_slk_paxel *)s->data;
+   img.data = (uint8_t *)s->data;
    ULK_slk_image_write(&img,f,rle);
 }
 

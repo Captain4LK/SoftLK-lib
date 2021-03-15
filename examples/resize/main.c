@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
    SLK_layer_set_dynamic(0,0); //This layer won't be dynamic since its size is fixed.
    SLK_layer_set_pos(0,canvas_pos_x,canvas_pos_y); //Set the layer pos to the one specified in the variables.
    SLK_layer_set_scale(0,canvas_scale); //Set the layer scale too.
-   SLK_draw_pal_set_clear_paxel(SLK_color_create_paxel(0,0));
+   SLK_draw_pal_set_clear_index(0);
    SLK_draw_pal_clear(); //Clear to paxel specified in above line.
    SLK_layer_set_palette(0,SLK_palette_load("assets/3-3-2.pal")); //Load the correct palete for the layer.
                                                                   //We will be using a rgb332 palette.
