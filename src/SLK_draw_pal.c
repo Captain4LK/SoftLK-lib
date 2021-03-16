@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <stdlib.h>
+#include <string.h>
 //-------------------------------------
 
 //Internal includes
@@ -103,23 +104,22 @@ void SLK_draw_pal_set_clear_index(uint8_t index)
 }
 
 //Clears the target to the color set by 
-//SLK_draw_pal_set_clear_paxel.
+//SLK_draw_pal_set_clear_index.
 void SLK_draw_pal_clear()
 {
-   for(int i = 0;i<target_pal->width*target_pal->height;i++)
-      target_pal->data[i] = target_pal_clear;
+   memset(target_pal->data,target_pal_clear,sizeof(*target_pal->data)*target_pal->width*target_pal->height);
 }
 
 //Draws a single paxel to the draw target.
 void SLK_draw_pal_index(int x, int y, uint8_t index)
 {
+   if(!index)
+      return;
+
    if(INBOUNDS(0,target_pal->width,x)&&INBOUNDS(0,target_pal->height,y))
    {
-      if(index)
-      {
-         int index = y*target_pal->width+x;
-         target_pal->data[index]= index;
-      }
+      int ind = y*target_pal->width+x;
+      target_pal->data[ind]= index;
    }
 }
 
@@ -159,7 +159,6 @@ void SLK_draw_pal_string(int x, int y, int scale, const char *text, uint8_t inde
 }
 
 //Draws a sprite to the draw target.
-//Uses bit blitting for faster drawing.
 void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
 {
    //Clip source sprite
@@ -230,11 +229,11 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
 //(Note: The values can be or'd together).
 void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip flip)
 {
+   //Clip source sprite
    int draw_start_y = 0;
    int draw_start_x = 0;
    int draw_end_x = s->width;
    int draw_end_y = s->height;
-
    if(x<0)
       draw_start_x = -x;
    if(y<0)
@@ -244,63 +243,49 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip fl
    if(y+draw_end_y>target_pal->height)
       draw_end_y = s->height+(target_pal->height-y-draw_end_y);
 
+   //Clip dst sprite
+   x = x<0?0:x;
+   y = y<0?0:y;
+
+   const uint8_t *src = &s->data[0];
+   uint8_t *dst = &target_pal->data[x+y*target_pal->width];
+   int src_step = -(draw_end_x-draw_start_x)+s->width;
+   int dst_step = target_pal->width-(draw_end_x-draw_start_x);
+
    switch(flip)
    {
    case SLK_FLIP_NONE:
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-      {
-         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-         {
-            uint8_t p = s->data[y1*s->width+x1];
-            if(p)
-            {
-               int index = (y1+y)*target_pal->width+x1+x;
-               target_pal->data[index] = p;
-            }
-         }
-      }
+      src+=draw_start_x+draw_start_y*s->width;
+      src_step = -(draw_end_x-draw_start_x)+s->width;
+      dst_step = target_pal->width-(draw_end_x-draw_start_x);
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step,src+=src_step)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++,src++,dst++)
+            *dst = *src?*src:*dst;
       break;
    case SLK_FLIP_VERTICAL:
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-      {
-         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-         {
-            uint8_t p = s->data[(s->height-y1-1)*s->width+x1];
-            if(p)
-            {
-               int index = (y1+y)*target_pal->width+x1+x;
-               target_pal->data[index] = p;
-            }
-         }
-      }
+      src+=draw_start_x+s->width*(s->height-draw_start_y-1);
+      src_step = -(draw_end_x-draw_start_x)-s->width;
+      dst_step = target_pal->width-(draw_end_x-draw_start_x);
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step,src+=src_step)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++,src++,dst++)
+            *dst = *src?*src:*dst;
       break;
    case SLK_FLIP_HORIZONTAL:
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-      {
-         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-         {
-            uint8_t p = s->data[y1*s->width+(s->width-x1-1)];
-            if(p)
-            {
-               int index = (y1+y)*target_pal->width+x1+x;
-               target_pal->data[index] = p;
-            }
-         }
-      }
+      src+=draw_start_y*s->width-draw_start_x+s->width-1;
+      src_step = (draw_end_x-draw_start_x)+s->width;
+      dst_step = target_pal->width-(draw_end_x-draw_start_x);
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step,src+=src_step)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++,src--,dst++)
+            *dst = *src?*src:*dst;
       break;
    case SLK_FLIP_VERTHOR:
-      for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-      {
-         for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-         {
-            uint8_t p = s->data[(s->height-y1-1)*s->width+(s->width-x1)];
-            if(p)
-            {
-               int index = (y1+y)*target_pal->width+x1+x;
-               target_pal->data[index] = p;
-            }
-         }
-      }
+      src+=s->width*(s->height-draw_start_y-1);
+      src+=-draw_start_x+s->width-1;
+      src_step = (draw_end_x-draw_start_x)-s->width;
+      dst_step = target_pal->width-(draw_end_x-draw_start_x);
+      for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step,src+=src_step)
+         for(int x1 = draw_start_x;x1<draw_end_x;x1++,src--,dst++)
+            *dst = *src?*src:*dst;
       break;
    }
 }
@@ -422,8 +407,8 @@ void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, uint8_t in
    {
       for(int x1 = draw_start_x;x1<draw_end_x;x1++)
       {
-         int index = (y1+y)*target_pal->width+x1+x;
-         target_pal->data[index] = index;
+         int ind = (y1+y)*target_pal->width+x1+x;
+         target_pal->data[ind] = index;
       }
    }
 }

@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS=-lm -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter
+CFLAGS=-lm -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter 
 DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o ULK_slk.o
 
 .PHONY: backend_sdl2_gl
@@ -27,7 +27,7 @@ SLK_color.o: ../../src/SLK_color.c ../../include/SLK/SLK_functions.h ../../inclu
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_draw_pal.o: ../../src/SLK_draw_pal.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h ../../src/SLK_draw_pal_i.h
-	$(CC) -O3 -c $< $(CFLAGS) 
+	$(CC) -O3 -c $< $(CFLAGS)
 
 SLK_draw_rgb.o: ../../src/SLK_draw_rgb.c ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h ../../src/SLK_draw_rgb_i.h
 	$(CC) -O3 -c $< $(CFLAGS) 
@@ -54,13 +54,13 @@ ULK_slk.o: ../../external/UtilityLK/src/ULK_slk.c ../../external/UtilityLK/inclu
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 backend_sdl2_gl.o: ../../src/backend/backend_sdl2_gl.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
-	$(CC) -O3 -c $< -lm -lSDL2 -lGL -Wall
+	$(CC) -O3 -c $< -lSDL2 -lGL $(CFLAGS)
 
 backend_sdl2.o: ../../src/backend/backend_sdl2.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
-	$(CC) -O3 -c $< -lm -lSDL2 -Wall
+	$(CC) -O3 -c $< -lSDL2 $(CFLAGS)
 
 backend_sdl2_surface.o: ../../src/backend/backend_sdl2_surface.c ../../src/backend.h ../../external/UtilityLK/include/ULK_slk.h
-	$(CC) -O3 -c $< -lm -lSDL2 -Wall
+	$(CC) -O3 -c $< -lSDL2 $(CFLAGS)
 
 clean:
 	rm -f *.o *.a

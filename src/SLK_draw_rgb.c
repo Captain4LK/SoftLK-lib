@@ -329,7 +329,7 @@ void SLK_draw_rgb_sprite_flip(const SLK_RGB_sprite *s, int x, int y, SLK_flip fl
       {
          for(int x1 = draw_start_x;x1<draw_end_x;x1++)
          {
-            SLK_Color c = s->data[(s->height-y1-1)*s->width+(s->width-x1)];
+            SLK_Color c = s->data[(s->height-y1-1)*s->width+(s->width-x1-1)];
             if(c.a)
                target_rgb->data[(y1+y)*target_rgb->width+x1+x] = c;
          }
