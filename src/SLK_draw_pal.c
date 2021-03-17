@@ -198,11 +198,11 @@ void SLK_draw_pal_sprite(const SLK_Pal_sprite *s, int x, int y)
 //when splitting the spritesheet into individual sprites.
 void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, int oy, int width, int height)
 {
+   //Clip source sprite
    int draw_start_y = 0;
    int draw_start_x = 0;
    int draw_end_x = width;
    int draw_end_y = height;
-
    if(x<0)
       draw_start_x = -x;
    if(y<0)
@@ -211,19 +211,19 @@ void SLK_draw_pal_sprite_partial(const SLK_Pal_sprite *s, int x, int y, int ox, 
       draw_end_x = width+(target_pal->width-x-draw_end_x);
    if(y+draw_end_y>target_pal->height)
       draw_end_y = height+(target_pal->height-y-draw_end_y);
+
+   //Clip dst sprite
+   x = x<0?0:x;
+   y = y<0?0:y;
+
+   const uint8_t *src = &s->data[draw_start_x+ox+(draw_start_y+oy)*s->width];
+   uint8_t *dst = &target_pal->data[x+y*target_pal->width];
+   int src_step = -(draw_end_x-draw_start_x)+s->width;
+   int dst_step = target_pal->width-(draw_end_x-draw_start_x);
     
-   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-      {
-         uint8_t p = s->data[(oy+y1)*s->width+ox+x1];
-         if(p)
-         {
-            int index = (y1+y)*target_pal->width+x1+x;
-            target_pal->data[index] = p;
-         }
-      }
-   }
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step,src+=src_step)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++,src++,dst++)
+         *dst = *src?*src:*dst;
 }
 
 //Draws a flipped sprite to the draw target.
