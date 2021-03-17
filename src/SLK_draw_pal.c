@@ -127,6 +127,9 @@ void SLK_draw_pal_index(int x, int y, uint8_t index)
 //Color and scale must be specified.
 void SLK_draw_pal_string(int x, int y, int scale, const char *text, uint8_t index)
 {
+   if(!index)
+      return;
+
    int x_dim = text_sprite_pal->width/16;
    int y_dim = text_sprite_pal->height/6;
    int sx = 0;
@@ -294,6 +297,9 @@ void SLK_draw_pal_sprite_flip(const SLK_Pal_sprite *s, int x, int y, SLK_flip fl
 //the Bresenham line drawing algorythm.
 void SLK_draw_pal_line(int x0, int y0, int x1, int y1, uint8_t index)
 {
+   if(!index)
+      return;
+
    if(x0>x1||y0>y1)
    {
       SWAP(x0,x1);
@@ -348,6 +354,9 @@ void SLK_draw_pal_line(int x0, int y0, int x1, int y1, uint8_t index)
 //with a fixed x value.
 void SLK_draw_pal_vertical_line(int x, int y0, int y1, uint8_t index)
 {
+   if(!index)
+      return;
+
    if(x<0||x>=target_pal->width||y0>=target_pal->height||y1<0)
       return;
    if(y0<0)
@@ -363,6 +372,9 @@ void SLK_draw_pal_vertical_line(int x, int y0, int y1, uint8_t index)
 //with a fixed y value.
 void SLK_draw_pal_horizontal_line(int x0, int x1, int y, uint8_t index)
 {
+   if(!index)
+      return;
+   
    if(y<0||y>=target_pal->height||x0>=target_pal->width||x1<0)
       return;
    if(x0<0)
@@ -370,13 +382,17 @@ void SLK_draw_pal_horizontal_line(int x0, int x1, int y, uint8_t index)
    if(x1>target_pal->width)
       x1 = target_pal->width;
 
-   for(int x = x0;x<x1;x++)
-      target_pal->data[y*target_pal->width+x] = index;
+   uint8_t *dst = &target_pal->data[y*target_pal->width+x0];
+   for(int x = x0;x<x1;x++,dst++)
+      *dst = index;
 }
 
 //Draws the outline of a colored rectangle.
 void SLK_draw_pal_rectangle(int x, int y, int width, int height, uint8_t index)
 {
+   if(!index)
+      return;
+
    SLK_draw_pal_horizontal_line(x,x+width,y,index);
    SLK_draw_pal_horizontal_line(x,x+width,y+height-1,index);
    SLK_draw_pal_vertical_line(x,y,y+height,index);
@@ -384,11 +400,12 @@ void SLK_draw_pal_rectangle(int x, int y, int width, int height, uint8_t index)
 }
 
 //Draws a colored filled rectangle.
+//The only function to not return when drawing with an
+//index of 0, can thus be used for clearing parts of
+//the target.
 void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, uint8_t index)
 {
-   if(!index)
-      return;
-
+   //Clip src rect
    int draw_start_y = 0;
    int draw_start_x = 0;
    int draw_end_x = width;
@@ -403,19 +420,24 @@ void SLK_draw_pal_fill_rectangle(int x, int y, int width, int height, uint8_t in
    if(y+draw_end_y>target_pal->height)
       draw_end_y = height+(target_pal->height-y-draw_end_y);
     
-   for(int y1 = draw_start_y;y1<draw_end_y;y1++)
-   {
-      for(int x1 = draw_start_x;x1<draw_end_x;x1++)
-      {
-         int ind = (y1+y)*target_pal->width+x1+x;
-         target_pal->data[ind] = index;
-      }
-   }
+   //Clip dst rect
+   x = x<0?0:x;
+   y = y<0?0:y;
+
+   uint8_t *dst = &target_pal->data[x+y*target_pal->width];
+   int dst_step = target_pal->width-(draw_end_x-draw_start_x);
+    
+   for(int y1 = draw_start_y;y1<draw_end_y;y1++,dst+=dst_step)
+      for(int x1 = draw_start_x;x1<draw_end_x;x1++,dst++)
+         *dst = index;
 }
 
 //Draws the outline of a colored circle.
 void SLK_draw_pal_circle(int x, int y, int radius, uint8_t index)
 {
+   if(!index)
+      return;
+
    int x_ = 0;
    int y_ = radius;
    int d = 1-radius;
@@ -454,6 +476,9 @@ void SLK_draw_pal_circle(int x, int y, int radius, uint8_t index)
 //Draws a colored filled circle.
 void SLK_draw_pal_fill_circle(int x, int y, int radius, uint8_t index)
 {
+   if(!index)
+      return;
+
    int x_ = 0;
    int y_ = radius;
    int d = 1-radius;
