@@ -68,10 +68,8 @@ void SLK_pal_sprite_destroy(SLK_Pal_sprite *s)
    free(s);
 }
 
-//Returns the paxel at the specified
+//Returns the index at the specified
 //location.
-//The paxel layout may change in
-//the future.
 uint8_t SLK_pal_sprite_get_index(const SLK_Pal_sprite *s, int x, int y)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
@@ -80,10 +78,8 @@ uint8_t SLK_pal_sprite_get_index(const SLK_Pal_sprite *s, int x, int y)
       return 0;
 }
 
-//Sets the paxel at the specified
+//Sets the index at the specified
 //position.
-//Again, the paxel layout may change
-//in the future.
 void SLK_pal_sprite_set_index(SLK_Pal_sprite *s, int x, int y, uint8_t c)
 {
    if(INBOUNDS(0,s->width,x)&&INBOUNDS(0,s->height,y))
@@ -114,8 +110,6 @@ SLK_Pal_sprite *SLK_pal_sprite_load_mem(const void *data, int length)
 //rle modes:
 //0: No RLE
 //1: RLE for indices
-//2: RLE for masks
-//3: RLE for all
 void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s, int rle)
 {
    backend_save_pal(s,path,rle);
@@ -127,8 +121,6 @@ void SLK_pal_sprite_save(const char *path, const SLK_Pal_sprite *s, int rle)
 //rle modes:
 //0: No RLE
 //1: RLE for indices
-//2: RLE for masks
-//3: RLE for all
 void SLK_pal_sprite_save_file(FILE *f, const SLK_Pal_sprite *s, int rle)
 {
    backend_save_pal_file(s,f,rle);
@@ -149,7 +141,7 @@ void SLK_pal_sprite_copy_partial(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src,
    }
 }
 
-//Copies the data o a sprite to another one.
+//Copies the data from a sprite to another one.
 //Usefull for duplicating sprites.
 void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src)
 {

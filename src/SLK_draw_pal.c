@@ -107,7 +107,7 @@ void SLK_draw_pal_clear()
    memset(target_pal->data,target_pal_clear,sizeof(*target_pal->data)*target_pal->width*target_pal->height);
 }
 
-//Draws a single paxel to the draw target.
+//Draws a single index to the draw target.
 void SLK_draw_pal_index(int x, int y, uint8_t index)
 {
    if(!index)
