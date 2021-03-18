@@ -30,9 +30,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define INBOUNDS(LOWER,UPPER,NUMBER) \
             ((unsigned)(NUMBER-LOWER)<(UPPER-LOWER))
-
-#define SIGNUM(NUM) \
-   NUM==0?0:(NUM<0?-1:1)
 //-------------------------------------
 
 //Typedefs
@@ -40,7 +37,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Variables
 static uint8_t target_pal_clear;
-static SLK_Pal_sprite *text_sprite_pal;
+static const SLK_Pal_sprite *text_sprite_pal;
 static SLK_Pal_sprite *text_sprite_pal_default;
 
 SLK_Pal_sprite *target_pal;
