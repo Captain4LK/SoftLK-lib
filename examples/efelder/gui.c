@@ -31,6 +31,7 @@ For more information, please refer to <http://unlicense.org/>
 
 //External includes
 #include <time.h>
+#include <string.h>
 #include "../../include/SLK/SLK.h"
 //-------------------------------------
 

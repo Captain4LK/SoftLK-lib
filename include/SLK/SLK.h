@@ -17,15 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #define _SLK_H_
 
-//Includes
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
-#include <math.h>
-#include <time.h>
-#include <string.h>
 
-//Internal includes
 #include "SLK_types.h"
 #include "SLK_functions.h"
 

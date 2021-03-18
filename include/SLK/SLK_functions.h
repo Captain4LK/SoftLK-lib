@@ -34,9 +34,6 @@ int             SLK_timer_get_fps();
 void            SLK_timer_update();
 float           SLK_timer_get_delta();
 
-//Render subsystem: SLK_render.c
-void            SLK_render_update();
-
 //Pal sprite subsystem: SLK_sprite_pal.c
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
 void            SLK_pal_sprite_destroy(SLK_Pal_sprite *s);
@@ -161,5 +158,6 @@ int             SLK_core_get_width();
 int             SLK_core_get_height();
 int             SLK_core_running();
 void            SLK_core_quit();
+void            SLK_render_update();
 
 #endif //_SLK_FUNCTIONS_H_

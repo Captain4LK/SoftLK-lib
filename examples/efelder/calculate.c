@@ -28,6 +28,7 @@ For more information, please refer to <http://unlicense.org/>
 //External includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "../../external/UtilityLK/include/ULK_vector.h"
 #include "../../external/UtilityLK/include/ULK_json.h"
 //-------------------------------------
