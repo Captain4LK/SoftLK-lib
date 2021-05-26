@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
+#include "../include/SLK/SLK_config.h"
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "backend.h"
@@ -84,6 +85,8 @@ void SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c)
       s->data[y*s->width+x] = c;
 }
 
+#if SLK_ENABLE_RGB
+
 //Loads a sprite from a png file.
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path)
 {
@@ -131,4 +134,6 @@ void SLK_rgb_sprite_copy_partial(SLK_RGB_sprite *dst, const SLK_RGB_sprite *src,
       for(int ty = 0;ty<height;ty++)
          SLK_rgb_sprite_set_pixel(dst,x+tx,y+ty,SLK_rgb_sprite_get_pixel(src,ox+tx,oy+ty));
 }
+
+#endif
 //-------------------------------------

@@ -20,6 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
+#include "../include/SLK/SLK_config.h"
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "backend.h"
@@ -40,6 +41,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Function implementations
+
+#if SLK_ENABLE_PAL
 
 //Creates a sprite with the requested dimensions
 //and returns a pointer to its location.
@@ -149,4 +152,6 @@ void SLK_pal_sprite_copy(SLK_Pal_sprite *dst, const SLK_Pal_sprite *src)
       for(int y = 0;y<src->height;y++)
          SLK_pal_sprite_set_index(dst,x,y,SLK_pal_sprite_get_index(src,x,y));
 }
+
+#endif
 //-------------------------------------

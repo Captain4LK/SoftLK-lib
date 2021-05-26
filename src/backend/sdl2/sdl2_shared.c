@@ -391,6 +391,8 @@ static int get_gamepad_index(int which)
    return -1;
 }
 
+#if SLK_ENABLE_RGB
+
 SLK_RGB_sprite *backend_load_rgb(const char *path)
 {
    cp_image_t img = cp_load_png(path);
@@ -463,6 +465,10 @@ void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
    cp_save_png(f,&img);
 }
 
+#endif
+
+#if SLK_ENABLE_PAL
+
 SLK_Pal_sprite *backend_load_pal(const char *path)
 {
    FILE *f = fopen(path,"rb");
@@ -522,6 +528,8 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
    img.data = (uint8_t *)s->data;
    ULK_slk_image_write(&img,f,rle);
 }
+
+#endif
 
 SLK_Palette *backend_load_palette(const char *path)
 {

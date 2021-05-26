@@ -27,9 +27,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../SLK_layer_i.h"
 #include "../backend.h"
 
+#if SLK_ENABLE_RGB
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
+#endif
 //-------------------------------------
 
 //#defines
@@ -309,7 +311,6 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    layer_textures = malloc(sizeof(*layer_textures)*layer_num);
    memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
    backend_update_viewport();
-
 }
 
 //Clears the window and redraws the scene.
@@ -328,6 +329,7 @@ void backend_render_update()
          {
          case SLK_LAYER_PAL:
          {
+#if SLK_ENABLE_PAL
             float width = (float)layers[l].type_0.target->width*layers[l].scale*pixel_scale;
             float height = (float)layers[l].type_0.target->height*layers[l].scale*pixel_scale;
             float x = (float)layers[l].x*pixel_scale;
@@ -361,10 +363,12 @@ void backend_render_update()
             SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
             SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
 
+#endif
             break;
          }
          case SLK_LAYER_RGB:
          {
+#if SLK_ENABLE_RGB
             int width = (float)layers[l].type_1.target->width*layers[l].scale*pixel_scale;
             int height = (float)layers[l].type_1.target->height*layers[l].scale*pixel_scale;
             int x = (float)layers[l].x*pixel_scale;
@@ -397,6 +401,7 @@ void backend_render_update()
             SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
             SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
 
+#endif
             break;
          }
          }
@@ -414,12 +419,16 @@ void backend_create_layer(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
+#if SLK_ENABLE_PAL
       layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
       SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+#endif
       break;
    case SLK_LAYER_RGB:
+#if SLK_ENABLE_RGB
       layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
       SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+#endif
       break;
    }
 }

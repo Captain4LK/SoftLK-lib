@@ -27,9 +27,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../SLK_layer_i.h"
 #include "../backend.h"
 
+#if SLK_ENABLE_RGB
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
+#endif
 //-------------------------------------
 
 //#defines
@@ -320,6 +322,7 @@ void backend_render_update()
          {
          case SLK_LAYER_PAL:
          {
+#if SLK_ENABLE_PAL
             float width = (float)layers[l].type_0.target->width*layers[l].scale*pixel_scale;
             float height = (float)layers[l].type_0.target->height*layers[l].scale*pixel_scale;
             float x = (float)layers[l].x*pixel_scale;
@@ -331,7 +334,7 @@ void backend_render_update()
             dst_rect.h = height;
 
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
-               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
+               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
 
             if(layer_surfaces[l]->w!=layers[l].type_0.target->width||layer_surfaces[l]->h!=layers[l].type_0.target->height)
             {
@@ -345,11 +348,13 @@ void backend_render_update()
             SDL_SetSurfaceColorMod(layer_surfaces[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
             SDL_SetSurfaceAlphaMod(layer_surfaces[l],layers[l].tint.a);
             SDL_BlitScaled(layer_surfaces[l],NULL,surface_window,&dst_rect);
+#endif
 
             break;
          }
          case SLK_LAYER_RGB:
          {
+#if SLK_ENABLE_RGB
             int width = (float)layers[l].type_1.target->width*layers[l].scale*pixel_scale;
             int height = (float)layers[l].type_1.target->height*layers[l].scale*pixel_scale;
             int x = (float)layers[l].x*pixel_scale;
@@ -375,6 +380,7 @@ void backend_render_update()
             SDL_SetSurfaceColorMod(layer_surfaces[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
             SDL_SetSurfaceAlphaMod(layer_surfaces[l],layers[l].tint.a);
             SDL_BlitScaled(layer_surfaces[l],NULL,surface_window,&dst_rect);
+#endif
 
             break;
          }
@@ -393,10 +399,14 @@ void backend_create_layer(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
+#if SLK_ENABLE_PAL
       layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+#endif
       break;
    case SLK_LAYER_RGB:
+#if SLK_ENABLE_RGB
       layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+#endif
       break;
    }
 }

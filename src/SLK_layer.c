@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
+#include "../include/SLK/SLK_config.h"
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "backend.h"
@@ -80,23 +81,29 @@ void SLK_layer_create(unsigned index, SLK_layer type)
    layers[index].x = 0;
    layers[index].y = 0;
    layers[index].scale = 1.0f;
-   int screen_width = backend_get_width();
-   int screen_height = backend_get_height();
 
    switch(type)
    {
    case SLK_LAYER_PAL:
       {
+#if SLK_ENABLE_PAL
+         int screen_width = backend_get_width();
+         int screen_height = backend_get_height();
          layers[index].type_0.target = SLK_pal_sprite_create(screen_width,screen_height);
          layers[index].type_0.render = SLK_rgb_sprite_create(screen_width,screen_height);
          backend_create_layer(index,type);
          layers[index].type_0.palette = rgb332;
+#endif
       }
       break;
    case SLK_LAYER_RGB:
       {
+#if SLK_ENABLE_RGB
+         int screen_width = backend_get_width();
+         int screen_height = backend_get_height();
          layers[index].type_1.target = SLK_rgb_sprite_create(screen_width,screen_height);
          backend_create_layer(index,type);
+#endif
       }
       break;
    }
@@ -168,6 +175,7 @@ void SLK_layer_set_size(unsigned index, int width, int height)
 
       if(layers[index].type==SLK_LAYER_PAL)
       {
+#if SLK_ENABLE_PAL
          if(layers[index].type_0.target==NULL||layers[index].type_0.render==NULL)
          {
             printf("Error: Layer %d has not been created yet!\n",index);
@@ -182,9 +190,11 @@ void SLK_layer_set_size(unsigned index, int width, int height)
          SLK_pal_sprite_copy(sprite_new,layers[index].type_0.target);
          SLK_pal_sprite_destroy(layers[index].type_0.target);
          layers[index].type_0.target = sprite_new;
+#endif
       }
       else if(layers[index].type==SLK_LAYER_RGB)
       {
+#if SLK_ENABLE_RGB
          if(layers[index].type_1.target==NULL)
          {
             printf("Error: Layer %d has not been created yet!\n",index);
@@ -197,6 +207,7 @@ void SLK_layer_set_size(unsigned index, int width, int height)
          SLK_rgb_sprite_copy(sprite_new,layers[index].type_1.target);
          SLK_rgb_sprite_destroy(layers[index].type_1.target);
          layers[index].type_1.target = sprite_new;
+#endif
       }
 
       SLK_layer_set_current(index);

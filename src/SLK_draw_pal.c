@@ -19,10 +19,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
+#include "../include/SLK/SLK_config.h"
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "SLK_draw_pal_i.h"
 //-------------------------------------
+
+#if SLK_ENABLE_PAL
 
 //#defines
 #define SWAP(x,y) \
@@ -371,6 +374,9 @@ void SLK_draw_pal_horizontal_line(int x0, int x1, int y, uint8_t index)
 {
    if(!index)
       return;
+
+   if(x0>x1)
+      SWAP(x0,x1);
    
    if(y<0||y>=target_pal->height||x0>=target_pal->width||x1<0)
       return;
@@ -502,4 +508,6 @@ void SLK_draw_pal_fill_circle(int x, int y, int radius, uint8_t index)
       SLK_draw_pal_horizontal_line(x-y_,x+y_,y-x_,index);
    }
 }
+
+#endif
 //-------------------------------------

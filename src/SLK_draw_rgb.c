@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Internal includes
+#include "../include/SLK/SLK_config.h"
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "SLK_draw_rgb_i.h"
@@ -38,9 +39,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+
+#if SLK_ENABLE_RGB
+
 static SLK_Color target_rgb_clear;
 static SLK_RGB_sprite *text_sprite_rgb;
 static SLK_RGB_sprite *text_sprite_rgb_default;
+
+#endif
 
 SLK_RGB_sprite *target_rgb;
 SLK_RGB_sprite *target_rgb_default;
@@ -50,6 +56,8 @@ SLK_RGB_sprite *target_rgb_default;
 //-------------------------------------
 
 //Function implementations
+
+#if SLK_ENABLE_RGB
 
 //Gets the current draw target.
 //Usefull for getting the default draw target.
@@ -520,4 +528,6 @@ void SLK_draw_rgb_fill_circle(int x, int y, int radius, SLK_Color color)
       SLK_draw_rgb_horizontal_line(x-y_,x+y_,y-x_,color);
    }
 }
+
+#endif
 //-------------------------------------

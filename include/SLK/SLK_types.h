@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #define _SLK_TYPES_H_
 
 #include <stdint.h>
+#include "SLK_config.h"
 
 typedef struct
 {

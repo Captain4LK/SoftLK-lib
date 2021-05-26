@@ -28,9 +28,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../SLK_layer_i.h"
 #include "../backend.h"
 
+#if SLK_ENABLE_RGB
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
+#endif
 //-------------------------------------
 
 //#defines
@@ -349,13 +351,14 @@ void backend_render_update()
          {
          case SLK_LAYER_PAL:
          {
+#if SLK_ENABLE_PAL
             float width = (float)layers[l].type_0.target->width*layers[l].scale;
             float height = (float)layers[l].type_0.target->height*layers[l].scale;
             float x = (float)layers[l].x;
             float y = (float)layers[l].y;
 
             for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
-               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i].index];
+               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
 
             glBindTexture(GL_TEXTURE_2D,layer_textures[l]);
             glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,layers[l].type_0.render->width,layers[l].type_0.render->height,0,GL_RGBA,GL_UNSIGNED_BYTE,layers[l].type_0.render->data);
@@ -372,10 +375,12 @@ void backend_render_update()
                glVertex3f(width+x,y,0.0f);
             glEnd();
 
+#endif
             break;
          }
          case SLK_LAYER_RGB:
          {
+#if SLK_ENABLE_RGB
             float width = (float)layers[l].type_1.target->width*layers[l].scale;
             float height = (float)layers[l].type_1.target->height*layers[l].scale;
             float x = (float)layers[l].x;
@@ -400,6 +405,7 @@ void backend_render_update()
                glVertex3f(width+x,y,0.0f);
             glEnd();
 
+#endif
             break;
          }
          }
@@ -417,6 +423,7 @@ void backend_create_layer(unsigned index, int type)
    switch(type)
    {
    case SLK_LAYER_PAL:
+#if SLK_ENABLE_PAL
       glGenTextures(1,&layer_textures[index]);
       glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
       glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
@@ -424,8 +431,10 @@ void backend_create_layer(unsigned index, int type)
       glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
       glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
                    0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_0.render->data);
+#endif
       break;
    case SLK_LAYER_RGB:
+#if SLK_ENABLE_RGB
       glGenTextures(1,&layer_textures[index]);
       glBindTexture(GL_TEXTURE_2D,layer_textures[index]);
       glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
@@ -433,6 +442,7 @@ void backend_create_layer(unsigned index, int type)
       glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
       glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,screen_width,screen_height,
                    0,GL_RGBA,GL_UNSIGNED_BYTE,layers[index].type_1.target->data);
+#endif
       break;
    }
 }

@@ -13,63 +13,11 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-//External includes
-//-------------------------------------
+#ifndef _SLK_CONFIG_H_
 
-//Internal includes
-#include "../include/SLK/SLK_config.h"
-#include "../include/SLK/SLK_functions.h"
-#include "backend.h"
-//-------------------------------------
+#define _SLK_CONFIG_H_
 
-//#defines
-//-------------------------------------
+#define SLK_ENABLE_RGB 1
+#define SLK_ENABLE_PAL 1
 
-//Typedefs
-//-------------------------------------
-
-//Variables
-//-------------------------------------
-
-//Function prototypes
-//-------------------------------------
-
-//Function implementations
-
-//Sets the target fps.
-//Pass a value of 0 or lower to set maximum fps.
-//Hardlimited to 1000 fps because SDL_GetTicks can't go
-//smaller than milliseconds.
-void SLK_timer_set_fps(int FPS)
-{
-   backend_set_fps(FPS);
-}
-
-//Returns the currently targeted fps.
-//Don't know how this could be usefull,
-//but anyway, here it is.
-int SLK_timer_get_fps()
-{
-   return backend_get_fps();
-}
-
-//Updates the timings and sleeps
-//the needed amount of time.
-//Already gets called in SLK_update,
-//only use if you know
-//what you are doing.
-void SLK_timer_update()
-{
-   backend_timer_update();
-}
-
-//Returns the time the last frame has taken
-//in seconds.
-//SLK is designed to use fixed framerates,
-//but if you desire to do something else
-//I won't stop you.
-float SLK_timer_get_delta()
-{
-   return backend_timer_get_delta();
-}
-//-------------------------------------
+#endif
