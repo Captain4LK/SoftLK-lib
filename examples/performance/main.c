@@ -65,7 +65,7 @@ static SLK_RGB_sprite *gui_01;
 static int frame = 0;
 static char time_stat[48];
 static int render_mode = 0;
-static double ftime = 0.1f;
+static double timef = 0.1f;
 //-------------------------------------
 
 //Function prototypes
@@ -178,9 +178,9 @@ static void main_loop()
       else if(render_mode==1)
          SLK_draw_rgb_sprite_flip(dino_sprites_rgb[world.entities[i].type][world.entities[i].frame],world.entities[i].x,world.entities[i].y,world.entities[i].flip);
    }
-   ftime+=((double)(clock()-start)/CLOCKS_PER_SEC);
+   timef+=((double)(clock()-start)/CLOCKS_PER_SEC);
    if(next_frame)
-      sprintf(time_stat,"%08lf %04d",ftime/((double)frame),world.used);
+      sprintf(time_stat,"%08lf %04d",timef/((double)frame),world.used);
    //-------------------------------------
 
    //Input
@@ -190,7 +190,7 @@ static void main_loop()
    if(SLK_key_pressed(SLK_KEY_P)||SLK_gamepad_pressed(0,SLK_PAD_LEFTSHOULDER))
    {
       render_mode = 0;
-      ftime = 0.0f;
+      timef = 0.0f;
       frame = 0;
 
       SLK_layer_activate(2,0);
@@ -204,7 +204,7 @@ static void main_loop()
    else if(SLK_key_pressed(SLK_KEY_R)||SLK_gamepad_pressed(0,SLK_PAD_RIGHTSHOULDER))
    {
       render_mode = 1;
-      ftime = 0.0f;
+      timef = 0.0f;
       frame = 0;
 
       SLK_layer_activate(2,1);

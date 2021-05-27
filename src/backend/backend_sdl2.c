@@ -99,7 +99,7 @@ void backend_update_viewport()
 {
    SDL_GetWindowSize(sdl_window,&window_width,&window_height);
 
-   if(dynamic)
+   if(layer_dynamic)
    {
       view_width = window_width;
       view_height = window_height;
@@ -212,7 +212,7 @@ void backend_handle_events()
       case SDL_WINDOWEVENT:
          if(event.window.event==SDL_WINDOWEVENT_RESIZED)
          {
-            if(dynamic)
+            if(layer_dynamic)
             {
                int new_width = event.window.data1/pixel_scale+1;
                int new_height = event.window.data2/pixel_scale+1;
@@ -258,7 +258,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    screen_width = width;
    screen_height = height;
    layer_count = layer_num;
-   dynamic = resizable;
+   layer_dynamic = resizable;
 
    if(SDL_Init(SDL_INIT_EVERYTHING)<0)
    {

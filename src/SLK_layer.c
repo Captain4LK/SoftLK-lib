@@ -55,7 +55,7 @@ static uint32_t rgb332_int[256] =
 };
 static SLK_Palette *rgb332 = (SLK_Palette*)rgb332_int;
 
-int dynamic;
+int layer_dynamic;
 int layer_count;
 SLK_Layer *layers;
 SLK_Layer *current_layer;

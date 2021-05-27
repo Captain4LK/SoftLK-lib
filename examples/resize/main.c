@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
    SLK_pal_sprite_destroy(logo); //Destroy the image again since it's not used anymore.
    //Pal layers don't (yet) have a set_changed flag, so we don't need to set it here.
 
+   SLK_mouse_set_relative(1);
    //Main loop.
    while(SLK_core_running())
    {

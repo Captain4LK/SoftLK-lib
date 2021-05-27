@@ -103,11 +103,11 @@ void SLK_update()
 //Creates a window, sets its title and allocates space for the layers.
 void SLK_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
 {
-   backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);
-
    //Allocate space for layers, max layer num is fixed.
    layers = malloc(sizeof(layers[0])*layer_num);
    memset(layers,0,sizeof(layers[0])*layer_num);
+
+   backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);
 
    running = 1;
    SLK_core_set_fullscreen(fullscreen);

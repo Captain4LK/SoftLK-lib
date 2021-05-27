@@ -19,7 +19,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #include "../include/SLK/SLK_types.h"
 
-extern int dynamic;
+extern int layer_dynamic;
 extern int layer_count;
 extern SLK_Layer *layers;
 extern SLK_Layer *current_layer;

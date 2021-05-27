@@ -50,7 +50,7 @@ For more information, please refer to <http://unlicense.org/>
 
 int main(int argc, char *argv[])
 {
-   SLK_setup(320,240,2,"SoftLK balls",0,SLK_WINDOW_MAX,1); 
+   SLK_setup(320,240,2,"SoftLK balls",0,4,1); 
    SLK_timer_set_fps(30);
 
    SLK_layer_create(0,SLK_LAYER_PAL);
