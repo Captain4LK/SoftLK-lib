@@ -294,7 +294,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    wglSwapInterval_t *wglSwapInterval;
    HGLRC gl_render_context;
 
-   pixel_scale = scale==SLK_WINDOW_MAX?4:scale;
+   pixel_scale = scale;
    screen_width = width;
    screen_height = height;
    layer_count = layer_num;
@@ -306,6 +306,30 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    uint16_t error = GdiplusStartup(&token,&startup_input,NULL);
    if(error!=0)
       printf("GdiplusStartup failed, error code: %d\n",error);
+
+   if(pixel_scale==SLK_WINDOW_MAX)
+   {
+      HMONITOR hmon = MonitorFromWindow(window,MONITOR_DEFAULTTONEAREST);
+      if(!hmon)
+         printf("Failed to get monitor from window: %ld\n",GetLastError());
+      MONITORINFO mi = {.cbSize = sizeof(mi)};
+      if(GetMonitorInfo(hmon, &mi))
+      {
+         int max_x,max_y;
+
+         max_x = mi.rcMonitor.right/screen_width;
+         max_y = mi.rcMonitor.bottom/screen_height;
+
+         pixel_scale = (max_x>max_y)?max_y:max_x;
+      }
+      else
+      {
+         printf("Failed to get monitor info: %ld\n",GetLastError());
+      }
+   }
+
+   if(pixel_scale<=0)
+      pixel_scale = 1;
 
    WNDCLASS wc = {};
    wc.hCursor = LoadCursor(NULL,IDC_ARROW);
