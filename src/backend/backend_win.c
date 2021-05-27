@@ -51,8 +51,6 @@ static int view_x;
 static int view_y;
 static int view_width;
 static int view_height;
-static GdiplusStartupInput startup_input;
-static ULONG_PTR token;
 static HWND window;
 static int mouse_x_rel;
 static int mouse_y_rel;
@@ -65,15 +63,10 @@ uint8_t key_map[256];
 uint8_t new_mouse_state[5];
 uint8_t old_mouse_state[5];
 static HDC gl_device_context;
-static HGLRC gl_render_context;
-static wglSwapInterval_t *wglSwapInterval;
 static GLuint *layer_textures;
 static int fps;
 static int framedelay;
 static float delta;
-static clock_t time_start;
-static clock_t time_end;
-static MSG message;
 static int mouse_relative = 0;
 //-------------------------------------
 
@@ -208,6 +201,9 @@ int backend_get_fps()
 //Limits the fps to the target fps.
 void backend_timer_update()
 {
+   static clock_t time_start;
+   static clock_t time_end;
+
    time_end = ((clock()*1000)/CLOCKS_PER_SEC);
    int difference = time_end-time_start;
    struct timespec ts = {};
@@ -230,6 +226,8 @@ void backend_handle_events()
    memcpy(old_key_state,new_key_state,sizeof(new_key_state));
    memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
    mouse_wheel = 0;
+
+   MSG message;
    while(PeekMessage(&message,0,0,0,PM_REMOVE))
    {
       TranslateMessage(&message);
@@ -291,6 +289,11 @@ void backend_handle_events()
 //Creates the window, etc.
 void backend_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
 {
+   ULONG_PTR token;
+   GdiplusStartupInput startup_input;
+   wglSwapInterval_t *wglSwapInterval;
+   HGLRC gl_render_context;
+
    pixel_scale = scale==SLK_WINDOW_MAX?4:scale;
    screen_width = width;
    screen_height = height;
