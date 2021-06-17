@@ -35,8 +35,6 @@ int             SLK_timer_get_fps();
 void            SLK_timer_update();
 float           SLK_timer_get_delta();
 
-#if SLK_ENABLE_PAL
-
 //Pal sprite subsystem: SLK_sprite_pal.c
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height);
 void            SLK_pal_sprite_destroy(SLK_Pal_sprite *s);
@@ -70,16 +68,12 @@ void            SLK_draw_pal_fill_rectangle(int x, int y, int width, int height,
 void            SLK_draw_pal_circle(int x, int y, int radius, uint8_t index);
 void            SLK_draw_pal_fill_circle(int x, int y, int radius, uint8_t index);
 
-#endif
-
 
 //RGB sprite subsystem: SLK_sprite_rgb.c
 SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height);
 void            SLK_rgb_sprite_destroy(SLK_RGB_sprite *s);
 SLK_Color       SLK_rgb_sprite_get_pixel(const SLK_RGB_sprite *s, int x, int y);
 void            SLK_rgb_sprite_set_pixel(SLK_RGB_sprite *s, int x, int y, SLK_Color c);
-
-#if SLK_ENABLE_RGB
 
 SLK_RGB_sprite *SLK_rgb_sprite_load(const char *path);
 SLK_RGB_sprite *SLK_rgb_sprite_load_file(FILE *f);
@@ -111,8 +105,6 @@ void            SLK_draw_rgb_rectangle(int x, int y, int width, int height, SLK_
 void            SLK_draw_rgb_fill_rectangle(int x, int y, int width, int height, SLK_Color color);
 void            SLK_draw_rgb_circle(int x, int y, int radius, SLK_Color color);
 void            SLK_draw_rgb_fill_circle(int x, int y, int radius, SLK_Color color);
-
-#endif
 
 //Color subsystem: SLK_color.c
 SLK_Color       SLK_color_create(uint8_t r, uint8_t g, uint8_t b, uint8_t a);

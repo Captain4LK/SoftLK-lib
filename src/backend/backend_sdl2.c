@@ -132,9 +132,6 @@ void backend_handle_events()
    for(int i = 0;i<MAX_CONTROLLERS;i++)
       memcpy(gamepads[i].old_button_state,gamepads[i].new_button_state,sizeof(gamepads[0].new_button_state));
 
-   mouse_x_rel = 0;
-   mouse_y_rel = 0;
-
    //Event managing
    SDL_Event event;
    while(SDL_PollEvent(&event))
@@ -168,10 +165,6 @@ void backend_handle_events()
          break;
       case SDL_MOUSEWHEEL:
          mouse_wheel = event.wheel.y;
-         break;
-      case SDL_MOUSEMOTION:
-         mouse_x_rel+=event.motion.xrel;
-         mouse_y_rel+=event.motion.yrel;
          break;
       case SDL_CONTROLLERBUTTONDOWN:
          if(event.cbutton.state==SDL_PRESSED)
@@ -237,18 +230,22 @@ void backend_handle_events()
 
    x-=view_x;
    y-=view_y;
-   mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
-   mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+   mouse_x = x/pixel_scale;
+   mouse_y = y/pixel_scale;
+
+   SDL_GetRelativeMouseState(&mouse_x_rel,&mouse_y_rel);
+   mouse_x_rel = mouse_x_rel/pixel_scale;
+   mouse_y_rel = mouse_y_rel/pixel_scale;
 
    if(mouse_x>=screen_width)
-     mouse_x= screen_width-1;
+     mouse_x = screen_width-1;
    if(mouse_y>=screen_height)
-     mouse_y= screen_height-1;
+     mouse_y = screen_height-1;
 
    if(mouse_x<0)
-     mouse_x= 0;
-   if(mouse_y<1)
-     mouse_y= 1;
+     mouse_x = 0;
+   if(mouse_y<0)
+     mouse_y = 0;
 }
 
 //Creates the window, etc.

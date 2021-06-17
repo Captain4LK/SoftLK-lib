@@ -237,6 +237,8 @@ void backend_handle_events()
    y-=view_y;
    mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
    mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
+   mouse_x_rel = (int)(((float)mouse_x_rel/(float)(window_width-(view_x*2))*(float)screen_width));
+   mouse_y_rel = (int)(((float)mouse_y_rel/(float)(window_height-(view_y*2))*(float)screen_height));
 
    if(mouse_x>=screen_width)
      mouse_x= screen_width-1;

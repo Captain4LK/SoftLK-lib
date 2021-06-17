@@ -15,7 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //External includes
 #include <time.h>
+#define WIN32_EXTRA_LEAN_AND_MEAN
 #include <windows.h>
+#include <windowsx.h>
 #include <gdiplus.h>
 #include <GL/gl.h>
 #include "../../external/UtilityLK/include/ULK_slk.h"
@@ -56,6 +58,8 @@ static int mouse_x_rel;
 static int mouse_y_rel;
 static int mouse_x;
 static int mouse_y;
+static int mouse_x_ev;
+static int mouse_y_ev;
 static int mouse_wheel;
 uint8_t new_key_state[256];
 uint8_t old_key_state[256];
@@ -235,13 +239,13 @@ void backend_handle_events()
    }
 
    POINT p;
-   GetCursorPos(&p);
-   ScreenToClient(window,&p);
+   p.x = mouse_x_ev;
+   p.y = mouse_y_ev;
    p.x-=view_x;
    p.y-=view_y;
 
-   p.x = (int)(((float)p.x/(float)(window_width-(view_x*2))*(float)screen_width));
-   p.y = (int)(((float)p.y/(float)(window_height-(view_y*2))*(float)screen_height));
+   p.x = p.x/pixel_scale;
+   p.y = p.y/pixel_scale;
 
    if(p.x>=screen_width)
       p.x = screen_width-1;
@@ -269,8 +273,8 @@ void backend_handle_events()
       pt.y = window_height/2;
       pt.x-=view_x;
       pt.y-=view_y;
-      pt.x = (int)(((float)pt.x/(float)(window_width-(view_x*2))*(float)screen_width));
-      pt.y = (int)(((float)pt.y/(float)(window_height-(view_y*2))*(float)screen_height));
+      pt.x = pt.x/pixel_scale;
+      pt.y = pt.y/pixel_scale;
 
       if(pt.x>=screen_width)
          pt.x = screen_width-1;
@@ -992,17 +996,19 @@ static LRESULT CALLBACK window_event(HWND win, UINT message, WPARAM wParam, LPAR
       }
       break;
    case WM_SIZE:
-      window_width = LOWORD(lParam);
-      window_height = HIWORD(lParam);
-      screen_width = window_width/pixel_scale+1;
-      screen_height = window_height/pixel_scale+1;
-      backend_update_viewport();
-
+      //window_width = LOWORD(lParam);
+      //window_height = HIWORD(lParam);
+      if(layer_dynamic)
+      {
+         screen_width = window_width/pixel_scale+1;
+         screen_height = window_height/pixel_scale+1;
+      }
       for(int l = 0;l<layer_count;l++)
       {
          if(layers!=NULL&&layers[l].dynamic)
             SLK_layer_set_size(l,screen_width,screen_height);
       }
+      backend_update_viewport();
       break;
    case WM_SYSKEYDOWN:
    case WM_KEYDOWN:
@@ -1045,10 +1051,12 @@ static LRESULT CALLBACK window_event(HWND win, UINT message, WPARAM wParam, LPAR
    case WM_MOUSEWHEEL:
       mouse_wheel = GET_WHEEL_DELTA_WPARAM(wParam)/WHEEL_DELTA;
       break;
+   case WM_MOUSEMOVE:
+      mouse_x_ev = GET_X_LPARAM(lParam);
+      mouse_y_ev = GET_Y_LPARAM(lParam);
+      break;
    default:
-      {
       result = DefWindowProc(win,message,wParam,lParam);
-      }
       break;
    }
 

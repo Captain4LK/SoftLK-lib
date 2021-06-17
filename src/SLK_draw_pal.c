@@ -25,8 +25,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "SLK_draw_pal_i.h"
 //-------------------------------------
 
-#if SLK_ENABLE_PAL
-
 //#defines
 #define SWAP(x,y) \
             { (x)=(x)^(y); (y)=(x)^(y); (x)=(x)^(y); }
@@ -39,12 +37,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //-------------------------------------
 
 //Variables
+SLK_Pal_sprite *target_pal;
+SLK_Pal_sprite *target_pal_default;
+
+#if SLK_ENABLE_PAL
+
 static uint8_t target_pal_clear;
 static const SLK_Pal_sprite *text_sprite_pal;
 static SLK_Pal_sprite *text_sprite_pal_default;
-
-SLK_Pal_sprite *target_pal;
-SLK_Pal_sprite *target_pal_default;
 //-------------------------------------
 
 //Function prototypes
