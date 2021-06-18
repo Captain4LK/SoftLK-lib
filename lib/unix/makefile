@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS=-lm -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter -flto
-DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o ULK_slk.o
+DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o ULK_slk.o SLK_gui.o
 HEADERS = ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h ../../include/SLK/SLK_config.h
 
 .PHONY: backend_sdl2_gl
@@ -49,6 +49,9 @@ SLK_sprite_rgb.o: ../../src/SLK_sprite_rgb.c $(HEADERS)
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_timer.o: ../../src/SLK_timer.c ../../src/backend.h $(HEADERS)
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_gui.o: ../../src/SLK_gui.c ../../include/SLK/SLK_gui.h $(HEADERS)
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 ULK_slk.o: ../../external/UtilityLK/src/ULK_slk.c ../../external/UtilityLK/include/ULK_slk.h $(HEADERS)
