@@ -319,6 +319,7 @@ SLK_gui_element *SLK_gui_vtabbar_create(int x, int y, int width, int tab_count, 
    e->tabbar.tabs = tab_count;
    e->tabbar.tabs_text = malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
    e->tabbar.tabs_text_x = malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
+
    for(int i = 0;i<tab_count;i++)
    {
       e->tabbar.elements[i] = NULL;

@@ -152,5 +152,4 @@ SLK_RGB_sprite  *SLK_gui_get_font();
 void             SLK_gui_set_font_color(SLK_Color color);
 void             SLK_gui_set_colors(SLK_Color c0, SLK_Color c1, SLK_Color c2, SLK_Color c3, SLK_Color c4);
 
-
 #endif
