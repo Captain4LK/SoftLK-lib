@@ -28,9 +28,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../../src/SLK_layer_i.h"
 #include "../../src/backend.h"
 
+#if SLK_ENABLE_RGB
 #define CUTE_PNG_IMPLEMENTATION
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
+#endif
 //-------------------------------------
 
 //#defines
@@ -110,36 +112,6 @@ void backend_set_fullscreen(int fullscreen)
    }
 
    backend_update_viewport();
-}
-
-//(should) center the viewport.
-void backend_update_viewport()
-{
-   SDL_GetRendererOutputSize(renderer,&window_width,&window_height);
-   //SDL_GetWindowSize(sdl_window,&window_width,&window_height);
-
-   if(dynamic)
-   {
-      view_width = window_width;
-      view_height = window_height;
-      view_x = 0;
-      view_y = 0;
-   }
-   else
-   {
-      view_width = screen_width*pixel_scale;
-      view_height = screen_height*pixel_scale;
-
-      view_x = (window_width-view_width)/2;
-      view_y = (window_height-view_height)/2;
-   }
-
-   SDL_Rect v;
-   v.x = view_x;
-   v.y = view_y;
-   v.w = view_width;
-   v.h = view_height;
-   SDL_RenderSetViewport(renderer,&v);
 }
 
 //Sets wether the window is visible.
@@ -242,197 +214,6 @@ void backend_timer_update()
 float backend_timer_get_delta()
 {
    return delta;
-}
-
-//Handles window and input events.
-void backend_handle_events()
-{
-   mouse_wheel = 0;
-   memcpy(old_key_state,new_key_state,sizeof(new_key_state));
-   memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
-   for(int i = 0;i<MAX_CONTROLLERS;i++)
-      memcpy(gamepads[i].old_button_state,gamepads[i].new_button_state,sizeof(gamepads[0].new_button_state));
-
-   mouse_x_rel = 0;
-   mouse_y_rel = 0;
-
-   //Event managing
-   SDL_Event event;
-   while(SDL_PollEvent(&event))
-   {
-      switch(event.type)
-      {
-      case SDL_QUIT:
-         SLK_core_quit();
-         break;
-      case SDL_KEYDOWN:
-         if(text_input_active&&event.key.keysym.sym==SDLK_BACKSPACE&&text_input[0]!='\0')
-            text_input[strlen(text_input)-1] = '\0';
-         if(event.key.state==SDL_PRESSED)
-            new_key_state[key_map[event.key.keysym.scancode]] = 1;
-         break;
-      case SDL_KEYUP:
-         if(event.key.state==SDL_RELEASED)
-            new_key_state[key_map[event.key.keysym.scancode]] = 0;
-         break;
-      case SDL_MOUSEBUTTONDOWN:
-         if(event.button.state==SDL_PRESSED)
-            new_mouse_state[mouse_map[event.button.button]] = 1;
-         break;
-      case SDL_MOUSEBUTTONUP:
-         if(event.button.state==SDL_RELEASED)
-            new_mouse_state[mouse_map[event.button.button]] = 0;
-         break;       
-      case SDL_TEXTINPUT:
-         if(text_input_active)
-            strcat(text_input,event.text.text);
-         break;
-      case SDL_MOUSEWHEEL:
-         mouse_wheel = event.wheel.y;
-         break;
-      case SDL_MOUSEMOTION:
-         mouse_x_rel+=event.motion.xrel;
-         mouse_y_rel+=event.motion.yrel;
-         break;
-      case SDL_CONTROLLERBUTTONDOWN:
-         if(event.cbutton.state==SDL_PRESSED)
-         {
-            int id = get_gamepad_index(event.cbutton.which);
-            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 1;
-         }
-         break;
-      case SDL_CONTROLLERBUTTONUP:
-         if(event.cbutton.state==SDL_RELEASED)
-         {
-            int id = get_gamepad_index(event.cbutton.which);
-            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 0;
-         }
-         break;
-      case SDL_CONTROLLERDEVICEADDED:
-         {
-            int which = event.cdevice.which;
-            if(which<MAX_CONTROLLERS)
-            {
-               gamepads[which].gamepad = SDL_GameControllerOpen(which);
-               gamepads[which].connected = 1;
-               SDL_Joystick *j = SDL_GameControllerGetJoystick(gamepads[which].gamepad);
-               gamepads[which].id = SDL_JoystickInstanceID(j);
-            }
-         }
-         break;
-      case SDL_CONTROLLERDEVICEREMOVED:
-         {
-            int which = event.cdevice.which;
-            if(which<0)
-               break;
-            int id = get_gamepad_index(which);
-            gamepads[id].connected = 0;
-            SDL_GameControllerClose(gamepads[id].gamepad);
-         }
-         break;
-      case SDL_WINDOWEVENT:
-         if(event.window.event==SDL_WINDOWEVENT_RESIZED)
-         {
-            if(dynamic)
-            {
-               int new_width = event.window.data1/pixel_scale+1;
-               int new_height = event.window.data2/pixel_scale+1;
-               screen_width = new_width;
-               screen_height = new_height;
-
-               for(int l = 0;l<layer_count;l++)
-               {
-                  if(layers[l].dynamic)
-                     SLK_layer_set_size(l,new_width,new_height);
-               }
-            }
-         }
-         backend_update_viewport();
-         break;
-      }
-   }
-   //-------------------------------------------
-   
-   int x,y;
-   SDL_GetMouseState(&x,&y);
-
-   x-=view_x;
-   y-=view_y;
-   mouse_x = (int)(((float)x/(float)(window_width-(view_x*2))*(float)screen_width));
-   mouse_y = (int)(((float)y/(float)(window_height-(view_y*2))*(float)screen_height));
-
-   if(mouse_x>=screen_width)
-     mouse_x= screen_width-1;
-   if(mouse_y>=screen_height)
-     mouse_y= screen_height-1;
-
-   if(mouse_x<0)
-     mouse_x= 0;
-   if(mouse_y<1)
-     mouse_y= 1;
-}
-
-//Creates the window, etc.
-void backend_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
-{
-   pixel_scale = scale;
-   screen_width = width;
-   screen_height = height;
-   layer_count = layer_num;
-   dynamic = resizable;
-
-   if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER)<0)
-   {
-      printf("FATAL ERROR: failed to init sdl\n");
-      exit(-1);
-   }
-
-   if(pixel_scale==SLK_WINDOW_MAX)
-   {
-      SDL_Rect max_size;
-
-      if(SDL_GetDisplayUsableBounds(0,&max_size)<0)
-      {
-         printf("Failed to get max dimensions: %s\n",SDL_GetError());
-      }
-      else
-      {
-         int max_x,max_y;
-
-         max_x = max_size.w/screen_width;
-         max_y = max_size.h/screen_height;
-
-         pixel_scale = (max_x>max_y)?max_y:max_x;
-      }
-      
-   }
-
-   if(pixel_scale<=0)
-      pixel_scale = 1;
-
-   if(resizable)
-      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_RESIZABLE);
-   else
-      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,0);
-
-   if(!sdl_window)
-   {
-      printf("FATAL ERROR: failed to create window\n");
-      exit(-1);
-   }
-
-   renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
-   if(!renderer)
-   {
-      printf("FATAL ERROR: failed to create renderer\n");
-      exit(-1);
-   }
-   SDL_SetRenderDrawColor(renderer,0,0,0,0);
-
-   layer_textures = malloc(sizeof(*layer_textures)*layer_num);
-   memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
-   backend_update_viewport();
-
 }
 
 //Creates the keymap.
@@ -597,119 +378,6 @@ void backend_stop_text_input()
    SDL_StopTextInput();
 }
 
-
-//Clears the window and redraws the scene.
-//Drawing is performed from back to front, layer 0 is always drawn last.
-void backend_render_update()
-{
-   SDL_RenderClear(renderer);
-
-   for(int l = layer_count-1;l>=0;l--)
-   {
-      layers[l].resized = 0;
-
-      if(layers[l].active)
-      {
-         switch(layers[l].type)
-         {
-         case SLK_LAYER_PAL:
-         {
-            float width = (float)layers[l].type_0.target->width*layers[l].scale*pixel_scale;
-            float height = (float)layers[l].type_0.target->height*layers[l].scale*pixel_scale;
-            float x = (float)layers[l].x*pixel_scale;
-            float y = (float)layers[l].y*pixel_scale;
-            SDL_Rect dst_rect;
-            dst_rect.x = x;
-            dst_rect.y = y;
-            dst_rect.w = width;
-            dst_rect.h = height;
-
-            for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
-               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
-
-            int w, h;
-            SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);
-
-            if(w!=layers[l].type_0.target->width||h!=layers[l].type_0.target->height)
-            {
-               SDL_DestroyTexture(layer_textures[l]);
-               layer_textures[l] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,layers[l].type_0.target->width,layers[l].type_0.target->height);
-               SDL_SetTextureBlendMode(layer_textures[l],SDL_BLENDMODE_BLEND);
-            }
-
-            void *data;
-            int stride;
-            SDL_LockTexture(layer_textures[l],NULL,&data,&stride);
-            memcpy(data,layers[l].type_0.render->data,sizeof(*layers[l].type_0.render->data)*layers[l].type_0.target->width*layers[l].type_0.target->height);
-            SDL_UnlockTexture(layer_textures[l]);
-
-            SDL_SetTextureColorMod(layer_textures[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
-            SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
-            SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
-
-            break;
-         }
-         case SLK_LAYER_RGB:
-         {
-            int width = (float)layers[l].type_1.target->width*layers[l].scale*pixel_scale;
-            int height = (float)layers[l].type_1.target->height*layers[l].scale*pixel_scale;
-            int x = (float)layers[l].x*pixel_scale;
-            int y = (float)layers[l].y*pixel_scale;
-            SDL_Rect dst_rect;
-            dst_rect.x = x;
-            dst_rect.y = y;
-            dst_rect.w = width;
-            dst_rect.h = height;
-
-            if(layers[l].type_1.target->changed)
-            {
-               int w, h;
-               SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);
-
-               if(w!=layers[l].type_1.target->width||h!=layers[l].type_1.target->height)
-               {
-                  SDL_DestroyTexture(layer_textures[l]);
-                  layer_textures[l] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,layers[l].type_1.target->width,layers[l].type_1.target->height);
-                  SDL_SetTextureBlendMode(layer_textures[l],SDL_BLENDMODE_BLEND);
-               }
-               void *data;
-               int stride;
-               SDL_LockTexture(layer_textures[l],NULL,&data,&stride);
-               memcpy(data,layers[l].type_1.target->data,sizeof(*layers[l].type_1.target->data)*layers[l].type_1.target->width*layers[l].type_1.target->height);
-               SDL_UnlockTexture(layer_textures[l]);
-               layers[l].type_1.target->changed = 0;
-            }
-            SDL_SetTextureColorMod(layer_textures[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
-            SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
-            SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
-
-            break;
-         }
-         }
-      }
-   }
-   
-   SDL_RenderPresent(renderer);
-}
-
-void backend_create_layer(unsigned index, int type)
-{
-   if(index>=layer_count)
-      return;
-
-   switch(type)
-   {
-   case SLK_LAYER_PAL:
-      layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
-      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
-      break;
-   case SLK_LAYER_RGB:
-      layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
-      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
-      break;
-   }
-}
-
 int backend_key_down(int key)
 {
    return new_key_state[key];
@@ -817,6 +485,8 @@ static int get_gamepad_index(int which)
    return -1;
 }
 
+#if SLK_ENABLE_RGB
+
 SLK_RGB_sprite *backend_load_rgb(const char *path)
 {
    cp_image_t img = cp_load_png(path);
@@ -889,6 +559,10 @@ void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
    cp_save_png(f,&img);
 }
 
+#endif
+
+#if SLK_ENABLE_PAL
+
 SLK_Pal_sprite *backend_load_pal(const char *path)
 {
    FILE *f = fopen(path,"rb");
@@ -948,6 +622,8 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
    img.data = (uint8_t *)s->data;
    ULK_slk_image_write(&img,f,rle);
 }
+
+#endif
 
 SLK_Palette *backend_load_palette(const char *path)
 {
@@ -1012,6 +688,357 @@ void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
          fprintf(f,"%d %d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b,pal->colors[i].a);
       else
          fprintf(f,"%d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b);
+   }
+}
+
+void *backend_system_malloc(size_t size)
+{
+   return malloc(size);
+}
+
+void backend_system_free(void *ptr)
+{
+   free(ptr);
+}
+
+void *backend_system_realloc(void *ptr, size_t size)
+{
+   return realloc(ptr,size);
+}
+
+//(should) center the viewport.
+void backend_update_viewport()
+{
+   SDL_GetWindowSize(sdl_window,&window_width,&window_height);
+
+   if(layer_dynamic)
+   {
+      view_width = window_width;
+      view_height = window_height;
+      view_x = 0;
+      view_y = 0;
+   }
+   else
+   {
+      view_width = screen_width*pixel_scale;
+      view_height = screen_height*pixel_scale;
+
+      view_x = (window_width-view_width)/2;
+      view_y = (window_height-view_height)/2;
+   }
+
+   SDL_Rect v;
+   v.x = view_x;
+   v.y = view_y;
+   v.w = view_width;
+   v.h = view_height;
+   SDL_RenderSetViewport(renderer,&v);
+}
+
+//Handles window and input events.
+void backend_handle_events()
+{
+   mouse_wheel = 0;
+   memcpy(old_key_state,new_key_state,sizeof(new_key_state));
+   memcpy(old_mouse_state,new_mouse_state,sizeof(new_mouse_state));
+   for(int i = 0;i<MAX_CONTROLLERS;i++)
+      memcpy(gamepads[i].old_button_state,gamepads[i].new_button_state,sizeof(gamepads[0].new_button_state));
+
+   //Event managing
+   SDL_Event event;
+   while(SDL_PollEvent(&event))
+   {
+      switch(event.type)
+      {
+      case SDL_QUIT:
+         SLK_core_quit();
+         break;
+      case SDL_KEYDOWN:
+         if(text_input_active&&event.key.keysym.sym==SDLK_BACKSPACE&&text_input[0]!='\0')
+            text_input[strlen(text_input)-1] = '\0';
+         if(event.key.state==SDL_PRESSED)
+            new_key_state[key_map[event.key.keysym.scancode]] = 1;
+         break;
+      case SDL_KEYUP:
+         if(event.key.state==SDL_RELEASED)
+            new_key_state[key_map[event.key.keysym.scancode]] = 0;
+         break;
+      case SDL_MOUSEBUTTONDOWN:
+         if(event.button.state==SDL_PRESSED)
+            new_mouse_state[mouse_map[event.button.button]] = 1;
+         break;
+      case SDL_MOUSEBUTTONUP:
+         if(event.button.state==SDL_RELEASED)
+            new_mouse_state[mouse_map[event.button.button]] = 0;
+         break;       
+      case SDL_TEXTINPUT:
+         if(text_input_active)
+            strcat(text_input,event.text.text);
+         break;
+      case SDL_MOUSEWHEEL:
+         mouse_wheel = event.wheel.y;
+         break;
+      case SDL_CONTROLLERBUTTONDOWN:
+         if(event.cbutton.state==SDL_PRESSED)
+         {
+            int id = get_gamepad_index(event.cbutton.which);
+            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 1;
+         }
+         break;
+      case SDL_CONTROLLERBUTTONUP:
+         if(event.cbutton.state==SDL_RELEASED)
+         {
+            int id = get_gamepad_index(event.cbutton.which);
+            gamepads[id].new_button_state[gamepad_map[event.cbutton.button]] = 0;
+         }
+         break;
+      case SDL_CONTROLLERDEVICEADDED:
+         {
+            int which = event.cdevice.which;
+            if(which<MAX_CONTROLLERS)
+            {
+               gamepads[which].gamepad = SDL_GameControllerOpen(which);
+               gamepads[which].connected = 1;
+               SDL_Joystick *j = SDL_GameControllerGetJoystick(gamepads[which].gamepad);
+               gamepads[which].id = SDL_JoystickInstanceID(j);
+            }
+         }
+         break;
+      case SDL_CONTROLLERDEVICEREMOVED:
+         {
+            int which = event.cdevice.which;
+            if(which<0)
+               break;
+            int id = get_gamepad_index(which);
+            gamepads[id].connected = 0;
+            SDL_GameControllerClose(gamepads[id].gamepad);
+         }
+         break;
+      case SDL_WINDOWEVENT:
+         if(event.window.event==SDL_WINDOWEVENT_RESIZED)
+         {
+            if(layer_dynamic)
+            {
+               int new_width = event.window.data1/pixel_scale+1;
+               int new_height = event.window.data2/pixel_scale+1;
+               screen_width = new_width;
+               screen_height = new_height;
+
+               for(int l = 0;l<layer_count;l++)
+               {
+                  if(layers[l].dynamic)
+                     SLK_layer_set_size(l,new_width,new_height);
+               }
+            }
+         }
+         backend_update_viewport();
+         break;
+      }
+   }
+   //-------------------------------------------
+   
+   int x,y;
+   SDL_GetMouseState(&x,&y);
+
+   x-=view_x;
+   y-=view_y;
+   mouse_x = x/pixel_scale;
+   mouse_y = y/pixel_scale;
+
+   SDL_GetRelativeMouseState(&mouse_x_rel,&mouse_y_rel);
+   mouse_x_rel = mouse_x_rel/pixel_scale;
+   mouse_y_rel = mouse_y_rel/pixel_scale;
+
+   if(mouse_x>=screen_width)
+     mouse_x = screen_width-1;
+   if(mouse_y>=screen_height)
+     mouse_y = screen_height-1;
+
+   if(mouse_x<0)
+     mouse_x = 0;
+   if(mouse_y<0)
+     mouse_y = 0;
+}
+
+//Creates the window, etc.
+void backend_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
+{
+   pixel_scale = scale;
+   screen_width = width;
+   screen_height = height;
+   layer_count = layer_num;
+   layer_dynamic = resizable;
+
+   if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS)<0)
+   {
+      printf("FATAL ERROR: failed to init sdl\n");
+      exit(-1);
+   }
+
+   if(pixel_scale==SLK_WINDOW_MAX)
+   {
+      SDL_Rect max_size;
+
+      if(SDL_GetDisplayUsableBounds(0,&max_size)<0)
+      {
+         printf("Failed to get max dimensions: %s\n",SDL_GetError());
+      }
+      else
+      {
+         int max_x,max_y;
+
+         max_x = max_size.w/screen_width;
+         max_y = max_size.h/screen_height;
+
+         pixel_scale = (max_x>max_y)?max_y:max_x;
+      }
+      
+   }
+
+   if(pixel_scale<=0)
+      pixel_scale = 1;
+
+   if(resizable)
+      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_RESIZABLE);
+   else
+      sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,0);
+
+   if(!sdl_window)
+   {
+      printf("FATAL ERROR: failed to create window\n");
+      exit(-1);
+   }
+
+   renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+   if(!renderer)
+   {
+      printf("FATAL ERROR: failed to create renderer\n");
+      exit(-1);
+   }
+   SDL_SetRenderDrawColor(renderer,0,0,0,0);
+
+   layer_textures = malloc(sizeof(*layer_textures)*layer_num);
+   memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
+   backend_update_viewport();
+}
+
+//Clears the window and redraws the scene.
+//Drawing is performed from back to front, layer 0 is always drawn last.
+void backend_render_update()
+{
+   SDL_RenderClear(renderer);
+
+   for(int l = layer_count-1;l>=0;l--)
+   {
+      layers[l].resized = 0;
+
+      if(layers[l].active)
+      {
+         switch(layers[l].type)
+         {
+         case SLK_LAYER_PAL:
+         {
+#if SLK_ENABLE_PAL
+            float width = (float)layers[l].type_0.target->width*layers[l].scale*pixel_scale;
+            float height = (float)layers[l].type_0.target->height*layers[l].scale*pixel_scale;
+            float x = (float)layers[l].x*pixel_scale;
+            float y = (float)layers[l].y*pixel_scale;
+            SDL_Rect dst_rect;
+            dst_rect.x = x;
+            dst_rect.y = y;
+            dst_rect.w = width;
+            dst_rect.h = height;
+
+            for(int i = 0;i<layers[l].type_0.render->width*layers[l].type_0.render->height;i++)
+               layers[l].type_0.render->data[i] = layers[l].type_0.palette->colors[layers[l].type_0.target->data[i]];
+
+            int w, h;
+            SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);
+
+            if(w!=layers[l].type_0.target->width||h!=layers[l].type_0.target->height)
+            {
+               SDL_DestroyTexture(layer_textures[l]);
+               layer_textures[l] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,layers[l].type_0.target->width,layers[l].type_0.target->height);
+               SDL_SetTextureBlendMode(layer_textures[l],SDL_BLENDMODE_BLEND);
+            }
+
+            void *data;
+            int stride;
+            SDL_LockTexture(layer_textures[l],NULL,&data,&stride);
+            memcpy(data,layers[l].type_0.render->data,sizeof(*layers[l].type_0.render->data)*layers[l].type_0.target->width*layers[l].type_0.target->height);
+            SDL_UnlockTexture(layer_textures[l]);
+
+            SDL_SetTextureColorMod(layer_textures[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
+            SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
+            SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
+
+#endif
+            break;
+         }
+         case SLK_LAYER_RGB:
+         {
+#if SLK_ENABLE_RGB
+            int width = (float)layers[l].type_1.target->width*layers[l].scale*pixel_scale;
+            int height = (float)layers[l].type_1.target->height*layers[l].scale*pixel_scale;
+            int x = (float)layers[l].x*pixel_scale;
+            int y = (float)layers[l].y*pixel_scale;
+            SDL_Rect dst_rect;
+            dst_rect.x = x;
+            dst_rect.y = y;
+            dst_rect.w = width;
+            dst_rect.h = height;
+
+            if(layers[l].type_1.target->changed)
+            {
+               int w, h;
+               SDL_QueryTexture(layer_textures[l], NULL, NULL, &w, &h);
+
+               if(w!=layers[l].type_1.target->width||h!=layers[l].type_1.target->height)
+               {
+                  SDL_DestroyTexture(layer_textures[l]);
+                  layer_textures[l] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,layers[l].type_1.target->width,layers[l].type_1.target->height);
+                  SDL_SetTextureBlendMode(layer_textures[l],SDL_BLENDMODE_BLEND);
+               }
+               void *data;
+               int stride;
+               SDL_LockTexture(layer_textures[l],NULL,&data,&stride);
+               memcpy(data,layers[l].type_1.target->data,sizeof(*layers[l].type_1.target->data)*layers[l].type_1.target->width*layers[l].type_1.target->height);
+               SDL_UnlockTexture(layer_textures[l]);
+               layers[l].type_1.target->changed = 0;
+            }
+            SDL_SetTextureColorMod(layer_textures[l],layers[l].tint.r,layers[l].tint.g,layers[l].tint.b);
+            SDL_SetTextureAlphaMod(layer_textures[l],layers[l].tint.a);
+            SDL_RenderCopy(renderer,layer_textures[l],NULL,&dst_rect);
+
+#endif
+            break;
+         }
+         }
+      }
+   }
+   
+   SDL_RenderPresent(renderer);
+}
+
+void backend_create_layer(unsigned index, int type)
+{
+   if(index>=layer_count)
+      return;
+
+   switch(type)
+   {
+   case SLK_LAYER_PAL:
+#if SLK_ENABLE_PAL
+      layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
+      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+#endif
+      break;
+   case SLK_LAYER_RGB:
+#if SLK_ENABLE_RGB
+      layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
+      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+#endif
+      break;
    }
 }
 //-------------------------------------

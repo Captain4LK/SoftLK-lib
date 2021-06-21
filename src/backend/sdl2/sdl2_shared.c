@@ -596,3 +596,18 @@ void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
          fprintf(f,"%d %d %d\n",pal->colors[i].r,pal->colors[i].g,pal->colors[i].b);
    }
 }
+
+void *backend_system_malloc(size_t size)
+{
+   return malloc(size);
+}
+
+void backend_system_free(void *ptr)
+{
+   free(ptr);
+}
+
+void *backend_system_realloc(void *ptr, size_t size)
+{
+   return realloc(ptr,size);
+}

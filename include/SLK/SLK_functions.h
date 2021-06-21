@@ -162,5 +162,8 @@ int             SLK_core_get_height();
 int             SLK_core_running();
 void            SLK_core_quit();
 void            SLK_render_update();
+void           *SLK_system_malloc(size_t size);
+void            SLK_system_free(void *ptr);
+void           *SLK_system_realloc(void *ptr, size_t size);
 
 #endif //_SLK_FUNCTIONS_H_

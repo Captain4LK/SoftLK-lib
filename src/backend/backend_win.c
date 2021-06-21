@@ -1062,4 +1062,19 @@ static LRESULT CALLBACK window_event(HWND win, UINT message, WPARAM wParam, LPAR
 
    return result;
 }
+
+void *backend_system_malloc(size_t size)
+{
+   return HeapAlloc(GetProcessHeap(),0,size);
+}
+
+void backend_system_free(void *ptr)
+{
+   HeapFree(GetProcessHeap(),0,ptr);
+}
+
+void *backend_system_realloc(void *ptr, size_t size)
+{
+   return HeapReAlloc(GetProcessHeap(),0,ptr,size);
+}
 //-------------------------------------

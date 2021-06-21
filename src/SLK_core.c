@@ -122,4 +122,25 @@ void SLK_render_update()
 {
    backend_render_update();
 }
+
+//System specific malloc, gets used by SoftLK-lib internally if not 
+//replace by SLK_set_malloc()
+void *SLK_system_malloc(size_t size)
+{
+   return backend_system_malloc(size);
+}
+
+//System specific free, gets used by SoftLK-lib internally if not 
+//replace by SLK_set_free()
+void SLK_system_free(void *ptr)
+{
+   backend_system_free(ptr);
+}
+
+//System specific realloc, gets used by SoftLK-lib internally if not 
+//replace by SLK_set_realloc()
+void *SLK_system_realloc(void *ptr, size_t size)
+{
+   return backend_system_realloc(ptr,size);
+}
 //-------------------------------------
