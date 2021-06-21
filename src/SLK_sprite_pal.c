@@ -48,12 +48,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //and returns a pointer to its location.
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 {
-   SLK_Pal_sprite *s = malloc(sizeof(*s));
+   SLK_Pal_sprite *s = backend_malloc(sizeof(*s));
 
    s->width = width;
    s->height = height;
 
-   s->data = malloc(width*height*sizeof(*s->data));
+   s->data = backend_malloc(width*height*sizeof(*s->data));
    memset(s->data,0,sizeof(*s->data)*width*height);
 
    return s;
@@ -67,8 +67,8 @@ void SLK_pal_sprite_destroy(SLK_Pal_sprite *s)
    if(s==NULL)
       return;
 
-   free(s->data);
-   free(s);
+   backend_free(s->data);
+   backend_free(s);
 }
 
 //Returns the index at the specified

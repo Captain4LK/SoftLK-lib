@@ -24,6 +24,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include "../include/SLK/SLK_types.h"
 #include "../include/SLK/SLK_functions.h"
 #include "../include/SLK/SLK_gui.h"
+#include "backend.h"
 //-------------------------------------
 
 //#defines
@@ -130,7 +131,7 @@ static int slk_gui_clip_text(char *dst, const char *src, int dst_size, SLK_gui_r
 
 SLK_gui_element *SLK_gui_button_create(int x, int y, int width, int height, const char *label)
 {
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_BUTTON;
    e->button.pos.x = x;
@@ -148,7 +149,7 @@ SLK_gui_element *SLK_gui_button_create(int x, int y, int width, int height, cons
 
 SLK_gui_element *SLK_gui_label_create(int x, int y, int width, int height, const char *label)
 {
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_LABEL;
    e->label.pos.x = x;
@@ -170,7 +171,7 @@ void SLK_gui_label_set_text(SLK_gui_element *element, const char *label)
 
 SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame_up, SLK_gui_rectangle frame_down)
 {
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_ICON;
    e->icon.sprite = sprite;
@@ -190,7 +191,7 @@ SLK_gui_element *SLK_gui_icon_create(int x, int y, int width, int height, SLK_RG
 
 SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int min, int max)
 {
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_SLIDER;
    e->slider.pos.x = x;
@@ -207,7 +208,7 @@ SLK_gui_element *SLK_gui_slider_create(int x, int y, int width, int height, int 
 
 SLK_gui_element *SLK_gui_image_create(int x, int y, int width, int height, SLK_RGB_sprite *sprite, SLK_gui_rectangle frame)
 {
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_IMAGE;
    e->image.sprite = SLK_rgb_sprite_create(width,height);
@@ -276,22 +277,22 @@ void SLK_gui_image_update(SLK_gui_element *element, SLK_RGB_sprite *sprite, SLK_
 SLK_gui_element *SLK_gui_tabbar_create(int x, int y, int width, int height, int tab_count, const char **tabs_text)
 {
    int tab_width = width/tab_count;
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_TABBAR;
-   e->tabbar.elements = malloc(sizeof(*e->tabbar.elements)*tab_count);;
+   e->tabbar.elements = backend_malloc(sizeof(*e->tabbar.elements)*tab_count);;
    e->tabbar.pos.x = x;
    e->tabbar.pos.y = y;
    e->tabbar.pos.w = width;
    e->tabbar.pos.h = height;
    e->tabbar.current_tab = 0;
    e->tabbar.tabs = tab_count;
-   e->tabbar.tabs_text = malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
-   e->tabbar.tabs_text_x = malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
+   e->tabbar.tabs_text = backend_malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
+   e->tabbar.tabs_text_x = backend_malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
    for(int i = 0;i<tab_count;i++)
    {
       e->tabbar.elements[i] = NULL;
-      e->tabbar.tabs_text[i] = malloc(sizeof(**e->tabbar.tabs_text)*256);
+      e->tabbar.tabs_text[i] = backend_malloc(sizeof(**e->tabbar.tabs_text)*256);
       e->tabbar.tabs_text_x[i] = slk_gui_clip_text(e->tabbar.tabs_text[i],tabs_text[i],256,(SLK_gui_rectangle){0,0,tab_width,height})+i*tab_width;
    }
 
@@ -307,23 +308,23 @@ void SLK_gui_tabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element *
 SLK_gui_element *SLK_gui_vtabbar_create(int x, int y, int width, int tab_count, const char **tabs_text)
 {
    int tab_width = width;
-   SLK_gui_element *e = malloc(sizeof(*e));
+   SLK_gui_element *e = backend_malloc(sizeof(*e));
    e->next = NULL;
    e->type = SLK_GUI_ELEMENT_VTABBAR;
-   e->tabbar.elements = malloc(sizeof(*e->tabbar.elements)*tab_count);;
+   e->tabbar.elements = backend_malloc(sizeof(*e->tabbar.elements)*tab_count);;
    e->tabbar.pos.x = x;
    e->tabbar.pos.y = y;
    e->tabbar.pos.w = width;
    e->tabbar.pos.h = 14*tab_count;
    e->tabbar.current_tab = 0;
    e->tabbar.tabs = tab_count;
-   e->tabbar.tabs_text = malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
-   e->tabbar.tabs_text_x = malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
+   e->tabbar.tabs_text = backend_malloc(sizeof(*e->tabbar.tabs_text)*tab_count);
+   e->tabbar.tabs_text_x = backend_malloc(sizeof(*e->tabbar.tabs_text_x)*tab_count);
 
    for(int i = 0;i<tab_count;i++)
    {
       e->tabbar.elements[i] = NULL;
-      e->tabbar.tabs_text[i] = malloc(sizeof(**e->tabbar.tabs_text)*256);
+      e->tabbar.tabs_text[i] = backend_malloc(sizeof(**e->tabbar.tabs_text)*256);
       e->tabbar.tabs_text_x[i] = slk_gui_clip_text(e->tabbar.tabs_text[i],tabs_text[i],256,(SLK_gui_rectangle){0,0,tab_width,14});
    }
 
@@ -338,7 +339,7 @@ void SLK_gui_vtabbar_add_element(SLK_gui_element *bar, int tab, SLK_gui_element 
 
 SLK_gui_window *SLK_gui_window_create(int x, int y, int width, int height)
 {
-   SLK_gui_window *w = malloc(sizeof(*w));
+   SLK_gui_window *w = backend_malloc(sizeof(*w));
    w->pos.x = x;
    w->pos.y = y;
    w->pos.w = width;
@@ -355,7 +356,7 @@ SLK_gui_window *SLK_gui_window_create(int x, int y, int width, int height)
 
 void SLK_gui_window_destroy(SLK_gui_window *w)
 {
-   free(w);
+   backend_free(w);
 }
 
 void SLK_gui_window_set_title(SLK_gui_window *w, const char *title)

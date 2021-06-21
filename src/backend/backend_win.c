@@ -812,7 +812,7 @@ SLK_RGB_sprite *backend_load_rgb_file(FILE *f)
    fread(data,size,1,f);
    data[size] = 0;
    SLK_RGB_sprite *out = backend_load_rgb_mem(data,size);
-   free(data);
+   backend_free(data);
 
    return out;
 }
@@ -885,7 +885,7 @@ SLK_Pal_sprite *backend_load_pal_file(FILE *f)
    fread(data,size,1,f);
    data[size] = 0;
    SLK_Pal_sprite *s = backend_load_pal_mem(data,size);
-   free(data);
+   backend_free(data);
 
    return s;
 }

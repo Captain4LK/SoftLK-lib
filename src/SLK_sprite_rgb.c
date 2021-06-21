@@ -45,12 +45,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //Creates a sprites with the specified dimensions and clear it.
 SLK_RGB_sprite *SLK_rgb_sprite_create(int width, int height)
 {   
-   SLK_RGB_sprite *s = malloc(sizeof(*s));
+   SLK_RGB_sprite *s = backend_malloc(sizeof(*s));
    
    s->width = width;
    s->height = height;
    
-   s->data = malloc(width*height*sizeof(*s->data));
+   s->data = backend_malloc(width*height*sizeof(*s->data));
    memset(s->data,0,width*height*sizeof(*s->data));
     
    return s;
@@ -64,8 +64,8 @@ void SLK_rgb_sprite_destroy(SLK_RGB_sprite *s)
    if(s==NULL)
       return;
 
-   free(s->data);
-   free(s);
+   backend_free(s->data);
+   backend_free(s);
 }
 
 //Returns the color at the specified position of a sprite.
