@@ -416,7 +416,7 @@ SLK_RGB_sprite *backend_load_rgb_file(FILE *f)
    fseek(f,0,SEEK_END);
    size = ftell(f);
    fseek(f,0,SEEK_SET);
-   char *data = malloc(size+1);
+   char *data = backend_malloc(size+1);
    fread(data,size,1,f);
    data[size] = 0;
    SLK_RGB_sprite *out = backend_load_rgb_mem(data,size);
@@ -489,7 +489,7 @@ SLK_Pal_sprite *backend_load_pal_file(FILE *f)
    fseek(f,0,SEEK_END);
    size = ftell(f);
    fseek(f,0,SEEK_SET);
-   data = malloc(size+1);
+   data = backend_malloc(size+1);
    fread(data,size,1,f);
    data[size] = 0;
    SLK_Pal_sprite *s = backend_load_pal_mem(data,size);
@@ -500,10 +500,10 @@ SLK_Pal_sprite *backend_load_pal_file(FILE *f)
 
 SLK_Pal_sprite *backend_load_pal_mem(const void *data, int length)
 {
-   ULK_slk_image *img = ULK_slk_image_load_mem_buffer(data,length);
+   HLH_slk *img = HLH_slk_image_load_mem_buffer(data,length);
    SLK_Pal_sprite *s = SLK_pal_sprite_create(img->width,img->height);
    memcpy(s->data,img->data,sizeof(*s->data)*s->width*s->height);
-   ULK_slk_image_free(img);
+   HLH_slk_image_free(img);
 
    return s;
 }
@@ -522,11 +522,11 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle)
 
 void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 {
-   ULK_slk_image img;
+   HLH_slk img;
    img.width = s->width;
    img.height = s->height;
    img.data = (uint8_t *)s->data;
-   ULK_slk_image_write(&img,f,rle);
+   HLH_slk_image_write(&img,f,rle);
 }
 
 #endif
@@ -555,7 +555,7 @@ SLK_Palette *backend_load_palette_file(FILE *f)
    int colors = 0,i,found;
    int r,g,b,a;
 
-   SLK_Palette *palette = malloc(sizeof(*palette));
+   SLK_Palette *palette = backend_malloc(sizeof(*palette));
    memset(palette,0,sizeof(*palette));
    for(i = 0;i<259&&fgets(buffer,512,f);i++)
    {
@@ -610,4 +610,34 @@ void backend_system_free(void *ptr)
 void *backend_system_realloc(void *ptr, size_t size)
 {
    return realloc(ptr,size);
+}
+
+void backend_set_malloc(void *(*func)(size_t size))
+{
+   bmalloc = func;
+}
+
+void backend_set_free(void (*func)(void *ptr))
+{
+   bfree = func;
+}
+
+void backend_set_realloc(void *(*func)(void *ptr, size_t size))
+{
+   brealloc = func;
+}
+
+void *backend_malloc(size_t size)
+{
+   return bmalloc(size);
+}
+
+void backend_free(void *ptr)
+{
+   bfree(ptr);
+}
+
+void *backend_realloc(void *ptr, size_t size)
+{
+   return brealloc(ptr,size);
 }

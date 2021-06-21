@@ -165,5 +165,8 @@ void            SLK_render_update();
 void           *SLK_system_malloc(size_t size);
 void            SLK_system_free(void *ptr);
 void           *SLK_system_realloc(void *ptr, size_t size);
+void            SLK_set_malloc(void *(*func)(size_t size));
+void            SLK_set_free(void (*func)(void *ptr));
+void            SLK_set_realloc(void *(*func)(void *ptr, size_t size));
 
 #endif //_SLK_FUNCTIONS_H_

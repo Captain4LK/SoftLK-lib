@@ -195,7 +195,6 @@ struct cp_atlas_image_t
    #include <stdlib.h> // malloc, free, calloc
    #define CUTE_PNG_ALLOC malloc
    #define CUTE_PNG_FREE free
-   #define CUTE_PNG_CALLOC calloc
 #endif
 
 #if !defined(CUTE_PNG_MEMCPY)
@@ -540,7 +539,8 @@ cp_err:
 // 3.2.3
 int cp_inflate(void* in, int in_bytes, void* out, int out_bytes)
 {
-   cp_state_t* s = (cp_state_t*)CUTE_PNG_CALLOC(1, sizeof(cp_state_t));
+   cp_state_t* s = (cp_state_t*)CUTE_PNG_ALLOC( sizeof(cp_state_t));
+   memset(s,0,sizeof(*s));
    s->bits = 0;
    s->count = 0;
    s->word_index = 0;

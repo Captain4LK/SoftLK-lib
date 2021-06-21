@@ -30,9 +30,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 #if SLK_ENABLE_RGB
 #define CUTE_PNG_IMPLEMENTATION
+#define CUTE_PNG_ALLOC backend_malloc
+#define CUTE_PNG_FREE backend_free
 #include "../../external/cute_png.h"
 //https://github.com/RandyGaul/cute_headers
 #endif
+
+#define HLH_SLK_IMPLEMENTATION
+#define HLH_SLK_MALLOC backend_malloc
+#define HLH_SLK_FREE backend_free
+#include "../../external/HLH_slk.h"
 //-------------------------------------
 
 //#defines
@@ -84,6 +91,10 @@ static int text_input_active;
 static int mouse_x;
 static int mouse_y;
 static int mouse_wheel;
+
+static void *(*bmalloc)(size_t size) = backend_system_malloc;
+static void (*bfree)(void *ptr) = backend_system_free;
+static void *(*brealloc)(void *ptr, size_t size) = backend_system_realloc;
 //-------------------------------------
 
 //Function prototypes
@@ -332,7 +343,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 
-   layer_textures = malloc(sizeof(*layer_textures)*layer_num);
+   layer_textures = backend_malloc(sizeof(*layer_textures)*layer_num);
    memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
 }
 

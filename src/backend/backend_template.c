@@ -40,160 +40,131 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 //Function implementations
 
-//Set the window title.
 void backend_set_title(const char *title)
 {
 
 }
 
-//Toggles fullscreen.
 void backend_set_fullscreen(int fullscreen)
 {
 
 }
 
-//(should) center the viewport.
 void backend_update_viewport()
 {
 
 }
 
-//Sets wether the window is visible.
 void backend_set_visible(int visible)
 {
 
 }
 
-//Sets the window icon.
 void backend_set_icon(const SLK_RGB_sprite *icon)
 {
 
 }
 
-//Returns the viewport width adjusted to pixel scale.
 int backend_get_width()
 {
    return 0;
 }
 
-//Returns the viewport height adjusted to pixel scale.
 int backend_get_height()
 {
    return 0;
 }
 
-//Returns the view width.
 int backend_get_view_width()
 {
    return 0;
 }
 
-//Returns the view height.
 int backend_get_view_height()
 {
    return 0;
 }
 
-//Returns the view x pos.
 int backend_get_view_x()
 {
    return 0;
 }
 
-//Returns the view y pos.
 int backend_get_view_y()
 {
    return 0;
 }
 
-//Returns the window width.
 int backend_get_win_width()
 {
    return 0;
 }
 
-//Returns the window height.
 int backend_get_win_height()
 {
    return 0;
 }
 
-//Sets the target/maximum fps.
 void backend_set_fps(int FPS)
 {
 
 }
 
-//Returns the current target fps.
 int backend_get_fps()
 {
    return 0;
 }
 
-//Limits the fps to the target fps.
 void backend_timer_update()
 {
 
 }
 
-//Returns the delta time of the last frame.
 float backend_timer_get_delta()
 {
-   return 0.0f;
+   return 0.1f;
 }
 
-//Handles window and input events.
 void backend_handle_events()
 {
 
 }
 
-//Creates the window, etc.
 void backend_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
 {
 
 }
 
-//Creates the keymap.
 void backend_input_init()
 {
 
 }
 
-//Shows or hides the mouse cursor.
 void backend_show_cursor(int shown)
 {
 
 }
 
-//Sets wether the mouse cursor is captured and only relative
-//mouse motion is registerd.
 void backend_mouse_set_relative(int relative)
 {
 
 }
 
-//Sets wether to track mouse events globally.
 void backend_mouse_capture(int capture)
 {
 
 }
 
-//Starts text input.
 void backend_start_text_input(char *text)
 {
 
 }
 
-//Stops text input.
 void backend_stop_text_input()
 {
 
 }
 
-
-//Clears the window and redraws the scene.
-//Drawing is performed from back to front, layer 0 is always drawn last.
 void backend_render_update()
 {
 
@@ -201,7 +172,7 @@ void backend_render_update()
 
 void backend_create_layer(unsigned index, int type)
 {
-   
+
 }
 
 int backend_key_down(int key)
@@ -339,8 +310,63 @@ SLK_Palette *backend_load_palette(const char *path)
    return NULL;
 }
 
+SLK_Palette *backend_load_palette_file(FILE *f)
+{
+   return NULL;
+}
+
 void backend_save_palette(const char *path, const SLK_Palette *pal)
 {
 
+}
+
+void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
+{
+
+}
+
+void *backend_system_malloc(size_t size)
+{
+   return NULL;
+}
+
+void backend_system_free(void *ptr)
+{
+
+}
+
+void *backend_system_realloc(void *ptr, size_t size)
+{
+   return NULL;
+}
+
+void backend_set_malloc(void *(*func)(size_t size))
+{
+
+}
+
+void backend_set_free(void (*func)(void *ptr))
+{
+
+}
+
+void backend_set_realloc(void *(*func)(void *ptr, size_t size))
+{
+
+}
+
+void *backend_malloc(size_t size)
+{
+   return NULL;
+}
+
+void backend_free(void *ptr)
+{
+
+}
+
+void *backend_realloc(void *ptr, size_t size)
+{
+   return NULL;
 }
 //-------------------------------------

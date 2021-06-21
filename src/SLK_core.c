@@ -104,7 +104,7 @@ void SLK_update()
 void SLK_setup(int width, int height, int layer_num, const char *title, int fullscreen, int scale, int resizable)
 {
    //Allocate space for layers, max layer num is fixed.
-   layers = malloc(sizeof(layers[0])*layer_num);
+   layers = backend_malloc(sizeof(layers[0])*layer_num);
    memset(layers,0,sizeof(layers[0])*layer_num);
 
    backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);
@@ -142,5 +142,20 @@ void SLK_system_free(void *ptr)
 void *SLK_system_realloc(void *ptr, size_t size)
 {
    return backend_system_realloc(ptr,size);
+}
+
+void SLK_set_malloc(void *(*func)(size_t size))
+{
+   backend_set_malloc(func);
+}
+
+void SLK_set_free(void (*func)(void *ptr))
+{
+   backend_set_free(func);
+}
+
+void SLK_set_realloc(void *(*func)(void *ptr, size_t size))
+{
+   backend_set_realloc(func);
 }
 //-------------------------------------
