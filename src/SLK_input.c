@@ -192,9 +192,9 @@ void SLK_mouse_capture(int capture)
 //to the provided char pointer.
 //Note: SoftLK does not allocate new memory,
 //you need to do that yourself.
-void SLK_text_input_start(char *text)
+void SLK_text_input_start(char *text, int max_length)
 {
-   backend_start_text_input(text);
+   backend_start_text_input(text,max_length);
 }
 
 //Stops the text input.

@@ -19,7 +19,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
-#include "../../external/UtilityLK/include/ULK_slk.h"
 //-------------------------------------
 
 //Internal includes
@@ -88,6 +87,7 @@ static int mouse_x_rel;
 static int mouse_y_rel;
 static char *text_input;
 static int text_input_active;
+static int text_input_max;
 static int mouse_x;
 static int mouse_y;
 static int mouse_wheel;
@@ -174,7 +174,7 @@ void backend_handle_events()
             new_mouse_state[mouse_map[event.button.button]] = 0;
          break;       
       case SDL_TEXTINPUT:
-         if(text_input_active)
+         if(text_input_active&&strlen(text_input)+strlen(event.text.text)<text_input_max)
             strcat(text_input,event.text.text);
          break;
       case SDL_MOUSEWHEEL:

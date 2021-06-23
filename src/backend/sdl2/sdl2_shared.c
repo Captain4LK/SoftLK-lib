@@ -268,10 +268,11 @@ void backend_mouse_capture(int capture)
 }
 
 //Starts text input.
-void backend_start_text_input(char *text)
+void backend_start_text_input(char *text, int max_length)
 {
    text_input = text;
    text_input_active = 1;
+   text_input_max = max_length;
 
    SDL_StartTextInput();
 }

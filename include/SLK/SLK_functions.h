@@ -133,7 +133,7 @@ void            SLK_mouse_get_layer_pos(unsigned index, int *x, int *y);
 void            SLK_mouse_show_cursor(int shown);
 void            SLK_mouse_set_relative(int relative);
 void            SLK_mouse_capture(int capture);
-void            SLK_text_input_start(char *text);
+void            SLK_text_input_start(char *text, int max_length);
 void            SLK_text_input_stop();
 
 //Layer subsystem: SLK_layer.c

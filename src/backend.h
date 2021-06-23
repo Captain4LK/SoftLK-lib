@@ -44,7 +44,7 @@ void backend_input_init();
 void backend_show_cursor(int shown);
 void backend_mouse_set_relative(int relative);
 void backend_mouse_capture(int capture);
-void backend_start_text_input(char *text);
+void backend_start_text_input(char *text, int max_length);
 void backend_stop_text_input();
 void backend_render_update();
 void backend_create_layer(unsigned index, int type);
