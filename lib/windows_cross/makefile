@@ -1,6 +1,6 @@
 CC = i686-w64-mingw32-gcc 
 CFLAGS=-lmingw32 -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter -flto
-DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_gui.o
+DEPENDENCIES  = SLK_core.o SLK_color.o SLK_draw_pal.o SLK_draw_rgb.o SLK_input.o SLK_layer.o SLK_palette.o SLK_sprite_pal.o SLK_sprite_rgb.o SLK_timer.o SLK_gui.o SLK_error.o
 HEADERS = ../../include/SLK/SLK_functions.h ../../include/SLK/SLK_types.h ../../include/SLK/SLK_config.h ../../src/backend.h
 
 .PHONY: backend_sdl2_gl
@@ -21,6 +21,9 @@ backend_win: $(DEPENDENCIES) backend_win.o
 	ar crs libSLK.a $^
 
 SLK_core.o: ../../src/SLK_core.c ../../src/SLK_layer_i.h $(HEADERS)
+	$(CC) -O3 -c $< $(CFLAGS) 
+
+SLK_error.o: ../../src/SLK_error.c $(HEADERS)
 	$(CC) -O3 -c $< $(CFLAGS) 
 
 SLK_color.o: ../../src/SLK_color.c $(HEADERS)

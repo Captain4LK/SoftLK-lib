@@ -94,6 +94,8 @@ typedef struct
    int held;
 }SLK_Button;
 
+typedef void (*SLK_error_pointer_type)(const char *format, ...);
+
 typedef enum 
 {
    SLK_KEY_NONE,

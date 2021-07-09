@@ -169,7 +169,16 @@ void            SLK_set_malloc(void *(*func)(size_t size));
 void            SLK_set_free(void (*func)(void *ptr));
 void            SLK_set_realloc(void *(*func)(void *ptr, size_t size));
 void            SLK_log(const char *w, ...);
-void            SLK_warning(const char *w, ...);
-void            SLK_error(const char *e, ...);
+void            SLK_warning_file_line(const char *w, ...);
+void            SLK_error_file_line(const char *e, ...);
+
+//Log subsystem: SLK_error.c
+SLK_error_pointer_type SLK_get_error_function_pointer(const char *file, int line);
+SLK_error_pointer_type SLK_get_warning_function_pointer(const char *file, int line);
+void SLK_default_warning(const char *st);
+void SLK_default_error(const char *st);
+void SLK_log(const char *w, ...);
+#define SLK_error (SLK_get_error_function_pointer(__FILE__,__LINE__))
+#define SLK_warning (SLK_get_warning_function_pointer(__FILE__,__LINE__))
 
 #endif //_SLK_FUNCTIONS_H_
