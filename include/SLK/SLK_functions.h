@@ -168,5 +168,8 @@ void           *SLK_system_realloc(void *ptr, size_t size);
 void            SLK_set_malloc(void *(*func)(size_t size));
 void            SLK_set_free(void (*func)(void *ptr));
 void            SLK_set_realloc(void *(*func)(void *ptr, size_t size));
+void            SLK_log(const char *w, ...);
+void            SLK_warning(const char *w, ...);
+void            SLK_error(const char *e, ...);
 
 #endif //_SLK_FUNCTIONS_H_

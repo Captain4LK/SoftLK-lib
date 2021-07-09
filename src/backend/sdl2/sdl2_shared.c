@@ -642,3 +642,21 @@ void *backend_realloc(void *ptr, size_t size)
 {
    return brealloc(ptr,size);
 }
+
+void backend_log(const char *w, va_list v)
+{
+   vprintf(w,v);
+}
+
+void backend_warning(const char *w, va_list v)
+{
+   printf("SoftLK warning: ");
+   vprintf(w,v);
+}
+
+void backend_error(const char *e, va_list v)
+{
+   printf("SoftLK error: ");
+   vprintf(e,v);
+   fflush(stdout);
+}

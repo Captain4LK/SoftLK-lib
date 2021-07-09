@@ -80,7 +80,7 @@ static void main_loop();
 
 int main(int argc, char *argv[])
 {
-   SLK_setup(320,240,5,"SoftLK - performance test",0,SLK_WINDOW_MAX,0);
+   SLK_setup(320,240,5,"SoftLK - performance test",1,SLK_WINDOW_MAX,0);
    SLK_draw_rgb_load_font("../../data/fonts/cursive1.png");
    SLK_timer_set_fps(30);
 

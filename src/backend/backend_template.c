@@ -325,6 +325,21 @@ void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
 
 }
 
+void backend_log(const char *w, va_list v)
+{
+
+}
+
+void backend_warning(const char *w, va_list v)
+{
+
+}
+
+void backend_error(const char *e, va_list v)
+{
+
+}
+
 void *backend_system_malloc(size_t size)
 {
    return NULL;
