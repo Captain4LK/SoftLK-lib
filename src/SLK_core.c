@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //External includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 //-------------------------------------
 
@@ -158,4 +159,27 @@ void SLK_set_realloc(void *(*func)(void *ptr, size_t size))
 {
    backend_set_realloc(func);
 }
-//-------------------------------------
+
+void SLK_log(const char *w, ...)
+{
+   va_list args;
+   va_start(args,w);
+   backend_log(w,args);
+   va_end(args);
+}
+
+void SLK_warning(const char *w, ...)
+{
+   va_list args;
+   va_start(args,w);
+   backend_warning(w,args);
+   va_end(args);
+}
+
+void SLK_error(const char *e, ...)
+{
+   va_list args;
+   va_start(args,e);
+   backend_error(e,args);
+   va_end(args);
+}

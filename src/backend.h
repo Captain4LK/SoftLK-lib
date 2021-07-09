@@ -79,6 +79,11 @@ SLK_Palette *backend_load_palette_file(FILE *f);
 void backend_save_palette(const char *path, const SLK_Palette *pal);
 void backend_save_palette_file(FILE *f, const SLK_Palette *pal);
 
+//Logging
+void backend_log(const char *w, va_list v);
+void backend_warning(const char *w, va_list v);
+void backend_error(const char *e, va_list v);
+
 //Memory managment
 void *backend_system_malloc(size_t size);
 void backend_system_free(void *ptr);

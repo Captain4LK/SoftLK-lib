@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 //External includes
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdint.h>
 #include <string.h>
 //-------------------------------------
 
