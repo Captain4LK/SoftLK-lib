@@ -273,7 +273,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
    if(SDL_Init(SDL_INIT_EVERYTHING)<0)
    {
-      printf("FATAL ERROR: failed to init sdl\n");
+      SLK_error("failed to init sdl: %s",SDL_GetError());
       exit(-1);
    }
 
@@ -283,7 +283,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
       if(SDL_GetDisplayUsableBounds(0,&max_size)<0)
       {
-         printf("Failed to get max dimensions: %s\n",SDL_GetError());
+         SLK_warning("failed to get max dimensions: %s",SDL_GetError());
       }
       else
       {
@@ -310,24 +310,24 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    else
       sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,SDL_WINDOW_OPENGL);
 
-   if(!sdl_window)
+   if(sdl_window==NULL)
    {
-      printf("FATAL ERROR: failed to create window\n");
+      SLK_error("failed to create window: %s",SDL_GetError());
       exit(-1);
    }
     
    sdl_gl_context = SDL_GL_CreateContext(sdl_window);
-   if(!sdl_gl_context)
+   if(sdl_gl_context==NULL)
    {
-      printf("FATAL ERROR: failed to create opengl context\n");
+      SLK_error("failed to create opengl context: %s",SDL_GetError());
       exit(-1);
    }
    SDL_GL_SetSwapInterval(0);
 
-   printf("OpenGL loaded\n");
-   printf("Vendor:   %s\n",glGetString(GL_VENDOR));
-   printf("Renderer: %s\n",glGetString(GL_RENDERER));
-   printf("Version:  %s\n",glGetString(GL_VERSION));
+   SLK_log("OpenGL loaded\n");
+   SLK_log("Vendor:   %s\n",glGetString(GL_VENDOR));
+   SLK_log("Renderer: %s\n",glGetString(GL_RENDERER));
+   SLK_log("Version:  %s\n",glGetString(GL_VERSION));
 
    glEnable(GL_TEXTURE_2D);
    glViewport(0,0,screen_width,screen_height);
@@ -344,6 +344,9 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    glLoadIdentity();
 
    layer_textures = backend_malloc(sizeof(*layer_textures)*layer_num);
+   if(layer_textures==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(*layer_textures)*layer_num);
+
    memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
 }
 

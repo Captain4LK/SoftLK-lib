@@ -180,7 +180,7 @@ void SLK_layer_set_size(unsigned index, int width, int height)
 #if SLK_ENABLE_PAL
          if(layers[index].type_0.target==NULL||layers[index].type_0.render==NULL)
          {
-            printf("Error: Layer %d has not been created yet!\n",index);
+            SLK_warning("layer %d has not been created yet",index);
             return;
          }
 
@@ -199,7 +199,7 @@ void SLK_layer_set_size(unsigned index, int width, int height)
 #if SLK_ENABLE_RGB
          if(layers[index].type_1.target==NULL)
          {
-            printf("Error: Layer %d has not been created yet!\n",index);
+            SLK_warning("layer %d has not been created yet",index);
             return;
          }
 

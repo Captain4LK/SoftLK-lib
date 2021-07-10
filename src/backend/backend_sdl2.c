@@ -131,7 +131,8 @@ void backend_update_viewport()
    v.y = view_y;
    v.w = view_width;
    v.h = view_height;
-   SDL_RenderSetViewport(renderer,&v);
+   if(SDL_RenderSetViewport(renderer,&v)<0)
+      SLK_warning("failed to set render viewport: %s",SDL_GetError());
 }
 
 //Handles window and input events.
@@ -270,7 +271,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
    if(SDL_Init(SDL_INIT_EVERYTHING)<0)
    {
-      printf("FATAL ERROR: failed to init sdl\n");
+      SLK_error("failed to init sdl: %s",SDL_GetError());
       exit(-1);
    }
 
@@ -280,7 +281,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
       if(SDL_GetDisplayUsableBounds(0,&max_size)<0)
       {
-         printf("Failed to get max dimensions: %s\n",SDL_GetError());
+         SLK_warning("failed to get max dimensions: %s",SDL_GetError());
       }
       else
       {
@@ -302,21 +303,25 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    else
       sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,0);
 
-   if(!sdl_window)
+   if(sdl_window==NULL)
    {
-      printf("FATAL ERROR: failed to create window\n");
+      SLK_error("failed to create window: %s",SDL_GetError());
       exit(-1);
    }
 
    renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
    if(!renderer)
    {
-      printf("FATAL ERROR: failed to create renderer\n");
+      SLK_error("failed to create renderer: %s",SDL_GetError());
       exit(-1);
    }
+
    SDL_SetRenderDrawColor(renderer,0,0,0,0);
 
    layer_textures = backend_malloc(sizeof(*layer_textures)*layer_num);
+   if(layer_textures==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(*layer_textures)*layer_num);
+
    memset(layer_textures,0,sizeof(*layer_textures)*layer_num);
    backend_update_viewport();
 }
@@ -429,13 +434,21 @@ void backend_create_layer(unsigned index, int type)
    case SLK_LAYER_PAL:
 #if SLK_ENABLE_PAL
       layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
-      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+      if(layer_textures[index]==NULL)
+         SLK_error("failed to create texture for layer %d: %s",index,SDL_GetError());
+
+      if(SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND)<0)
+         SLK_warning("failed to set texture blend mode: %s",SDL_GetError());
 #endif
       break;
    case SLK_LAYER_RGB:
 #if SLK_ENABLE_RGB
       layer_textures[index] = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_RGBA32,SDL_TEXTUREACCESS_STREAMING,screen_width,screen_height);
-      SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND);
+      if(layer_textures[index]==NULL)
+         SLK_error("failed to create texture for layer %d: %s",index,SDL_GetError());
+
+      if(SDL_SetTextureBlendMode(layer_textures[index],SDL_BLENDMODE_BLEND)<0)
+         SLK_warning("failed to set texture blend mode: %s",SDL_GetError());
 #endif
       break;
    }

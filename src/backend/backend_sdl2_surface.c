@@ -276,7 +276,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
    if(SDL_Init(SDL_INIT_EVERYTHING)<0)
    {
-      printf("FATAL ERROR: failed to init sdl\n");
+      SLK_error("failed to init sdl: %s",SDL_GetError());
       exit(-1);
    }
 
@@ -286,7 +286,7 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
 
       if(SDL_GetDisplayUsableBounds(0,&max_size)<0)
       {
-         printf("Failed to get max dimensions: %s\n",SDL_GetError());
+         SLK_warning("failed to get max dimensions: %s",SDL_GetError());
       }
       else
       {
@@ -308,16 +308,24 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    else
       sdl_window = SDL_CreateWindow(title,SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,width*pixel_scale,height*pixel_scale,0);
 
-   if(!sdl_window)
+   if(sdl_window==NULL)
    {
-      printf("FATAL ERROR: failed to create window\n");
+      SLK_error("failed to create window: %s",SDL_GetError());
       exit(-1);
    }
 
    surface_window = SDL_GetWindowSurface(sdl_window);
+   if(surface_window==NULL)
+      SLK_error("failed to get window surface: %s",SDL_GetError());
+
    backend_update_viewport();
+
    SDL_SetClipRect(surface_window,&surface_base_rect);
+
    layer_surfaces = backend_malloc(sizeof(*layer_surfaces)*layer_num);
+   if(layer_surfaces==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(*layer_surfaces)*layer_num);
+
    memset(layer_surfaces,0,sizeof(*layer_surfaces)*layer_num);
 }
 
@@ -414,11 +422,15 @@ void backend_create_layer(unsigned index, int type)
    case SLK_LAYER_PAL:
 #if SLK_ENABLE_PAL
       layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+      if(layer_surfaces[index]==NULL)
+         SLK_error("failed to create surface for layer %d: %s",index,SDL_GetError());
 #endif
       break;
    case SLK_LAYER_RGB:
 #if SLK_ENABLE_RGB
       layer_surfaces[index] = SDL_CreateRGBSurface(0,screen_width,screen_height,32,((SLK_Color){.r=255}).n,((SLK_Color){.g=255}).n,((SLK_Color){.b=255}).n,((SLK_Color){.a=255}.n));
+      if(layer_surfaces[index]==NULL)
+         SLK_error("failed to create surface for layer %d: %s",index,SDL_GetError());
 #endif
       break;
    }

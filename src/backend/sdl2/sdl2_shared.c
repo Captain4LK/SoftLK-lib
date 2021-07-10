@@ -9,11 +9,14 @@ void backend_set_fullscreen(int fullscreen)
 {
    if(fullscreen)
    {
-      SDL_SetWindowFullscreen(sdl_window,SDL_WINDOW_FULLSCREEN_DESKTOP);
+      if(SDL_SetWindowFullscreen(sdl_window,SDL_WINDOW_FULLSCREEN_DESKTOP)!=0)
+         SLK_warning("failed to fullscreen window: %s",SDL_GetError());
    }
    else
    {
-      SDL_SetWindowFullscreen(sdl_window,0);
+      if(SDL_SetWindowFullscreen(sdl_window,0)!=0)
+         SLK_warning("failed to exit fullscreen: %s",SDL_GetError());
+
       SDL_SetWindowSize(sdl_window,screen_width*pixel_scale,screen_height*pixel_scale);
    }
 
@@ -33,9 +36,13 @@ void backend_set_visible(int visible)
 void backend_set_icon(const SLK_RGB_sprite *icon)
 {
    SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(icon->data,icon->width,icon->height,32,icon->width*4,0xf000,0x0f00,0x00f0,0x000f);
+   if(surface==NULL)
+   {
+      SLK_warning("failed to create sdl surface from rgb sprite: %s",SDL_GetError());
+      return;
+   }
 
    SDL_SetWindowIcon(sdl_window,surface);
-
    SDL_FreeSurface(surface);
 }
 
@@ -251,20 +258,23 @@ void backend_input_init()
 //Shows or hides the mouse cursor.
 void backend_show_cursor(int shown)
 {
-   SDL_ShowCursor(shown?SDL_ENABLE:SDL_DISABLE);
+   if(SDL_ShowCursor(shown?SDL_ENABLE:SDL_DISABLE)<0)
+      SLK_warning("failed to show/hide cursor: %s",SDL_GetError());
 }
 
 //Sets wether the mouse cursor is captured and only relative
 //mouse motion is registerd.
 void backend_mouse_set_relative(int relative)
 {
-   SDL_SetRelativeMouseMode(relative);
+   if(SDL_SetRelativeMouseMode(relative)<0)
+      SLK_warning("failed to set relative mouse mode: %s",SDL_GetError());
 }
 
 //Sets wether to track mouse events globally.
 void backend_mouse_capture(int capture)
 {
-   SDL_CaptureMouse(capture);
+   if(SDL_CaptureMouse(capture)<0)
+      SLK_warning("failed to capture/release mouse: %s",SDL_GetError());
 }
 
 //Starts text input.
@@ -398,9 +408,9 @@ SLK_RGB_sprite *backend_load_rgb(const char *path)
 {
    cp_image_t img = cp_load_png(path);
    SLK_RGB_sprite *out = NULL;
-   if(img.pix==0)
+   if(img.pix==NULL)
    {
-      printf("Failed to load %s\n",path);
+      SLK_warning("failed to load png %s\n",path);
       return NULL;
    }
 
@@ -430,9 +440,9 @@ SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
 {
    cp_image_t img = cp_load_png_mem(data,length);
    SLK_RGB_sprite *out = NULL;
-   if(img.pix==0)
+   if(img.pix==NULL)
    {
-      puts("Failed to load png from mem");
+      SLK_warning("failed to load png from memory buffer");
       return NULL;
    }
 
@@ -446,9 +456,11 @@ SLK_RGB_sprite *backend_load_rgb_mem(const void *data, int length)
 
 void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 {
-   if(!path)
+   if(path==NULL)
       return;
    FILE *f = fopen(path,"wb");
+   if(f==NULL)
+      SLK_warning("failed to open %s for writing",path);
 
    backend_save_rgb_file(s,f);
 
@@ -457,8 +469,12 @@ void backend_save_rgb(const SLK_RGB_sprite *s, const char *path)
 
 void backend_save_rgb_file(const SLK_RGB_sprite *s, FILE *f)
 {
-   if(!f)
+   if(f==NULL)
+   {
+      SLK_warning("file pointer is NULL, can't write png to disk");
       return;
+   }
+
    cp_image_t img;
    img.w = s->width;
    img.h = s->height;
@@ -475,9 +491,10 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
    FILE *f = fopen(path,"rb");
    if(f==NULL)
    {
-      printf("Failed to load %s\n",path);
+      SLK_warning("failed to open %s for reading",path);
       return NULL;
    }
+
    SLK_Pal_sprite *out = backend_load_pal_file(f);
    fclose(f);
    return out;
@@ -485,6 +502,12 @@ SLK_Pal_sprite *backend_load_pal(const char *path)
 
 SLK_Pal_sprite *backend_load_pal_file(FILE *f)
 {
+   if(f==NULL)
+   {
+      SLK_warning("file pointer is NULL, can't read .slk file");
+      return NULL;
+   }
+
    int size = 0;
    char *data = NULL;
    fseek(f,0,SEEK_END);
@@ -513,8 +536,11 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle)
 {
    FILE *f = fopen(path,"wb");
 
-   if(!f)
+   if(f==NULL)
+   {
+      SLK_warning("failed to open %s for writing",path);
       return;
+   }
 
    backend_save_pal_file(s,f,rle);
       
@@ -523,6 +549,12 @@ void backend_save_pal(const SLK_Pal_sprite *s, const char *path, int rle)
 
 void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 {
+   if(f==NULL)
+   {
+      SLK_warning("file pointer is NULL, can't write palette to disk");
+      return;
+   }
+
    HLH_slk img;
    img.width = s->width;
    img.height = s->height;
@@ -535,28 +567,48 @@ void backend_save_pal_file(const SLK_Pal_sprite *s, FILE *f, int rle)
 SLK_Palette *backend_load_palette(const char *path)
 {
    FILE *f = fopen(path,"r");
+   if(f==NULL)
+   {
+      SLK_warning("failed to open %s for reading",path);
+      return NULL; 
+   }
+
    SLK_Palette *palette = backend_load_palette_file(f);
    fclose(f);
+
    return palette;
 }
 
 void backend_save_palette(const char *path, const SLK_Palette *pal)
 {
    FILE *f = fopen(path,"w");
+   if(f==NULL)
+   {
+      SLK_warning("failed to open %s for writing",path);
+      return;
+   }
+
    backend_save_palette_file(f,pal);
+
   fclose(f);
 }
 
 SLK_Palette *backend_load_palette_file(FILE *f)
 {
-   if(!f)
+   if(f==NULL)
+   {
+      SLK_warning("file pointer is NULL, can't load palette");
       return NULL;
+   }
 
    char buffer[512];
    int colors = 0,i,found;
    int r,g,b,a;
 
    SLK_Palette *palette = backend_malloc(sizeof(*palette));
+   if(palette==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(*palette));
+
    memset(palette,0,sizeof(*palette));
    for(i = 0;i<259&&fgets(buffer,512,f);i++)
    {
@@ -586,8 +638,12 @@ SLK_Palette *backend_load_palette_file(FILE *f)
 
 void backend_save_palette_file(FILE *f, const SLK_Palette *pal)
 {
-   if(!f)
+   if(f==NULL)
+   {
+      SLK_warning("file pointer is NULL, can't write palette to disk");
       return;
+   }
+
    fprintf(f,"JASC-PAL\n0100\n%d\n",pal->used);
    for(int i = 0;i<pal->used;i++)
    {

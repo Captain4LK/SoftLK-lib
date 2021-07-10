@@ -106,6 +106,8 @@ void SLK_setup(int width, int height, int layer_num, const char *title, int full
 {
    //Allocate space for layers, max layer num is fixed.
    layers = backend_malloc(sizeof(layers[0])*layer_num);
+   if(layers==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(layers[0])*layer_num);
    memset(layers,0,sizeof(layers[0])*layer_num);
 
    backend_setup(width,height,layer_num,title,fullscreen,scale,resizable);

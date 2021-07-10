@@ -51,11 +51,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 SLK_Pal_sprite *SLK_pal_sprite_create(int width, int height)
 {
    SLK_Pal_sprite *s = backend_malloc(sizeof(*s));
+   if(s==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",sizeof(*s));
 
    s->width = width;
    s->height = height;
 
    s->data = backend_malloc(width*height*sizeof(*s->data));
+   if(s->data==NULL)
+      SLK_error("malloc of size %zu failed, out of memory!",width*height*sizeof(*s->data));
+
    memset(s->data,0,sizeof(*s->data)*width*height);
 
    return s;
