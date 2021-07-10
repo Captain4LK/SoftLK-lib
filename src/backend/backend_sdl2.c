@@ -14,6 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 //External includes
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -269,7 +273,14 @@ void backend_setup(int width, int height, int layer_num, const char *title, int 
    layer_count = layer_num;
    layer_dynamic = resizable;
 
-   if(SDL_Init(SDL_INIT_EVERYTHING)<0)
+   Uint32 flags = 
+#ifndef __EMSCRIPTEN__
+   SDL_INIT_EVERYTHING;
+#else
+   SDL_INIT_VIDEO|SDL_INIT_EVENTS;
+#endif
+
+   if(SDL_Init(flags)<0)
    {
       SLK_error("failed to init sdl: %s",SDL_GetError());
       exit(-1);

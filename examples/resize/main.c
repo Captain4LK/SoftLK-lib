@@ -48,7 +48,7 @@ For more information, please refer to <http://unlicense.org/>
 
 int main(int argc, char *argv[])
 {
-   SLK_setup(800,600,2,"SoftLK resize test",0,1,1);  //Create 2 layers, one for the background, the other one for the image.
+   SLK_setup(800,600,2,"SoftLK resize test",0,1,0);  //Create 2 layers, one for the background, the other one for the image.
    SLK_timer_set_fps(60);
 
    //Layer 1 is the background layer (layer 0 is the last to get drawn).
